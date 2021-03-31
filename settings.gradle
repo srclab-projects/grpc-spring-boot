@@ -10,18 +10,16 @@
 //  }
 //}
 
-rootProject.name = 'demo-spring-boot-build'
+rootProject.name = 'grpc-spring-boot-build'
 
 file("${rootDir}/").eachDir { dir ->
-  if (dir.name == "demo-spring-boot-starters") {
+  if (dir.name == "grpc-spring-boot-starters") {
     dir.eachDir { subDir ->
       include ":${dir.name}:${subDir.name}"
     }
     return
   }
-  if (dir.name.startsWith("demo-spring-boot-")) {
+  if (dir.name.startsWith("grpc-spring-boot-")) {
     include ":${dir.name}"
   }
 }
-
-include ":demo-app"

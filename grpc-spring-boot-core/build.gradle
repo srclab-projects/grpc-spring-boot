@@ -1,0 +1,32 @@
+plugins {
+  id 'build.kotlin-publish-jar'
+}
+
+description = "gRPC Spring Boot Core: Core and basic gRPC interfaces, functions and utilities for Spring Boot."
+
+java {
+  registerFeature('optionalSupport') {
+    usingSourceSet(sourceSets.main)
+  }
+}
+
+dependencies {
+  implementation(platform(project(":grpc-spring-boot-dependencies")))
+
+  api("xyz.srclab.spring.boot:boat-spring-boot-starter")
+
+  testCompile(project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test"))
+
+  kapt(platform(project(":grpc-spring-boot-dependencies")))
+  kapt("org.springframework.boot:spring-boot-autoconfigure-processor")
+  kapt("org.springframework.boot:spring-boot-configuration-processor")
+
+  //developmentOnly("org.springframework.boot:spring-boot-devtools")
+}
+
+compileJava.inputs.files(processResources)
+
+test {
+  useTestNG()
+  include("**/*Test.class", "**/*TestKt.class")
+}
