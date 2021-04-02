@@ -11,9 +11,9 @@ java {
 }
 
 dependencies {
-  implementation(platform(project(":grpc-spring-boot-dependencies")))
+  api platform(project(":grpc-spring-boot-dependencies"))
 
-  api("xyz.srclab.spring.boot:boat-spring-boot-starter-test:0.0.0")
+  api "xyz.srclab.spring.boot:boat-spring-boot-starter-test"
 }
 
 test {

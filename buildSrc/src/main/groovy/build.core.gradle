@@ -32,10 +32,8 @@ ext["utils"] = [
 
 class Printer {
 
-  private static final PREFIX = ">> Demo Spring Boot: "
-
   def info(message) {
-    println("$PREFIX$message")
+    println(">> info: $message")
   }
 }
 
