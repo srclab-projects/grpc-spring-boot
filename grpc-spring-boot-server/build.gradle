@@ -2,7 +2,7 @@ plugins {
   id 'build.kotlin-publish-jar'
 }
 
-description = "gRPC Spring Boot Core: Core and basic gRPC interfaces, functions and utilities for Spring Boot."
+description = "gRPC Spring Boot Server: gRPC server interfaces, functions and utilities for Spring Boot."
 
 java {
   registerFeature('optionalSupport') {
@@ -11,13 +11,9 @@ java {
 }
 
 dependencies {
-  api platform(project(":grpc-spring-boot-dependencies"))
-
-  api "xyz.srclab.spring.boot:boat-spring-boot-starter"
-  api "io.grpc:grpc-all"
+  implementation project(":grpc-spring-boot-core")
 
   testCompile project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test")
-  testCompile project(":grpc-spring-boot-test-protobuf")
 
   kapt platform(project(":grpc-spring-boot-dependencies"))
   kapt "org.springframework.boot:spring-boot-autoconfigure-processor"
