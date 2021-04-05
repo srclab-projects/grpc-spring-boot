@@ -1,6 +1,6 @@
 @file:JvmName("ProtobufBeans")
 
-package xyz.srclab.spring.boot.protobuf
+package xyz.srclab.spring.boot.grpc.protobuf
 
 import xyz.srclab.common.bean.BeanCopyOptions
 import xyz.srclab.common.bean.BeanResolver
@@ -10,5 +10,7 @@ val PROTOBUF_BEAN_RESOLVER: BeanResolver = BeanResolver.DEFAULT.withPreResolveHa
 
 @JvmField
 val PROTOBUF_BEAN_COPY_OPTIONS: BeanCopyOptions = BeanCopyOptions.DEFAULT
-    .withBeanResolver(PROTOBUF_BEAN_RESOLVER)
-    .withConverter(PROTOBUF_CONVERTER)
+    .toBuilder()
+    .beanResolver(PROTOBUF_BEAN_RESOLVER)
+    .converter(PROTOBUF_CONVERTER)
+    .build()

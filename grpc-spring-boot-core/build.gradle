@@ -15,6 +15,9 @@ dependencies {
 
   api "xyz.srclab.spring.boot:boat-spring-boot-starter"
   api "io.grpc:grpc-all"
+  api "com.hubspot.jackson:jackson-datatype-protobuf"
+
+  compileOnly "org.springframework.boot:spring-boot-starter-web"
 
   testCompile project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test")
   testCompile project(":grpc-spring-boot-test-protobuf")

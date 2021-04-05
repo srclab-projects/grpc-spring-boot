@@ -1,4 +1,4 @@
-package xyz.srclab.spring.boot.protobuf
+package xyz.srclab.spring.boot.grpc.protobuf
 
 import com.google.protobuf.Descriptors
 import com.google.protobuf.Message
@@ -9,6 +9,7 @@ import xyz.srclab.common.bean.BeanResolveHandler
 import xyz.srclab.common.invoke.Invoker
 import xyz.srclab.common.invoke.Invoker.Companion.toInvoker
 import xyz.srclab.common.reflect.genericInterface
+import xyz.srclab.common.reflect.method
 import xyz.srclab.common.reflect.methodOrNull
 import xyz.srclab.common.reflect.rawClass
 import java.lang.reflect.Method
@@ -143,6 +144,9 @@ object ProtobufBeanResolveHandler : AbstractBeanResolveHandler() {
         for (field in descriptor.fields) {
             createPropertyInvoker(field, isBuilder)
         }
+
+        //Add class property
+        getters["class"] = PropertyInvoker(Class::class.java, rawClass.method("getClass").toInvoker())
 
         context.breakResolving()
     }
