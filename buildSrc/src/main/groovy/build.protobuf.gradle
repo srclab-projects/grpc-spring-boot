@@ -39,8 +39,30 @@ protobuf {
 
     generatedFilesBaseDir = "$projectDir/src"
   }
+
+  plugins {
+    grpc {
+      artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
+    }
+    //grpckt {
+    //  artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion"
+    //}
+  }
+
+  generateProtoTasks {
+    all().each { task ->
+      task.plugins {
+        // Generate Java gRPC classes
+        grpc {
+          setOutputSubDir "java"
+        }
+        // Generate Kotlin gRPC using the custom plugin from library
+        //grpckt {}
+      }
+    }
+  }
 }
 
 clean {
-  delete protobuf.generatedFilesBaseDir
+  delete("${protobuf.generatedFilesBaseDir}/main/java", "${protobuf.generatedFilesBaseDir}/main/grpc")
 }

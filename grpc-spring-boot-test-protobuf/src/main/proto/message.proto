@@ -1,8 +1,9 @@
 syntax = "proto3";
 
 option java_package = "xyz.srclab.spring.boot.proto";
-option java_outer_classname = "ProtoMessage";
+//option java_outer_classname = "ProtoMessage";
 option java_multiple_files = true;
+//option java_generic_services = true;
 
 message RequestMessage {
     string id = 1;
@@ -27,5 +28,8 @@ message MessageData {
 }
 
 service MessageService {
-    rpc Query(RequestMessage) returns (ResponseMessage);
+    rpc Request1(RequestMessage) returns (ResponseMessage);
+    rpc Request2(stream RequestMessage) returns (ResponseMessage);
+    rpc Request3(RequestMessage) returns (stream ResponseMessage);
+    rpc Request4(stream RequestMessage) returns (stream ResponseMessage);
 }
