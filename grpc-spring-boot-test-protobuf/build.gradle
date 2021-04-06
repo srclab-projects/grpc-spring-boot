@@ -1,0 +1,24 @@
+plugins {
+  id 'build.protobuf'
+}
+
+description = "gRPC Spring Boot Protobuf"
+
+java {
+  registerFeature('optionalSupport') {
+    usingSourceSet(sourceSets.main)
+  }
+}
+
+dependencies {
+  api platform(project(":grpc-spring-boot-dependencies"))
+
+  api "io.grpc:grpc-all"
+
+  testCompile project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test")
+}
+
+test {
+  useTestNG()
+  include("**/*Sample.class", "**/*SampleKt.class")
+}

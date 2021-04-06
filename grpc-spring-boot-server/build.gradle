@@ -1,0 +1,30 @@
+plugins {
+  id 'build.kotlin-publish-jar'
+}
+
+description = "gRPC Spring Boot Server: gRPC server interfaces, functions and utilities for Spring Boot."
+
+java {
+  registerFeature('optionalSupport') {
+    usingSourceSet(sourceSets.main)
+  }
+}
+
+dependencies {
+  implementation project(":grpc-spring-boot-core")
+
+  testCompile project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test")
+
+  kapt platform(project(":grpc-spring-boot-dependencies"))
+  kapt "org.springframework.boot:spring-boot-autoconfigure-processor"
+  kapt "org.springframework.boot:spring-boot-configuration-processor"
+
+  //developmentOnly "org.springframework.boot:spring-boot-devtools"
+}
+
+compileJava.inputs.files(processResources)
+
+test {
+  useTestNG()
+  include("**/*Test.class", "**/*TestKt.class")
+}

@@ -1,0 +1,82 @@
+plugins {
+  id 'build.core'
+  id 'maven-publish'
+  id 'java-platform'
+  id 'signing'
+}
+
+printer.info("${project.name}: import kotlin-publish-platform")
+
+if (infos.publish.enablePublish) {
+  publishing {
+    publications {
+      maven(MavenPublication) {
+        from components.javaPlatform
+
+        pom {
+          name = project.name
+          description = project.description
+          url = infos.url
+          inceptionYear = infos.inceptionYear
+          scm {
+            connection = "scm:git:${infos.url}.git"
+            developerConnection = "scm:git:${infos.url}.git"
+            url = infos.url
+          }
+          if (infos.licenses != null) {
+            licenses {
+              infos.licenses.forEach { each ->
+                license {
+                  name = each.name
+                  url = each.url
+                }
+              }
+            }
+          }
+          if (infos.developers != null) {
+            developers {
+              infos.developers.forEach { each ->
+                developer {
+                  email = each.email
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    repositories {
+      mavenLocal()
+      if (infos.publish.isSnapshot) {
+        maven {
+          name = "${infos.publish.snapshotId}"
+          url = infos.publish.urls.snapshot
+          credentials {
+            username = getProperty("publish${infos.publish.snapshotId.capitalize()}Username")
+            password = getProperty("publish${infos.publish.snapshotId.capitalize()}Password")
+          }
+        }
+      }
+      if (infos.publish.isRelease) {
+        maven {
+          name = "${infos.publish.releaseId}"
+          url = infos.publish.urls.release
+          credentials {
+            username = getProperty("publish${infos.publish.releaseId.capitalize()}Username")
+            password = getProperty("publish${infos.publish.releaseId.capitalize()}Password")
+          }
+        }
+      }
+    }
+
+    if (infos.publish.isSigning) {
+      ext."signing.keyId" = getProperty("signing${infos.publish.signingId.capitalize()}Id")
+      ext."signing.password" = getProperty("signing${infos.publish.signingId.capitalize()}Password")
+      ext."signing.secretKeyRingFile" = getProperty("signing${infos.publish.signingId.capitalize()}SecretKeyRingFile")
+      signing {
+        sign publishing.publications.maven
+      }
+    }
+  }
+}

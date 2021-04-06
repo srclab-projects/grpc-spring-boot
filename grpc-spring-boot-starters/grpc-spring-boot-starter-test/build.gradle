@@ -1,0 +1,15 @@
+plugins {
+  id 'build.kotlin-publish-jar'
+}
+
+description = "gRPC Spring Boot Starters for Test"
+
+java {
+  registerFeature('optionalSupport') {
+    usingSourceSet(sourceSets.main)
+  }
+}
+
+dependencies {
+  api(project(":grpc-spring-boot-test"))
+}

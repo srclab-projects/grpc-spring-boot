@@ -1,0 +1,68 @@
+plugins {
+  id 'build.core'
+  id 'build.kotlin-compile'
+  id "com.google.protobuf"
+  id "java"
+}
+
+printer.info("${project.name}: import protobuf")
+
+sourceSets {
+  main {
+    proto {
+      // In addition to the default 'src/main/proto'
+      //srcDir 'src/main/protobuf'
+      //srcDir 'src/main/protocolbuffers'
+      // In addition to the default '**/*.proto' (use with caution).
+      // Using an extension other than 'proto' is NOT recommended,
+      // because when proto files are published along with class files, we can
+      // only tell the type of a file from its extension.
+      //include '**/*.protodevel'
+    }
+    java {
+      //...
+    }
+  }
+  test {
+    proto {
+      // In addition to the default 'src/test/proto'
+      //srcDir 'src/test/protocolbuffers'
+    }
+  }
+}
+
+protobuf {
+  // Configure the protoc executable
+  protoc {
+    // Download from repositories
+    artifact = "com.google.protobuf:protoc:$protocVersion"
+
+    generatedFilesBaseDir = "$projectDir/src"
+  }
+
+  plugins {
+    grpc {
+      artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
+    }
+    //grpckt {
+    //  artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion"
+    //}
+  }
+
+  generateProtoTasks {
+    all().each { task ->
+      task.plugins {
+        // Generate Java gRPC classes
+        grpc {
+          setOutputSubDir "java"
+        }
+        // Generate Kotlin gRPC using the custom plugin from library
+        //grpckt {}
+      }
+    }
+  }
+}
+
+clean {
+  delete("${protobuf.generatedFilesBaseDir}/main/java", "${protobuf.generatedFilesBaseDir}/main/grpc")
+}

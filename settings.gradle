@@ -1,0 +1,25 @@
+//pluginManagement {
+//  repositories {
+//    maven {
+//      url "https://maven.aliyun.com/repository/gradle-plugin"
+//    }
+//    gradlePluginPortal()
+//  }
+//  plugins {
+//    id "org.jetbrains.kotlin.jvm" version "${kotlinVersion}"
+//  }
+//}
+
+rootProject.name = 'grpc-spring-boot-build'
+
+file("${rootDir}/").eachDir { dir ->
+  if (dir.name == "grpc-spring-boot-starters") {
+    dir.eachDir { subDir ->
+      include ":${dir.name}:${subDir.name}"
+    }
+    return
+  }
+  if (dir.name.startsWith("grpc-spring-boot-")) {
+    include ":${dir.name}"
+  }
+}
