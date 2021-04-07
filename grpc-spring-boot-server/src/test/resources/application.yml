@@ -1,0 +1,14 @@
+grpc:
+  server:
+    servers:
+      default:
+        port: 6565
+      serverGroup:
+        port: 6566
+        groupPatterns: group*
+      server2:
+        port: 6567
+        groupPatterns: group2
+      server3:
+        port: 6568
+        groupPatterns: group3

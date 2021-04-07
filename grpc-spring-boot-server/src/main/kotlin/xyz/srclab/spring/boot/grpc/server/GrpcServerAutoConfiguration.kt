@@ -28,6 +28,12 @@ open class GrpcServerAutoConfiguration {
     }
 
     @ConditionalOnMissingBean
+    @Bean("xyz.srclab.spring.boot.grpc.server.GrpcServerLifecycle")
+    open fun grpcServerLifecycle(): GrpcServerLifecycle {
+        return GrpcServerLifecycle()
+    }
+
+    @ConditionalOnMissingBean
     @Bean("xyz.srclab.spring.boot.grpc.server.GrpcServerBuilderHelperBean")
     open fun grpcServerBuilderHelperBean(): GrpcServerBuilderHelperBean {
         return GrpcServerBuilderHelperBean()

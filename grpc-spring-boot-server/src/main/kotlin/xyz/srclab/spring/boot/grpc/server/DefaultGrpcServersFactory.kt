@@ -5,7 +5,6 @@ import io.grpc.Server
 import io.grpc.ServerInterceptor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.getBeansWithAnnotation
 import org.springframework.context.ApplicationContext
 import xyz.srclab.common.collect.MutableSetMap
 import xyz.srclab.common.collect.toImmutableMap
@@ -25,7 +24,6 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
             mutableMapOf<String, MutableSet<BindableService>>().toMutableSetMap()
         val interceptorGroups: MutableSetMap<String, ServerInterceptor> =
             mutableMapOf<String, MutableSet<ServerInterceptor>>().toMutableSetMap()
-        val processedBindableServices: MutableSet<String> = mutableSetOf()
 
         fun groupService(
             annotation: GrpcService?,
@@ -78,24 +76,6 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
             val bean = serviceEntry.value
             val serviceAnnotation = applicationContext.findAnnotationOnBean(beanName, GrpcService::class.java)
             groupService(serviceAnnotation, beanName, bean)
-            processedBindableServices.add(beanName)
-        }
-
-        //find all @GrpcService
-        val grpcServices = applicationContext.getBeansWithAnnotation<GrpcService>()
-        for (serviceEntry in grpcServices) {
-            val beanName = serviceEntry.key
-            if (processedBindableServices.contains(beanName)) {
-                continue
-            }
-            val bean = serviceEntry.value
-            if (bean !is BindableService) {
-                throw IllegalArgumentException(
-                    "Type of gRPC service bean should be an ImplBase class. now it is ${bean.javaClass}"
-                )
-            }
-            val serviceAnnotation = applicationContext.findAnnotationOnBean(beanName, GrpcService::class.java)
-            groupService(serviceAnnotation, beanName, bean)
         }
 
         //find all server interceptor
@@ -114,7 +94,13 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
             val serverName = serverEntry.key
             val serverProperties = serverEntry.value
             result[serverName] =
-                grpcServerFactory.create(serverProperties, serversProperties, serviceGroups, interceptorGroups)
+                grpcServerFactory.create(
+                    serverName,
+                    serverProperties,
+                    serversProperties,
+                    serviceGroups,
+                    interceptorGroups
+                )
         }
         return result.toImmutableMap()
     }
