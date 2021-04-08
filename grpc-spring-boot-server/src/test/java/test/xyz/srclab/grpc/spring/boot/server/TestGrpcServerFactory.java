@@ -1,4 +1,4 @@
-package test.xyz.srclab.spring.boot.grpc.server;
+package test.xyz.srclab.grpc.spring.boot.server;
 
 import io.grpc.BindableService;
 import io.grpc.Server;
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import xyz.srclab.annotations.Nullable;
 import xyz.srclab.common.collect.MutableSetMap;
 import xyz.srclab.common.test.TestMarker;
-import xyz.srclab.spring.boot.grpc.server.DefaultGrpcServerFactory;
-import xyz.srclab.spring.boot.grpc.server.GrpcServerDefinition;
+import xyz.srclab.grpc.spring.boot.server.DefaultGrpcServerFactory;
+import xyz.srclab.grpc.spring.boot.server.GrpcServerDefinition;
 
 import java.util.LinkedList;
 import java.util.List;

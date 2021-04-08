@@ -1,6 +1,6 @@
 @file:JvmName("GrpcServers")
 
-package xyz.srclab.spring.boot.grpc.server
+package xyz.srclab.grpc.spring.boot.server
 
 const val DEFAULT_SERVER_NAME = "default"
 

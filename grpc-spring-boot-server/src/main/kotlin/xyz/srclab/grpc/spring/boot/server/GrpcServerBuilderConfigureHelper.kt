@@ -1,4 +1,4 @@
-package xyz.srclab.spring.boot.grpc.server
+package xyz.srclab.grpc.spring.boot.server
 
 import io.grpc.BindableService
 import io.grpc.ServerBuilder

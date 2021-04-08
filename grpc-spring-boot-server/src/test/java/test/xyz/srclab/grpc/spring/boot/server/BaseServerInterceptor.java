@@ -1,4 +1,4 @@
-package test.xyz.srclab.spring.boot.grpc.server;
+package test.xyz.srclab.grpc.spring.boot.server;
 
 import io.grpc.*;
 import xyz.srclab.annotations.Nullable;

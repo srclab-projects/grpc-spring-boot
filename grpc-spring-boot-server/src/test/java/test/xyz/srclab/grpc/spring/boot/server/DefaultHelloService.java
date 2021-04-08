@@ -1,18 +1,18 @@
-package test.xyz.srclab.spring.boot.grpc.server;
+package test.xyz.srclab.grpc.spring.boot.server;
 
 import io.grpc.stub.StreamObserver;
-import xyz.srclab.spring.boot.grpc.server.GrpcService;
-import xyz.srclab.spring.boot.proto.Group3HelloServiceGrpc;
+import org.springframework.stereotype.Service;
+import xyz.srclab.spring.boot.proto.DefaultHelloServiceGrpc;
 import xyz.srclab.spring.boot.proto.HelloRequest;
 import xyz.srclab.spring.boot.proto.HelloResponse;
 
-@GrpcService(group = "group3")
-public class HelloService3 extends Group3HelloServiceGrpc.Group3HelloServiceImplBase {
+@Service
+public class DefaultHelloService extends DefaultHelloServiceGrpc.DefaultHelloServiceImplBase {
 
     @Override
     public void hello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
         responseObserver.onNext(HelloResponse.newBuilder()
-                .setMessage("HelloService3")
+                .setMessage("DefaultHelloService")
                 .setThreadName(Thread.currentThread().getName())
                 .build()
         );

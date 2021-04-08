@@ -1,7 +1,7 @@
-package test.xyz.srclab.spring.boot.grpc.server;
+package test.xyz.srclab.grpc.spring.boot.server;
 
 import io.grpc.stub.StreamObserver;
-import xyz.srclab.spring.boot.grpc.server.GrpcService;
+import xyz.srclab.grpc.spring.boot.server.GrpcService;
 import xyz.srclab.spring.boot.proto.Group1HelloServiceGrpc;
 import xyz.srclab.spring.boot.proto.HelloRequest;
 import xyz.srclab.spring.boot.proto.HelloResponse;

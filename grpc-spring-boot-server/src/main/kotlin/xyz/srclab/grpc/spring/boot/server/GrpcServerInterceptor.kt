@@ -1,4 +1,4 @@
-package xyz.srclab.spring.boot.grpc.server
+package xyz.srclab.grpc.spring.boot.server
 
 import org.springframework.core.annotation.AliasFor
 import org.springframework.stereotype.Component
