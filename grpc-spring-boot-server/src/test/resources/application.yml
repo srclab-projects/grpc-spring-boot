@@ -3,9 +3,9 @@ grpc:
     defaults:
       ip: localhost
       threadPoolBeanName: defaultExecutor
-      #sslCertChainClassPath: server.crt
-      #sslPrivateKeyClassPath: server.key
-      #sslTrustCertCollectionClassPath: client.tst
+      #sslCertChainClassPath: myServer.crt
+      #sslPrivateKeyClassPath: myServer.key.pkcs8
+      #sslTrustCertCollectionClassPath: trusts.crt
       #sslClientAuth: require
     servers:
       default:

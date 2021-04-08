@@ -37,8 +37,6 @@ open class DefaultGrpcServerSslFactory : GrpcServerSslFactory {
 
         val builder =
             SslContextBuilder.forServer(keyCertChainStream, privateKeyStream, serverDefinition.sslPrivateKeyPassword)
-        //builder.sslProvider(SslProvider.OPENSSL)
-        //builder.protocols("HTTP/2")
 
         val trustCertCollectionStream = openStream(trustCertCollectionClassPath, trustCertCollectionFile)
         if (trustCertCollectionStream !== null) {

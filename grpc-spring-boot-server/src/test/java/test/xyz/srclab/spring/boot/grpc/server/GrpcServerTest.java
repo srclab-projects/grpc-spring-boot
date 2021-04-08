@@ -57,11 +57,11 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
                 //.sslContext(
                 //        GrpcSslContexts.forClient()
                 //                .keyManager(
-                //                        Loaders.loadResource("client.crt").openStream(),
-                //                        Loaders.loadResource("client.key").openStream()
+                //                        Loaders.loadResource("myClient.crt").openStream(),
+                //                        Loaders.loadResource("myClient.key.pkcs8").openStream()
                 //                )
                 //                .trustManager(
-                //                        Loaders.loadResource("server.tst").openStream()
+                //                        Loaders.loadResource("trusts.crt").openStream()
                 //                )
                 //                .clientAuth(ClientAuth.REQUIRE).build()
                 //)
