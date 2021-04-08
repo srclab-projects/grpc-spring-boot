@@ -50,7 +50,7 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
         serviceGroups: MutableSetMap<String, BindableService>,
         interceptorGroups: MutableSetMap<String, ServerInterceptor>
     ): Server {
-        val builder = NettyServerBuilder.forAddress(InetSocketAddress(serverDefinition.ip, serverDefinition.port))
+        val builder = NettyServerBuilder.forAddress(InetSocketAddress(serverDefinition.host, serverDefinition.port))
         grpcServerBuilderConfigureHelper.configureServices(
             builder,
             serverDefinition,

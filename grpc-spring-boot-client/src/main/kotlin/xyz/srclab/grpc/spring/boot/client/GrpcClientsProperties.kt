@@ -1,16 +1,16 @@
-package xyz.srclab.spring.boot.grpc.server
+package xyz.srclab.grpc.spring.boot.client
 
 import io.grpc.internal.GrpcUtil
 import io.grpc.netty.NettyServerBuilder
 import xyz.srclab.common.collect.toImmutableSet
 import java.util.concurrent.TimeUnit
 
-open class GrpcServersProperties {
-    var defaults: GrpcServerProperties? = null
-    var servers: Map<String, GrpcServerProperties> = emptyMap()
+open class GrpcClientsProperties {
+    var defaults: GrpcClientProperties? = null
+    var servers: Map<String, GrpcClientProperties> = emptyMap()
 }
 
-open class GrpcServerProperties {
+open class GrpcClientProperties {
     var inProcess: Boolean? = null
     var ip: String? = null
     var port: Int? = null
@@ -39,7 +39,7 @@ open class GrpcServerProperties {
     var sslClientAuth: String? = null
 }
 
-open class GrpcServerDefinition(
+open class GrpcClientDefinition(
     val name: String,
     _inProcess: Boolean?,
     _ip: String?,
@@ -100,15 +100,15 @@ open class GrpcServerDefinition(
     val sslClientAuth: String? = _sslClientAuth
 }
 
-fun GrpcServersProperties.toDefinitions(): Set<GrpcServerDefinition> {
+fun GrpcClientsProperties.toDefinitions(): Set<GrpcClientDefinition> {
     return this.servers.entries.map { this.getServerDefinition(it.key) }.toImmutableSet()
 }
 
-private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerDefinition {
+private fun GrpcClientsProperties.getServerDefinition(name: String): GrpcClientDefinition {
     val defaults = this.defaults
     val properties = this.servers[name] ?: throw IllegalArgumentException("Server properties $name not found")
     if (defaults === null) {
-        return GrpcServerDefinition(
+        return GrpcClientDefinition(
             name,
             properties.inProcess,
             properties.ip,
@@ -136,7 +136,7 @@ private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerD
             properties.sslClientAuth,
         )
     } else {
-        return GrpcServerDefinition(
+        return GrpcClientDefinition(
             name,
             properties.inProcess ?: defaults.inProcess,
             properties.ip ?: defaults.ip,

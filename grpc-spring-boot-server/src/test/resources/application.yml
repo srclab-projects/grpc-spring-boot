@@ -1,7 +1,7 @@
 grpc:
   server:
     defaults:
-      ip: localhost
+      host: localhost
       threadPoolBeanName: defaultExecutor
       #sslCertChainClassPath: myServer.crt
       #sslPrivateKeyClassPath: myServer.key.pkcs8

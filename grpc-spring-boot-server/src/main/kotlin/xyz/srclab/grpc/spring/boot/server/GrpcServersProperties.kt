@@ -12,7 +12,7 @@ open class GrpcServersProperties {
 
 open class GrpcServerProperties {
     var inProcess: Boolean? = null
-    var ip: String? = null
+    var host: String? = null
     var port: Int? = null
     var groupPatterns: List<String>? = null
     var threadPoolBeanName: String? = null
@@ -42,7 +42,7 @@ open class GrpcServerProperties {
 open class GrpcServerDefinition(
     val name: String,
     _inProcess: Boolean?,
-    _ip: String?,
+    _host: String?,
     _port: Int?,
     _groupPatterns: List<String>?,
     _threadPoolBeanName: String?,
@@ -69,7 +69,7 @@ open class GrpcServerDefinition(
     _sslClientAuth: String?,
 ) {
     val inProcess: Boolean = _inProcess ?: false
-    val ip: String = _ip ?: "127.0.0.1"
+    val host: String = _host ?: "127.0.0.1"
     val port: Int = _port ?: 6565
     val groupPatterns: List<String> = _groupPatterns ?: emptyList()
     val threadPoolBeanName: String? = _threadPoolBeanName
@@ -111,7 +111,7 @@ private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerD
         return GrpcServerDefinition(
             name,
             properties.inProcess,
-            properties.ip,
+            properties.host,
             properties.port,
             properties.groupPatterns,
             properties.threadPoolBeanName,
@@ -139,7 +139,7 @@ private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerD
         return GrpcServerDefinition(
             name,
             properties.inProcess ?: defaults.inProcess,
-            properties.ip ?: defaults.ip,
+            properties.host ?: defaults.host,
             properties.port ?: defaults.port,
             properties.groupPatterns ?: defaults.groupPatterns,
             properties.threadPoolBeanName ?: defaults.threadPoolBeanName,
