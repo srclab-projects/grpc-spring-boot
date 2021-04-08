@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option java_package = "xyz.srclab.spring.boot.proto";
+option java_multiple_files = true;
+
+message HelloRequest {
+    string message = 1;
+}
+
+message HelloResponse {
+    string message = 1;
+    string threadName = 2;
+}
+
+service DefaultHelloService {
+    rpc hello(HelloRequest) returns (HelloResponse);
+}
+
+service Group1HelloService {
+    rpc hello(HelloRequest) returns (HelloResponse);
+}
+
+service Group2HelloService {
+    rpc hello(HelloRequest) returns (HelloResponse);
+}
+
+service Group3HelloService {
+    rpc hello(HelloRequest) returns (HelloResponse);
+}
