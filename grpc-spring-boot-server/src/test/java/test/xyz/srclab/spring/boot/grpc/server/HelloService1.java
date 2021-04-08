@@ -11,7 +11,11 @@ public class HelloService1 extends Group1HelloServiceGrpc.Group1HelloServiceImpl
 
     @Override
     public void hello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-        responseObserver.onNext(HelloResponse.newBuilder().setMessage("HelloService1").build());
+        responseObserver.onNext(HelloResponse.newBuilder()
+                .setMessage("HelloService1")
+                .setThreadName(Thread.currentThread().getName())
+                .build()
+        );
         responseObserver.onCompleted();
     }
 }

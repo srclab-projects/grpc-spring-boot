@@ -7,7 +7,6 @@ import io.grpc.inprocess.InProcessServerBuilder
 import io.grpc.netty.NettyServerBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.context.ApplicationContext
 import xyz.srclab.common.collect.MutableSetMap
 import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
@@ -16,82 +15,69 @@ import javax.annotation.Resource
 open class DefaultGrpcServerFactory : GrpcServerFactory {
 
     @Resource
-    private lateinit var applicationContext: ApplicationContext
-
-    @Resource
-    private lateinit var grpcServerBuilderHelperBean: GrpcServerBuilderHelperBean
+    private lateinit var grpcServerBuilderConfigureHelper: GrpcServerBuilderConfigureHelper
 
     override fun create(
-        serverName: String,
-        serverProperties: GrpcServerProperties,
-        serversProperties: GrpcServersProperties,
+        serverDefinition: GrpcServerDefinition,
         serviceGroups: MutableSetMap<String, BindableService>,
         interceptorGroups: MutableSetMap<String, ServerInterceptor>
     ): Server {
-        return if (serverProperties.inProcess) createInProcessServer(
-            serverName,
-            serverProperties,
-            serversProperties,
+        return if (serverDefinition.inProcess) createInProcessServer(
+            serverDefinition,
             serviceGroups,
             interceptorGroups
-        ) else createNettyServer(serverName, serverProperties, serversProperties, serviceGroups, interceptorGroups)
+        ) else createNettyServer(serverDefinition, serviceGroups, interceptorGroups)
     }
 
     private fun createInProcessServer(
-        serverName: String,
-        serverProperties: GrpcServerProperties,
-        serversProperties: GrpcServersProperties,
+        serverDefinition: GrpcServerDefinition,
         serviceGroups: MutableSetMap<String, BindableService>,
         interceptorGroups: MutableSetMap<String, ServerInterceptor>
     ): Server {
-        val builder = InProcessServerBuilder.forName(serverName)
-        grpcServerBuilderHelperBean.addServices(
+        val builder = InProcessServerBuilder.forName(serverDefinition.name)
+        grpcServerBuilderConfigureHelper.configureServices(
             builder,
-            serverProperties.groupPatterns,
-            serverName,
+            serverDefinition,
             serviceGroups,
             interceptorGroups
         )
-        logger.info("gRPC in-process-server $serverName created.")
+        logger.info("gRPC in-process-server ${serverDefinition.name} created.")
         return builder.build()
     }
 
     private fun createNettyServer(
-        serverName: String,
-        serverProperties: GrpcServerProperties,
-        serversProperties: GrpcServersProperties,
+        serverDefinition: GrpcServerDefinition,
         serviceGroups: MutableSetMap<String, BindableService>,
         interceptorGroups: MutableSetMap<String, ServerInterceptor>
     ): Server {
-        val builder = NettyServerBuilder.forAddress(InetSocketAddress(serverProperties.ip, serverProperties.port))
-        grpcServerBuilderHelperBean.addServices(
+        val builder = NettyServerBuilder.forAddress(InetSocketAddress(serverDefinition.ip, serverDefinition.port))
+        grpcServerBuilderConfigureHelper.configureServices(
             builder,
-            serverProperties.groupPatterns,
-            serverName,
+            serverDefinition,
             serviceGroups,
             interceptorGroups
         )
-        grpcServerBuilderHelperBean.addExecutor(
+        grpcServerBuilderConfigureHelper.configureExecutor(
             builder,
-            serverProperties.threadPoolBeanName,
-            serversProperties.defaultThreadPoolBeanName
+            serverDefinition
         )
 
-        builder.maxConcurrentCallsPerConnection(serverProperties.maxConcurrentCallsPerConnection)
-        builder.flowControlWindow(serverProperties.flowControlWindow)
-        builder.maxInboundMessageSize(serverProperties.maxMessageSize)
-        builder.maxInboundMetadataSize(serverProperties.maxHeaderListSize)
-        builder.keepAliveTime(serverProperties.keepAliveTimeInNanos, TimeUnit.NANOSECONDS)
-        builder.keepAliveTimeout(serverProperties.keepAliveTimeoutInNanos, TimeUnit.NANOSECONDS)
-        builder.maxConnectionIdle(serverProperties.maxConnectionIdleInNanos, TimeUnit.NANOSECONDS)
-        builder.maxConnectionAge(serverProperties.maxConnectionAgeInNanos, TimeUnit.NANOSECONDS)
-        builder.maxConnectionAgeGrace(serverProperties.maxConnectionAgeGraceInNanos, TimeUnit.NANOSECONDS)
-        builder.permitKeepAliveWithoutCalls(serverProperties.permitKeepAliveWithoutCalls)
-        builder.permitKeepAliveTime(serverProperties.permitKeepAliveTimeInNanos, TimeUnit.NANOSECONDS)
+        builder.maxConcurrentCallsPerConnection(serverDefinition.maxConcurrentCallsPerConnection)
+        builder.flowControlWindow(serverDefinition.flowControlWindow)
+        builder.maxInboundMessageSize(serverDefinition.maxMessageSize)
+        builder.maxInboundMetadataSize(serverDefinition.maxHeaderListSize)
+        builder.keepAliveTime(serverDefinition.keepAliveTimeInNanos, TimeUnit.NANOSECONDS)
+        builder.keepAliveTimeout(serverDefinition.keepAliveTimeoutInNanos, TimeUnit.NANOSECONDS)
+        builder.maxConnectionIdle(serverDefinition.maxConnectionIdleInNanos, TimeUnit.NANOSECONDS)
+        builder.maxConnectionAge(serverDefinition.maxConnectionAgeInNanos, TimeUnit.NANOSECONDS)
+        builder.maxConnectionAgeGrace(serverDefinition.maxConnectionAgeGraceInNanos, TimeUnit.NANOSECONDS)
+        builder.permitKeepAliveWithoutCalls(serverDefinition.permitKeepAliveWithoutCalls)
+        builder.permitKeepAliveTime(serverDefinition.permitKeepAliveTimeInNanos, TimeUnit.NANOSECONDS)
 
-        //builder.sslContext()
+        //SSL
+        grpcServerBuilderConfigureHelper.configureSsl(builder, serverDefinition)
 
-        logger.info("gRPC netty-server $serverName created.")
+        logger.info("gRPC netty-server ${serverDefinition.name} created.")
         return builder.build()
     }
 

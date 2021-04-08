@@ -19,7 +19,7 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
     @Resource
     private lateinit var grpcServerFactory: GrpcServerFactory
 
-    override fun create(serversProperties: GrpcServersProperties): Map<String, Server> {
+    override fun create(serverDefinitions: Set<GrpcServerDefinition>): Map<String, Server> {
         val serviceGroups: MutableSetMap<String, BindableService> =
             mutableMapOf<String, MutableSet<BindableService>>().toMutableSetMap()
         val interceptorGroups: MutableSetMap<String, ServerInterceptor> =
@@ -90,17 +90,8 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
 
         //build gRPC server
         val result: MutableMap<String, Server> = mutableMapOf()
-        for (serverEntry in serversProperties.servers) {
-            val serverName = serverEntry.key
-            val serverProperties = serverEntry.value
-            result[serverName] =
-                grpcServerFactory.create(
-                    serverName,
-                    serverProperties,
-                    serversProperties,
-                    serviceGroups,
-                    interceptorGroups
-                )
+        for (serverDefinition in serverDefinitions) {
+            result[serverDefinition.name] = grpcServerFactory.create(serverDefinition, serviceGroups, interceptorGroups)
         }
         return result.toImmutableMap()
     }

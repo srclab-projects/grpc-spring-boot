@@ -2,13 +2,16 @@ package test.xyz.srclab.spring.boot.grpc.server;
 
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
+import io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.NettyChannelBuilder;
+import io.netty.handler.ssl.ClientAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import xyz.srclab.common.base.Loaders;
 import xyz.srclab.spring.boot.proto.*;
 
 import javax.annotation.Resource;
@@ -22,17 +25,17 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
 
     private static final Logger logger = LoggerFactory.getLogger(GrpcServerTest.class);
 
-    @Resource
-    private DefaultHelloService defaultHelloService;
-
-    @Resource
-    private HelloService1 helloService1;
-
-    @Resource
-    private HelloService2 helloService2;
-
-    @Resource
-    private HelloService3 helloService3;
+    //@Resource
+    //private DefaultHelloService defaultHelloService;
+    //
+    //@Resource
+    //private HelloService1 helloService1;
+    //
+    //@Resource
+    //private HelloService2 helloService2;
+    //
+    //@Resource
+    //private HelloService3 helloService3;
 
     @Resource
     private DefaultServerInterceptor defaultServerInterceptor;
@@ -47,9 +50,22 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
     private Group3ServerInterceptor group3ServerInterceptor;
 
     @Test
-    public void testServers() {
+    public void testServers() throws Exception {
         HelloRequest helloRequest = HelloRequest.getDefaultInstance();
-        Channel defaultChannel = NettyChannelBuilder.forTarget("127.0.0.1:6565").usePlaintext().build();
+        //ChannelCredentials cred = TlsChannelCredentials.newBuilder().build();
+        Channel defaultChannel = NettyChannelBuilder.forTarget("localhost:6565").usePlaintext().build();
+                //.sslContext(
+                //        GrpcSslContexts.forClient()
+                //                .keyManager(
+                //                        Loaders.loadResource("client.crt").openStream(),
+                //                        Loaders.loadResource("client.key").openStream()
+                //                )
+                //                .trustManager(
+                //                        Loaders.loadResource("server.tst").openStream()
+                //                )
+                //                .clientAuth(ClientAuth.REQUIRE).build()
+                //)
+                //.build();
         Channel groupsChannel = NettyChannelBuilder.forTarget("127.0.0.1:6566").usePlaintext().build();
         Channel group2Channel = NettyChannelBuilder.forTarget("127.0.0.1:6567").usePlaintext().build();
         Channel group3Channel = NettyChannelBuilder.forTarget("127.0.0.1:6568").usePlaintext().build();
@@ -134,6 +150,23 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
                         //"Group2HelloService",
                         "Group3HelloService"
                 )
+        );
+
+        Assert.assertTrue(
+                DefaultHelloServiceGrpc.newBlockingStub(defaultChannel).hello(helloRequest).getThreadName()
+                        .startsWith("default-task-executor")
+        );
+        Assert.assertTrue(
+                Group1HelloServiceGrpc.newBlockingStub(defaultChannel).hello(helloRequest).getThreadName()
+                        .startsWith("default-task-executor")
+        );
+        Assert.assertTrue(
+                Group2HelloServiceGrpc.newBlockingStub(group2Channel).hello(helloRequest).getThreadName()
+                        .startsWith("group2-task-executor")
+        );
+        Assert.assertTrue(
+                Group3HelloServiceGrpc.newBlockingStub(group3Channel).hello(helloRequest).getThreadName()
+                        .startsWith("default-task-executor")
         );
     }
 }

@@ -11,9 +11,7 @@ import xyz.srclab.common.collect.MutableSetMap
 interface GrpcServerFactory {
 
     fun create(
-        serverName: String,
-        serverProperties: GrpcServerProperties,
-        serversProperties: GrpcServersProperties,
+        serverDefinition: GrpcServerDefinition,
         serviceGroups: MutableSetMap<String, BindableService>,
         interceptorGroups: MutableSetMap<String, ServerInterceptor>,
     ): Server

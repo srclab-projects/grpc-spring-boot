@@ -4,6 +4,7 @@ import io.grpc.BindableService
 import io.grpc.ServerBuilder
 import io.grpc.ServerInterceptor
 import io.grpc.ServerInterceptors
+import io.grpc.netty.NettyServerBuilder
 import org.springframework.context.ApplicationContext
 import org.springframework.util.AntPathMatcher
 import xyz.srclab.common.collect.MutableSetMap
@@ -11,17 +12,19 @@ import xyz.srclab.common.collect.toMutableSetMap
 import java.util.concurrent.Executor
 import javax.annotation.Resource
 
-open class GrpcServerBuilderHelperBean {
+open class GrpcServerBuilderConfigureHelper {
 
     @Resource
     private lateinit var applicationContext: ApplicationContext
 
+    @Resource
+    private lateinit var grpcServerSslFactory: GrpcServerSslFactory
+
     private val antPathMatcher = AntPathMatcher()
 
-    open fun addServices(
+    open fun configureServices(
         builder: ServerBuilder<*>,
-        groupPatterns: List<String>,
-        serverName: String,
+        serverDefinition: GrpcServerDefinition,
         serviceGroups: Map<String, Set<BindableService>>,
         interceptorGroups: Map<String, Set<ServerInterceptor>>
     ) {
@@ -36,7 +39,9 @@ open class GrpcServerBuilderHelperBean {
                 }
             }
             if (services.isNullOrEmpty()) {
-                throw IllegalStateException("No gRPC service found in group $groupPattern for server $serverName")
+                throw IllegalStateException(
+                    "No gRPC service found in group $groupPattern for server ${serverDefinition.name}"
+                )
             }
             for (serviceEntry in services) {
                 val group = serviceEntry.key
@@ -62,35 +67,38 @@ open class GrpcServerBuilderHelperBean {
             }
         }
 
-        if (groupPatterns.isEmpty()) {
+        if (serverDefinition.groupPatterns.isEmpty()) {
             addServiceGroupPattern(DEFAULT_GROUP_NAME)
         } else {
-            for (groupPattern in groupPatterns) {
+            for (groupPattern in serverDefinition.groupPatterns) {
                 addServiceGroupPattern(groupPattern)
             }
         }
     }
 
-    open fun addExecutor(
+    open fun configureExecutor(
         builder: ServerBuilder<*>,
-        threadPoolBeanName: String?,
-        defaultThreadPoolBeanName: String?,
+        serverDefinition: GrpcServerDefinition,
     ) {
-        fun getExecutor(): Executor? {
-            val beanName = threadPoolBeanName ?: defaultThreadPoolBeanName
-            if (beanName === null) {
-                return null
-            }
-            val executor = applicationContext.getBean(beanName)
-            if (executor !is Executor) {
-                throw IllegalArgumentException("bean $beanName is not a Executor.")
-            }
-            return executor
+        val threadPoolBeanName = serverDefinition.threadPoolBeanName
+        if (threadPoolBeanName === null) {
+            return
         }
+        val executor = applicationContext.getBean(threadPoolBeanName)
+        if (executor !is Executor) {
+            throw IllegalArgumentException("bean $threadPoolBeanName is not a Executor.")
+        }
+        builder.executor(executor)
+    }
 
-        val executor = getExecutor()
-        if (executor !== null) {
-            builder.executor(executor)
+    open fun configureSsl(
+        builder: NettyServerBuilder,
+        serverDefinition: GrpcServerDefinition,
+    ) {
+        val sslContext = grpcServerSslFactory.create(serverDefinition)
+        if (sslContext === null) {
+            return
         }
+        builder.sslContext(sslContext)
     }
 }

@@ -11,7 +11,11 @@ public class DefaultHelloService extends DefaultHelloServiceGrpc.DefaultHelloSer
 
     @Override
     public void hello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-        responseObserver.onNext(HelloResponse.newBuilder().setMessage("DefaultHelloService").build());
+        responseObserver.onNext(HelloResponse.newBuilder()
+                .setMessage("DefaultHelloService")
+                .setThreadName(Thread.currentThread().getName())
+                .build()
+        );
         responseObserver.onCompleted();
     }
 }
