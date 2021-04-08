@@ -18,7 +18,6 @@ dependencies {
   //testCompile "org.springframework.boot:spring-boot-starter-web"
   //testCompile group: 'io.netty', name: 'netty-tcnative', version: '2.0.38.Final'
 
-
   kapt platform(project(":grpc-spring-boot-dependencies"))
   kapt "org.springframework.boot:spring-boot-autoconfigure-processor"
   kapt "org.springframework.boot:spring-boot-configuration-processor"
