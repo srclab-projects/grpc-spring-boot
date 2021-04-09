@@ -14,6 +14,7 @@ dependencies {
   implementation project(":grpc-spring-boot-core")
 
   testCompile project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test")
+  api project(":grpc-spring-boot-test-protobuf")
 
   kapt platform(project(":grpc-spring-boot-dependencies"))
   kapt "org.springframework.boot:spring-boot-autoconfigure-processor"
