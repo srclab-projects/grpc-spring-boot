@@ -2,12 +2,12 @@ package test.xyz.srclab.grpc.spring.boot.server;
 
 import io.grpc.stub.StreamObserver;
 import xyz.srclab.grpc.spring.boot.server.GrpcService;
-import xyz.srclab.spring.boot.proto.Group3HelloServiceGrpc;
 import xyz.srclab.spring.boot.proto.HelloRequest;
 import xyz.srclab.spring.boot.proto.HelloResponse;
+import xyz.srclab.spring.boot.proto.HelloService3Grpc;
 
-@GrpcService(group = "group3")
-public class HelloService3 extends Group3HelloServiceGrpc.Group3HelloServiceImplBase {
+@GrpcService(serverPatterns = "server3")
+public class HelloService3 extends HelloService3Grpc.HelloService3ImplBase {
 
     @Override
     public void hello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {

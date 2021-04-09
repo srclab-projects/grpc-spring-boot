@@ -10,14 +10,15 @@ import org.springframework.stereotype.Component
 annotation class GrpcService(
 
     /**
-     * Group name of gRPC service, default is empty means [DEFAULT_GROUP_NAME].
+     * Server name patterns of gRPC, default is empty means match for all.
      */
-    @get:AliasFor("group")
+    @get:AliasFor("serverPatterns")
+    @get:JvmName("value")
     val value: Array<String> = [],
 
     /**
-     * Group name of gRPC service, default is empty means [DEFAULT_GROUP_NAME].
+     * Server name patterns of gRPC, default is empty means match for all.
      */
-    @get:AliasFor("value")
-    val group: Array<String> = [],
+    @get:JvmName("serverPatterns")
+    val serverPatterns: Array<String> = [],
 )

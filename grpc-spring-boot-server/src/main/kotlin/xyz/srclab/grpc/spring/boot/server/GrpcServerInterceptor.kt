@@ -10,14 +10,16 @@ import org.springframework.stereotype.Component
 annotation class GrpcServerInterceptor(
 
     /**
-     * Group name pattern of gRPC service in which interceptor work for, default is empty which means match for all.
+     * Bean name patterns of gRPC service in which interceptor work for, default is empty which means match for all.
      */
-    @get:AliasFor("groupPattern")
+    @get:AliasFor("servicePatterns")
+    @get:JvmName("value")
     val value: Array<String> = [],
 
     /**
-     * Group name pattern of gRPC service in which interceptor work for, default is empty which means match for all.
+     * Bean name patterns of gRPC service in which interceptor work for, default is empty which means match for all.
      */
     @get:AliasFor("value")
-    val groupPattern: Array<String> = [],
+    @get:JvmName("servicePatterns")
+    val servicePatterns: Array<String> = [],
 )

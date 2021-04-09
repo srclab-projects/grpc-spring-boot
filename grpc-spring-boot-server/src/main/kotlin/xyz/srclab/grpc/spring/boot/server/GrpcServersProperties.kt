@@ -14,9 +14,8 @@ open class GrpcServerProperties {
     var inProcess: Boolean? = null
     var host: String? = null
     var port: Int? = null
-    var groupPatterns: List<String>? = null
-    var threadPoolBeanName: String? = null
 
+    var threadPoolBeanName: String? = null
     var maxConcurrentCallsPerConnection: Int? = null
     var flowControlWindow: Int? = null
     var maxMessageSize: Int? = null
@@ -44,9 +43,8 @@ open class GrpcServerDefinition(
     _inProcess: Boolean?,
     _host: String?,
     _port: Int?,
-    _groupPatterns: List<String>?,
-    _threadPoolBeanName: String?,
 
+    _threadPoolBeanName: String?,
     _maxConcurrentCallsPerConnection: Int?,
     _flowControlWindow: Int?,
     _maxMessageSize: Int?,
@@ -71,9 +69,8 @@ open class GrpcServerDefinition(
     val inProcess: Boolean = _inProcess ?: false
     val host: String = _host ?: "127.0.0.1"
     val port: Int = _port ?: 6565
-    val groupPatterns: List<String> = _groupPatterns ?: emptyList()
-    val threadPoolBeanName: String? = _threadPoolBeanName
 
+    val threadPoolBeanName: String? = _threadPoolBeanName
     val maxConcurrentCallsPerConnection: Int = _maxConcurrentCallsPerConnection ?: Int.MAX_VALUE
     val flowControlWindow: Int = _flowControlWindow ?: NettyServerBuilder.DEFAULT_FLOW_CONTROL_WINDOW
     val maxMessageSize: Int = _maxMessageSize ?: GrpcUtil.DEFAULT_MAX_MESSAGE_SIZE
@@ -113,7 +110,6 @@ private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerD
             properties.inProcess,
             properties.host,
             properties.port,
-            properties.groupPatterns,
             properties.threadPoolBeanName,
             properties.maxConcurrentCallsPerConnection,
             properties.flowControlWindow,
@@ -141,7 +137,6 @@ private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerD
             properties.inProcess ?: defaults.inProcess,
             properties.host ?: defaults.host,
             properties.port ?: defaults.port,
-            properties.groupPatterns ?: defaults.groupPatterns,
             properties.threadPoolBeanName ?: defaults.threadPoolBeanName,
             properties.maxConcurrentCallsPerConnection ?: defaults.maxConcurrentCallsPerConnection,
             properties.flowControlWindow ?: defaults.flowControlWindow,

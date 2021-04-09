@@ -10,13 +10,10 @@ grpc:
     servers:
       default:
         port: 6565
-      serverGroup:
+      server1:
         port: 6566
-        groupPatterns: group*
       server2:
         port: 6567
-        groupPatterns: group2
         threadPoolBeanName: group2Executor
       server3:
         port: 6568
-        groupPatterns: group3

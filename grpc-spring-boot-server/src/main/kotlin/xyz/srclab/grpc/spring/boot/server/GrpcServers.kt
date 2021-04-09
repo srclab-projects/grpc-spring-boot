@@ -6,16 +6,16 @@ const val DEFAULT_SERVER_NAME = "default"
 
 const val DEFAULT_GROUP_NAME = "default"
 
-val GrpcService.valueOrGroup: List<String>
-    @JvmName("valueOrGroup") get() = when {
+val GrpcService.valueOrServerPatterns: List<String>
+    @JvmName("valueOrServerPatterns") get() = when {
         this.value.isNotEmpty() -> this.value.toList()
-        this.group.isNotEmpty() -> this.group.toList()
+        this.serverPatterns.isNotEmpty() -> this.serverPatterns.toList()
         else -> emptyList()
     }
 
-val GrpcServerInterceptor.valueOrGroupPattern: List<String>
-    @JvmName("valueOrGroup") get() = when {
+val GrpcServerInterceptor.valueOrServicePatterns: List<String>
+    @JvmName("valueOrServicePatterns") get() = when {
         this.value.isNotEmpty() -> this.value.toList()
-        this.groupPattern.isNotEmpty() -> this.groupPattern.toList()
+        this.servicePatterns.isNotEmpty() -> this.servicePatterns.toList()
         else -> emptyList()
     }

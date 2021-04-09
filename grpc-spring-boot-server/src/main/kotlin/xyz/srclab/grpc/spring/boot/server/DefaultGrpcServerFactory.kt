@@ -1,13 +1,10 @@
 package xyz.srclab.grpc.spring.boot.server
 
-import io.grpc.BindableService
 import io.grpc.Server
-import io.grpc.ServerInterceptor
 import io.grpc.inprocess.InProcessServerBuilder
 import io.grpc.netty.NettyServerBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import xyz.srclab.common.collect.MutableSetMap
 import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 import javax.annotation.Resource
@@ -19,27 +16,23 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
 
     override fun create(
         serverDefinition: GrpcServerDefinition,
-        serviceGroups: MutableSetMap<String, BindableService>,
-        interceptorGroups: MutableSetMap<String, ServerInterceptor>
+        serviceBuilders: Set<GrpcServiceDefinitionBuilder>
     ): Server {
         return if (serverDefinition.inProcess) createInProcessServer(
             serverDefinition,
-            serviceGroups,
-            interceptorGroups
-        ) else createNettyServer(serverDefinition, serviceGroups, interceptorGroups)
+            serviceBuilders
+        ) else createNettyServer(serverDefinition, serviceBuilders)
     }
 
     private fun createInProcessServer(
         serverDefinition: GrpcServerDefinition,
-        serviceGroups: MutableSetMap<String, BindableService>,
-        interceptorGroups: MutableSetMap<String, ServerInterceptor>
+        serviceBuilders: Set<GrpcServiceDefinitionBuilder>
     ): Server {
         val builder = InProcessServerBuilder.forName(serverDefinition.name)
         grpcServerBuilderConfigureHelper.configureServices(
             builder,
             serverDefinition,
-            serviceGroups,
-            interceptorGroups
+            serviceBuilders
         )
         logger.info("gRPC in-process-server ${serverDefinition.name} created.")
         return builder.build()
@@ -47,15 +40,13 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
 
     private fun createNettyServer(
         serverDefinition: GrpcServerDefinition,
-        serviceGroups: MutableSetMap<String, BindableService>,
-        interceptorGroups: MutableSetMap<String, ServerInterceptor>
+        serviceGroupBuilders: Set<GrpcServiceDefinitionBuilder>
     ): Server {
         val builder = NettyServerBuilder.forAddress(InetSocketAddress(serverDefinition.host, serverDefinition.port))
         grpcServerBuilderConfigureHelper.configureServices(
             builder,
             serverDefinition,
-            serviceGroups,
-            interceptorGroups
+            serviceGroupBuilders
         )
         grpcServerBuilderConfigureHelper.configureExecutor(
             builder,

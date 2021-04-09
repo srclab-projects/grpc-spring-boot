@@ -1,18 +1,17 @@
 package test.xyz.srclab.grpc.spring.boot.server;
 
-import io.grpc.BindableService;
 import io.grpc.Server;
-import io.grpc.ServerInterceptor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import xyz.srclab.annotations.Nullable;
-import xyz.srclab.common.collect.MutableSetMap;
 import xyz.srclab.common.test.TestMarker;
 import xyz.srclab.grpc.spring.boot.server.DefaultGrpcServerFactory;
 import xyz.srclab.grpc.spring.boot.server.GrpcServerDefinition;
+import xyz.srclab.grpc.spring.boot.server.GrpcServiceDefinitionBuilder;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class TestGrpcServerFactory extends DefaultGrpcServerFactory {
@@ -23,11 +22,10 @@ public class TestGrpcServerFactory extends DefaultGrpcServerFactory {
     @Override
     public Server create(
             @NotNull GrpcServerDefinition serverDefinition,
-            @NotNull MutableSetMap<String, BindableService> serviceGroups,
-            @NotNull MutableSetMap<String, ServerInterceptor> interceptorGroups
+            @NotNull Set<? extends GrpcServiceDefinitionBuilder> serviceBuilders
     ) {
         addCreateTrace(serverDefinition.getName());
-        return super.create(serverDefinition, serviceGroups, interceptorGroups);
+        return super.create(serverDefinition, serviceBuilders);
     }
 
     private void addCreateTrace(String serverName) {

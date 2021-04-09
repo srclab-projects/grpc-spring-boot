@@ -38,13 +38,13 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
     private DefaultServerInterceptor defaultServerInterceptor;
 
     @Resource
-    private GroupsServerInterceptor groupsServerInterceptor;
+    private HelloServerInterceptorX helloServerInterceptorX;
 
     @Resource
-    private Group2ServerInterceptor group2ServerInterceptor;
+    private HelloServerInterceptor2 helloServerInterceptor2;
 
     @Resource
-    private Group3ServerInterceptor group3ServerInterceptor;
+    private HelloServerInterceptor3 helloServerInterceptor3;
 
     @Resource
     private TestGrpcServerFactory testGrpcServerFactory;
@@ -66,89 +66,127 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
         //                .clientAuth(ClientAuth.REQUIRE).build()
         //)
         //.build();
-        Channel groupsChannel = NettyChannelBuilder.forTarget("127.0.0.1:6566").usePlaintext().build();
-        Channel group2Channel = NettyChannelBuilder.forTarget("127.0.0.1:6567").usePlaintext().build();
-        Channel group3Channel = NettyChannelBuilder.forTarget("127.0.0.1:6568").usePlaintext().build();
+        Channel server1Channel = NettyChannelBuilder.forTarget("127.0.0.1:6566").usePlaintext().build();
+        Channel server2Channel = NettyChannelBuilder.forTarget("127.0.0.1:6567").usePlaintext().build();
+        Channel server3Channel = NettyChannelBuilder.forTarget("127.0.0.1:6568").usePlaintext().build();
+
+        /*
+         * default: default
+         * server1: default, serverX
+         * server2: default, serverX, server2
+         * server3: default, serverX, server3
+         */
+
         Assert.assertEquals(
                 DefaultHelloServiceGrpc.newBlockingStub(defaultChannel).hello(helloRequest).getMessage(),
                 "DefaultHelloService"
         );
-        Assert.assertEquals(
-                Group1HelloServiceGrpc.newBlockingStub(defaultChannel).hello(helloRequest).getMessage(),
-                "HelloService1"
-        );
-        Assert.assertEquals(
-                Group2HelloServiceGrpc.newBlockingStub(groupsChannel).hello(helloRequest).getMessage(),
-                "HelloService2"
-        );
-        Assert.assertEquals(
-                Group3HelloServiceGrpc.newBlockingStub(groupsChannel).hello(helloRequest).getMessage(),
-                "HelloService3"
-        );
-        Assert.assertEquals(
-                Group2HelloServiceGrpc.newBlockingStub(group2Channel).hello(helloRequest).getMessage(),
-                "HelloService2"
-        );
-        Assert.assertEquals(
-                Group3HelloServiceGrpc.newBlockingStub(group3Channel).hello(helloRequest).getMessage(),
-                "HelloService3"
-        );
+        Assert.expectThrows(StatusRuntimeException.class, () ->
+                HelloServiceXGrpc.newBlockingStub(defaultChannel).hello(helloRequest));
+        Assert.expectThrows(StatusRuntimeException.class, () ->
+                HelloService2Grpc.newBlockingStub(defaultChannel).hello(helloRequest));
+        Assert.expectThrows(StatusRuntimeException.class, () ->
+                HelloService3Grpc.newBlockingStub(defaultChannel).hello(helloRequest));
 
+        Assert.assertEquals(
+                DefaultHelloServiceGrpc.newBlockingStub(server1Channel).hello(helloRequest).getMessage(),
+                "DefaultHelloService"
+        );
+        Assert.assertEquals(
+                HelloServiceXGrpc.newBlockingStub(server1Channel).hello(helloRequest).getMessage(),
+                "HelloServiceX"
+        );
         Assert.expectThrows(StatusRuntimeException.class, () ->
-                Group2HelloServiceGrpc.newBlockingStub(defaultChannel).hello(helloRequest));
+                HelloService2Grpc.newBlockingStub(server1Channel).hello(helloRequest));
         Assert.expectThrows(StatusRuntimeException.class, () ->
-                Group3HelloServiceGrpc.newBlockingStub(defaultChannel).hello(helloRequest));
+                HelloService3Grpc.newBlockingStub(server1Channel).hello(helloRequest));
+
+
+        Assert.assertEquals(
+                DefaultHelloServiceGrpc.newBlockingStub(server2Channel).hello(helloRequest).getMessage(),
+                "DefaultHelloService"
+        );
+        Assert.assertEquals(
+                HelloServiceXGrpc.newBlockingStub(server2Channel).hello(helloRequest).getMessage(),
+                "HelloServiceX"
+        );
+        Assert.assertEquals(
+                HelloService2Grpc.newBlockingStub(server2Channel).hello(helloRequest).getMessage(),
+                "HelloService2"
+        );
         Assert.expectThrows(StatusRuntimeException.class, () ->
-                DefaultHelloServiceGrpc.newBlockingStub(groupsChannel).hello(helloRequest));
+                HelloService3Grpc.newBlockingStub(server1Channel).hello(helloRequest));
+
+
+        Assert.assertEquals(
+                DefaultHelloServiceGrpc.newBlockingStub(server3Channel).hello(helloRequest).getMessage(),
+                "DefaultHelloService"
+        );
+        Assert.assertEquals(
+                HelloServiceXGrpc.newBlockingStub(server3Channel).hello(helloRequest).getMessage(),
+                "HelloServiceX"
+        );
+        Assert.assertEquals(
+                HelloService3Grpc.newBlockingStub(server3Channel).hello(helloRequest).getMessage(),
+                "HelloService3"
+        );
         Assert.expectThrows(StatusRuntimeException.class, () ->
-                Group1HelloServiceGrpc.newBlockingStub(groupsChannel).hello(helloRequest));
-        Assert.expectThrows(StatusRuntimeException.class, () ->
-                Group3HelloServiceGrpc.newBlockingStub(group2Channel).hello(helloRequest));
-        Assert.expectThrows(StatusRuntimeException.class, () ->
-                Group2HelloServiceGrpc.newBlockingStub(group3Channel).hello(helloRequest));
+                HelloService2Grpc.newBlockingStub(server1Channel).hello(helloRequest));
 
         Assert.assertEquals(
                 defaultServerInterceptor.getServiceTraces(),
                 Arrays.asList(
                         "DefaultHelloService",
-                        "Group1HelloService",
-                        "Group2HelloService",
-                        "Group3HelloService",
-                        "Group2HelloService",
-                        "Group3HelloService"
+                        "DefaultHelloService",
+                        "HelloServiceX",
+                        "DefaultHelloService",
+                        "HelloServiceX",
+                        "HelloService2",
+                        "DefaultHelloService",
+                        "HelloServiceX",
+                        "HelloService3"
                 )
         );
         Assert.assertEquals(
-                groupsServerInterceptor.getServiceTraces(),
+                helloServerInterceptorX.getServiceTraces(),
                 Arrays.asList(
                         //"DefaultHelloService",
-                        //"Group1HelloService",
-                        "Group2HelloService",
-                        "Group3HelloService",
-                        "Group2HelloService",
-                        "Group3HelloService"
+                        //"DefaultHelloService",
+                        "HelloServiceX",
+                        //"DefaultHelloService",
+                        "HelloServiceX",
+                        "HelloService2",
+                        //"DefaultHelloService",
+                        "HelloServiceX",
+                        "HelloService3"
                 )
         );
         Assert.assertEquals(
-                group2ServerInterceptor.getServiceTraces(),
+                helloServerInterceptor2.getServiceTraces(),
                 Arrays.asList(
                         //"DefaultHelloService",
-                        //"Group1HelloService",
-                        "Group2HelloService",
-                        //"Group3HelloService",
-                        "Group2HelloService"
-                        //"Group3HelloService"
+                        //"DefaultHelloService",
+                        //"HelloServiceX",
+                        //"DefaultHelloService",
+                        //"HelloServiceX",
+                        "HelloService2"
+                        //"DefaultHelloService",
+                        //"HelloServiceX",
+                        //"HelloService3"
                 )
         );
         Assert.assertEquals(
-                group3ServerInterceptor.getServiceTraces(),
+                helloServerInterceptor3.getServiceTraces(),
                 Arrays.asList(
                         //"DefaultHelloService",
-                        //"Group1HelloService",
-                        //"Group2HelloService",
-                        "Group3HelloService",
-                        //"Group2HelloService",
-                        "Group3HelloService"
+                        //"DefaultHelloService",
+                        //"HelloServiceX",
+                        //"DefaultHelloService",
+                        //"HelloServiceX",
+                        //"HelloService2",
+                        //"DefaultHelloService",
+                        //"HelloServiceX",
+                        "HelloService3"
                 )
         );
 
@@ -157,15 +195,15 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
                         .startsWith("default-task-executor")
         );
         Assert.assertTrue(
-                Group1HelloServiceGrpc.newBlockingStub(defaultChannel).hello(helloRequest).getThreadName()
+                HelloServiceXGrpc.newBlockingStub(server1Channel).hello(helloRequest).getThreadName()
                         .startsWith("default-task-executor")
         );
         Assert.assertTrue(
-                Group2HelloServiceGrpc.newBlockingStub(group2Channel).hello(helloRequest).getThreadName()
+                HelloService2Grpc.newBlockingStub(server2Channel).hello(helloRequest).getThreadName()
                         .startsWith("group2-task-executor")
         );
         Assert.assertTrue(
-                Group3HelloServiceGrpc.newBlockingStub(group3Channel).hello(helloRequest).getThreadName()
+                HelloService3Grpc.newBlockingStub(server3Channel).hello(helloRequest).getThreadName()
                         .startsWith("default-task-executor")
         );
 
@@ -173,7 +211,7 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
                 testGrpcServerFactory.getCreateTraces(),
                 Arrays.asList(
                         "default",
-                        "serverGroup",
+                        "server1",
                         "server2",
                         "server3"
                 )
