@@ -10,6 +10,7 @@ import xyz.srclab.common.base.loadResource
 import java.io.File
 import java.io.InputStream
 import java.util.concurrent.Executor
+import java.util.concurrent.TimeUnit
 import javax.annotation.Resource
 
 open class GrpcServerBuilderConfigureHelper {
@@ -80,5 +81,56 @@ open class GrpcServerBuilderConfigureHelper {
         }
 
         builder.sslContext(sslBuilder.build())
+    }
+
+    open fun configureShadedNettyServerMisc(builder: NettyServerBuilder, serverDefinition: GrpcServerDefinition) {
+        val maxConcurrentCallsPerConnection = serverDefinition.maxConcurrentCallsPerConnection
+        if (maxConcurrentCallsPerConnection !== null) {
+            builder.maxConcurrentCallsPerConnection(maxConcurrentCallsPerConnection)
+        }
+        val initialFlowControlWindow = serverDefinition.initialFlowControlWindow
+        if (initialFlowControlWindow !== null) {
+            builder.initialFlowControlWindow(initialFlowControlWindow)
+        }
+        val flowControlWindow = serverDefinition.flowControlWindow
+        if (flowControlWindow !== null) {
+            builder.flowControlWindow(flowControlWindow)
+        }
+        val maxMessageSize = serverDefinition.maxMessageSize
+        if (maxMessageSize !== null) {
+            builder.maxInboundMessageSize(maxMessageSize)
+        }
+        val maxHeaderListSize = serverDefinition.maxHeaderListSize
+        if (maxHeaderListSize !== null) {
+            builder.maxInboundMetadataSize(maxHeaderListSize)
+        }
+        val keepAliveTimeInNanos = serverDefinition.keepAliveTimeInNanos
+        if (keepAliveTimeInNanos !== null) {
+            builder.keepAliveTime(keepAliveTimeInNanos, TimeUnit.NANOSECONDS)
+        }
+        val keepAliveTimeoutInNanos = serverDefinition.keepAliveTimeoutInNanos
+        if (keepAliveTimeoutInNanos !== null) {
+            builder.keepAliveTimeout(keepAliveTimeoutInNanos, TimeUnit.NANOSECONDS)
+        }
+        val maxConnectionIdleInNanos = serverDefinition.maxConnectionIdleInNanos
+        if (maxConnectionIdleInNanos !== null) {
+            builder.maxConnectionIdle(maxConnectionIdleInNanos, TimeUnit.NANOSECONDS)
+        }
+        val maxConnectionAgeInNanos = serverDefinition.maxConnectionAgeInNanos
+        if (maxConnectionAgeInNanos !== null) {
+            builder.maxConnectionAge(maxConnectionAgeInNanos, TimeUnit.NANOSECONDS)
+        }
+        val maxConnectionAgeGraceInNanos = serverDefinition.maxConnectionAgeGraceInNanos
+        if (maxConnectionAgeGraceInNanos !== null) {
+            builder.maxConnectionAgeGrace(maxConnectionAgeGraceInNanos, TimeUnit.NANOSECONDS)
+        }
+        val permitKeepAliveWithoutCalls = serverDefinition.permitKeepAliveWithoutCalls
+        if (permitKeepAliveWithoutCalls !== null) {
+            builder.permitKeepAliveWithoutCalls(permitKeepAliveWithoutCalls)
+        }
+        val permitKeepAliveTimeInNanos = serverDefinition.permitKeepAliveTimeInNanos
+        if (permitKeepAliveTimeInNanos !== null) {
+            builder.permitKeepAliveTime(permitKeepAliveTimeInNanos, TimeUnit.NANOSECONDS)
+        }
     }
 }
