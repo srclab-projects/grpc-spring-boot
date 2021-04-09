@@ -28,12 +28,6 @@ open class GrpcServerAutoConfiguration {
     }
 
     @ConditionalOnMissingBean
-    @Bean("xyz.srclab.spring.boot.grpc.server.GrpcServerSslFactory")
-    open fun grpcServerSslFactory(): GrpcServerSslFactory {
-        return DefaultGrpcServerSslFactory()
-    }
-
-    @ConditionalOnMissingBean
     @Bean("xyz.srclab.spring.boot.grpc.server.GrpcServerLifecycle")
     open fun grpcServerLifecycle(): GrpcServerLifecycle {
         return GrpcServerLifecycle()
