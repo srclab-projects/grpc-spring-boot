@@ -17,9 +17,9 @@ open class ExecutorConfiguration {
     }
 
     @Bean
-    open fun group2Executor(): TaskExecutor {
+    open fun server2Executor(): TaskExecutor {
         val properties = ThreadPoolProperties()
-        properties.threadNamePrefix = "group2-task-executor"
+        properties.threadNamePrefix = "server2-task-executor"
         return newTaskExecutor(properties)
     }
 }

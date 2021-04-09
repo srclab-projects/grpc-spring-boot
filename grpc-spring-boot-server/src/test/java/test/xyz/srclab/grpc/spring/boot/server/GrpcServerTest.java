@@ -203,7 +203,7 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
         );
         Assert.assertTrue(
                 HelloService2Grpc.newBlockingStub(server2Channel).hello(helloRequest).getThreadName()
-                        .startsWith("group2-task-executor")
+                        .startsWith("server2-task-executor")
         );
         Assert.assertTrue(
                 HelloService3Grpc.newBlockingStub(server3Channel).hello(helloRequest).getThreadName()

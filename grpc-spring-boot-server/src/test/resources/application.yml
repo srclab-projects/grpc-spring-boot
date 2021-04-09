@@ -14,6 +14,6 @@ grpc:
         port: 6566
       server2:
         port: 6567
-        threadPoolBeanName: group2Executor
+        threadPoolBeanName: server2Executor
       server3:
         port: 6568
