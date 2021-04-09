@@ -68,7 +68,7 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
         //SSL
         grpcServerBuilderConfigureHelper.configureSsl(builder, serverDefinition)
 
-        logger.info("gRPC netty-server ${serverDefinition.name} created.")
+        logger.info("gRPC shaded-netty-server ${serverDefinition.name} created.")
         return builder.build()
     }
 
