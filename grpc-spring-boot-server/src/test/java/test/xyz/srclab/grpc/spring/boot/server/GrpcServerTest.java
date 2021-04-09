@@ -2,7 +2,7 @@ package test.xyz.srclab.grpc.spring.boot.server;
 
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
-import io.grpc.netty.NettyChannelBuilder;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,7 +53,7 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
     public void testServers() throws Exception {
         HelloRequest helloRequest = HelloRequest.getDefaultInstance();
         //ChannelCredentials cred = TlsChannelCredentials.newBuilder().build();
-        Channel defaultChannel = NettyChannelBuilder.forTarget("localhost:6565").usePlaintext().build();
+        Channel defaultChannel = NettyChannelBuilder.forTarget("127.0.0.1:6565").usePlaintext().build();
         //.sslContext(
         //        GrpcSslContexts.forClient()
         //                .keyManager(

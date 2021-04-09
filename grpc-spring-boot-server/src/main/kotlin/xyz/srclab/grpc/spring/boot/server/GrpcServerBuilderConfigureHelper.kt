@@ -1,7 +1,7 @@
 package xyz.srclab.grpc.spring.boot.server
 
 import io.grpc.ServerBuilder
-import io.grpc.netty.NettyServerBuilder
+import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder
 import org.springframework.context.ApplicationContext
 import java.util.concurrent.Executor
 import javax.annotation.Resource

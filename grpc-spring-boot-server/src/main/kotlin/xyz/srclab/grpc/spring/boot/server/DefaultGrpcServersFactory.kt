@@ -76,6 +76,7 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
             val beanName = serviceEntry.key
             val bean = serviceEntry.value
             val serviceAnnotation = applicationContext.findAnnotationOnBean(beanName, GrpcService::class.java)
+            logger.debug("Load gRPC service: $beanName (${bean.javaClass}).")
             bean.matchServers(beanName, serviceAnnotation)
         }
 
@@ -86,6 +87,7 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
             val bean = interceptorEntry.value
             val interceptorAnnotation =
                 applicationContext.findAnnotationOnBean(beanName, GrpcServerInterceptor::class.java)
+            logger.debug("Load gRPC server interceptor: $beanName (${bean.javaClass}).")
             bean.matchServices(interceptorAnnotation)
         }
 

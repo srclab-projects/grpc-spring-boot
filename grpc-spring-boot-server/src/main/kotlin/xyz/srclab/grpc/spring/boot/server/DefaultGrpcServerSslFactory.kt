@@ -1,8 +1,8 @@
 package xyz.srclab.grpc.spring.boot.server
 
-import io.netty.handler.ssl.ClientAuth
-import io.netty.handler.ssl.SslContext
-import io.netty.handler.ssl.SslContextBuilder
+import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder
 import xyz.srclab.common.base.enumValueOfIgnoreCase
 import xyz.srclab.common.base.loadResource
 import java.io.File

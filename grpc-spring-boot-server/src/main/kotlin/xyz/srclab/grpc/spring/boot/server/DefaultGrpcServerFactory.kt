@@ -2,7 +2,7 @@ package xyz.srclab.grpc.spring.boot.server
 
 import io.grpc.Server
 import io.grpc.inprocess.InProcessServerBuilder
-import io.grpc.netty.NettyServerBuilder
+import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.InetSocketAddress

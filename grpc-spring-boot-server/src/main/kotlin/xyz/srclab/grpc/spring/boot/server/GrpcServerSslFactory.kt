@@ -1,6 +1,6 @@
 package xyz.srclab.grpc.spring.boot.server
 
-import io.netty.handler.ssl.SslContext
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext
 
 /**
  * Factory to create gRPC server ssl context.
