@@ -54,7 +54,7 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
             serverDefinition,
             serviceBuilders
         )
-        logger.info("gRPC in-process-server ${serverDefinition.name} created.")
+        logger.info("gRPC in-process-server created: ${serverDefinition.name}")
         return builder.build()
     }
 
@@ -73,7 +73,7 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
             grpcShadedNettyServerConfigurer.configureServerBuilder(builder, serverDefinition)
         }
 
-        logger.info("gRPC shaded-netty-server ${serverDefinition.name} created.")
+        logger.info("gRPC shaded-netty-server created: ${serverDefinition.name}")
         return builder.build()
     }
 

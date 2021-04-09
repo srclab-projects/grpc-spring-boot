@@ -47,7 +47,7 @@ open class DefaultGrpcChannelFactory : GrpcChannelFactory {
     ): Channel {
         val builder = InProcessChannelBuilder.forName(clientDefinition.name)
         grpcChannelBuilderConfigureHelper.configureInterceptors(builder, interceptors)
-        logger.info("gRPC in-process-channel ${clientDefinition.name} created.")
+        logger.info("gRPC in-process-channel created: ${clientDefinition.name}")
         return builder.build()
     }
 
@@ -66,7 +66,7 @@ open class DefaultGrpcChannelFactory : GrpcChannelFactory {
             grpcShadedNettyChannelConfigurer.configureChannelBuilder(builder, clientDefinition)
         }
 
-        logger.info("gRPC shaded-netty-channel ${clientDefinition.name} created.")
+        logger.info("gRPC shaded-netty-channel created: ${clientDefinition.name}")
         return builder.build()
     }
 
