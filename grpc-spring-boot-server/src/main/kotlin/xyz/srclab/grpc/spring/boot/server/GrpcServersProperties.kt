@@ -98,7 +98,7 @@ open class GrpcServerDefinition(
 }
 
 fun GrpcServersProperties.toDefinitions(): Set<GrpcServerDefinition> {
-    return this.servers.entries.map { this.getServerDefinition(it.key) }.toImmutableSet()
+    return this.servers.entries.map { getServerDefinition(it.key) }.toImmutableSet()
 }
 
 private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerDefinition {
