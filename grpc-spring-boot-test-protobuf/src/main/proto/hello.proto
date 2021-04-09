@@ -16,14 +16,14 @@ service DefaultHelloService {
     rpc hello(HelloRequest) returns (HelloResponse);
 }
 
-service Group1HelloService {
+service HelloServiceX {
     rpc hello(HelloRequest) returns (HelloResponse);
 }
 
-service Group2HelloService {
+service HelloService2 {
     rpc hello(HelloRequest) returns (HelloResponse);
 }
 
-service Group3HelloService {
+service HelloService3 {
     rpc hello(HelloRequest) returns (HelloResponse);
 }
