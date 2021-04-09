@@ -1,19 +1,18 @@
 grpc:
-  server:
+  client:
     defaults:
-      host: localhost
       threadPoolBeanName: defaultExecutor
-    servers:
+    clients:
       default:
-        port: 6565
+        targets: 127.0.0.1:6565
         #sslCertChainClassPath: myServer.crt
         #sslPrivateKeyClassPath: myServer.key.pkcs8
         #sslTrustCertCollectionClassPath: trusts.crt
         #sslClientAuth: require
-      server1:
-        port: 6566
-      server2:
-        port: 6567
-        threadPoolBeanName: server2Executor
-      server3:
-        port: 6568
+      client1:
+        targets: 127.0.0.1:6566
+      client2:
+        targets: 127.0.0.1:6567
+        threadPoolBeanName: client2Executor
+      client3:
+        targets: 127.0.0.1:6568

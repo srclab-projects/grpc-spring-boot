@@ -1,9 +1,6 @@
 package xyz.srclab.grpc.spring.boot.server
 
-import io.grpc.internal.GrpcUtil
-import io.grpc.netty.NettyServerBuilder
 import xyz.srclab.common.collect.toImmutableSet
-import java.util.concurrent.TimeUnit
 
 open class GrpcServersProperties {
     var defaults: GrpcServerProperties? = null
@@ -17,6 +14,7 @@ open class GrpcServerProperties {
 
     var threadPoolBeanName: String? = null
     var maxConcurrentCallsPerConnection: Int? = null
+    var initialFlowControlWindow: Int? = null
     var flowControlWindow: Int? = null
     var maxMessageSize: Int? = null
     var maxHeaderListSize: Int? = null
@@ -46,6 +44,7 @@ open class GrpcServerDefinition(
 
     _threadPoolBeanName: String?,
     _maxConcurrentCallsPerConnection: Int?,
+    _initialFlowControlWindow: Int?,
     _flowControlWindow: Int?,
     _maxMessageSize: Int?,
     _maxHeaderListSize: Int?,
@@ -71,17 +70,18 @@ open class GrpcServerDefinition(
     val port: Int = _port ?: 6565
 
     val threadPoolBeanName: String? = _threadPoolBeanName
-    val maxConcurrentCallsPerConnection: Int = _maxConcurrentCallsPerConnection ?: Int.MAX_VALUE
-    val flowControlWindow: Int = _flowControlWindow ?: NettyServerBuilder.DEFAULT_FLOW_CONTROL_WINDOW
-    val maxMessageSize: Int = _maxMessageSize ?: GrpcUtil.DEFAULT_MAX_MESSAGE_SIZE
-    val maxHeaderListSize: Int = _maxHeaderListSize ?: GrpcUtil.DEFAULT_MAX_HEADER_LIST_SIZE
-    val keepAliveTimeInNanos: Long = _keepAliveTimeInNanos ?: GrpcUtil.DEFAULT_SERVER_KEEPALIVE_TIME_NANOS
-    val keepAliveTimeoutInNanos: Long = _keepAliveTimeoutInNanos ?: GrpcUtil.DEFAULT_SERVER_KEEPALIVE_TIMEOUT_NANOS
-    val maxConnectionIdleInNanos: Long = _maxConnectionIdleInNanos ?: Long.MAX_VALUE
-    val maxConnectionAgeInNanos: Long = _maxConnectionAgeInNanos ?: Long.MAX_VALUE
-    val maxConnectionAgeGraceInNanos: Long = _maxConnectionAgeGraceInNanos ?: Long.MAX_VALUE
-    val permitKeepAliveWithoutCalls: Boolean = _permitKeepAliveWithoutCalls ?: false
-    val permitKeepAliveTimeInNanos: Long = _permitKeepAliveTimeInNanos ?: TimeUnit.MINUTES.toNanos(5)
+    val maxConcurrentCallsPerConnection: Int? = _maxConcurrentCallsPerConnection
+    val initialFlowControlWindow: Int? = _initialFlowControlWindow
+    val flowControlWindow: Int? = _flowControlWindow
+    val maxMessageSize: Int? = _maxMessageSize
+    val maxHeaderListSize: Int? = _maxHeaderListSize
+    val keepAliveTimeInNanos: Long? = _keepAliveTimeInNanos
+    val keepAliveTimeoutInNanos: Long? = _keepAliveTimeoutInNanos
+    val maxConnectionIdleInNanos: Long? = _maxConnectionIdleInNanos
+    val maxConnectionAgeInNanos: Long? = _maxConnectionAgeInNanos
+    val maxConnectionAgeGraceInNanos: Long? = _maxConnectionAgeGraceInNanos
+    val permitKeepAliveWithoutCalls: Boolean? = _permitKeepAliveWithoutCalls
+    val permitKeepAliveTimeInNanos: Long? = _permitKeepAliveTimeInNanos
 
     val sslCertChainClassPath: String? = _sslCertChainClassPath
     val sslPrivateKeyClassPath: String? = _sslPrivateKeyClassPath
@@ -98,7 +98,7 @@ open class GrpcServerDefinition(
 }
 
 fun GrpcServersProperties.toDefinitions(): Set<GrpcServerDefinition> {
-    return this.servers.entries.map { this.getServerDefinition(it.key) }.toImmutableSet()
+    return this.servers.entries.map { getServerDefinition(it.key) }.toImmutableSet()
 }
 
 private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerDefinition {
@@ -112,6 +112,7 @@ private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerD
             properties.port,
             properties.threadPoolBeanName,
             properties.maxConcurrentCallsPerConnection,
+            properties.initialFlowControlWindow,
             properties.flowControlWindow,
             properties.maxMessageSize,
             properties.maxHeaderListSize,
@@ -139,6 +140,7 @@ private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerD
             properties.port ?: defaults.port,
             properties.threadPoolBeanName ?: defaults.threadPoolBeanName,
             properties.maxConcurrentCallsPerConnection ?: defaults.maxConcurrentCallsPerConnection,
+            properties.initialFlowControlWindow ?: defaults.initialFlowControlWindow,
             properties.flowControlWindow ?: defaults.flowControlWindow,
             properties.maxMessageSize ?: defaults.maxMessageSize,
             properties.maxHeaderListSize ?: defaults.maxHeaderListSize,

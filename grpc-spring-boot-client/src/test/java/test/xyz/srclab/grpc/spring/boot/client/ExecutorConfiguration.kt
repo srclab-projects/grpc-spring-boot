@@ -1,4 +1,4 @@
-package test.xyz.srclab.grpc.spring.boot.server
+package test.xyz.srclab.grpc.spring.boot.client
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -17,9 +17,9 @@ open class ExecutorConfiguration {
     }
 
     @Bean
-    open fun server2Executor(): TaskExecutor {
+    open fun client2Executor(): TaskExecutor {
         val properties = ThreadPoolProperties()
-        properties.threadNamePrefix = "server2-task-executor"
+        properties.threadNamePrefix = "client2-task-executor"
         return newTaskExecutor(properties)
     }
 }

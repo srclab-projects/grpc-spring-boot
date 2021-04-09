@@ -49,6 +49,9 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
     @Resource
     private TestGrpcServerFactory testGrpcServerFactory;
 
+    @Resource
+    private TestGrpcShadedNettyServerConfigurer testGrpcShadedNettyServerConfigurer;
+
     @Test
     public void testServers() throws Exception {
         HelloRequest helloRequest = HelloRequest.getDefaultInstance();
@@ -200,7 +203,7 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
         );
         Assert.assertTrue(
                 HelloService2Grpc.newBlockingStub(server2Channel).hello(helloRequest).getThreadName()
-                        .startsWith("group2-task-executor")
+                        .startsWith("server2-task-executor")
         );
         Assert.assertTrue(
                 HelloService3Grpc.newBlockingStub(server3Channel).hello(helloRequest).getThreadName()
@@ -209,6 +212,16 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
 
         Assert.assertEquals(
                 testGrpcServerFactory.getCreateTraces(),
+                Arrays.asList(
+                        "default",
+                        "server1",
+                        "server2",
+                        "server3"
+                )
+        );
+
+        Assert.assertEquals(
+                testGrpcShadedNettyServerConfigurer.getCreateTraces(),
                 Arrays.asList(
                         "default",
                         "server1",
