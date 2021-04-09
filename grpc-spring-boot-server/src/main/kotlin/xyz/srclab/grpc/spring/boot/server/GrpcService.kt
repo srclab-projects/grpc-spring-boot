@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component
 annotation class GrpcService(
 
     /**
-     * Server name patterns of gRPC, default is empty means match for all.
+     * Server name patterns of gRPC service, default is empty means match for all.
      */
     @get:AliasFor("serverPatterns")
     @get:JvmName("value")
     val value: Array<String> = [],
 
     /**
-     * Server name patterns of gRPC, default is empty means match for all.
+     * Server name patterns of gRPC service, default is empty means match for all.
      */
     @get:JvmName("serverPatterns")
     val serverPatterns: Array<String> = [],

@@ -53,7 +53,7 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
                 for (serverEntry in servers) {
                     val services = serverEntry.value
                     for (service in services) {
-                        service.addInterceptor(this)
+                        service.interceptors.add(this)
                     }
                 }
                 return
@@ -63,7 +63,7 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
                     val services = serverEntry.value
                     for (service in services) {
                         if (antPathMatcher.match(valueOrServicePattern, service.beanName)) {
-                            service.addInterceptor(this)
+                            service.interceptors.add(this)
                         }
                     }
                 }

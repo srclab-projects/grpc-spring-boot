@@ -22,14 +22,7 @@ interface GrpcServiceDefinitionBuilder {
     @Suppress(INAPPLICABLE_JVM_NAME)
     @get:JvmName("interceptors")
     @set:JvmName("interceptors")
-    var interceptors: List<ServerInterceptor>?
-
-    @JvmDefault
-    fun addInterceptor(interceptor: ServerInterceptor) {
-        val interceptors: MutableList<ServerInterceptor> = this.interceptors?.toMutableList() ?: LinkedList()
-        interceptors.add(interceptor)
-        this.interceptors = interceptors
-    }
+    var interceptors: MutableList<ServerInterceptor>
 
     @JvmDefault
     fun build(): ServerServiceDefinition {
@@ -51,7 +44,8 @@ interface GrpcServiceDefinitionBuilder {
             return object : GrpcServiceDefinitionBuilder {
                 override var beanName: String = beanName
                 override var service: BindableService = service
-                override var interceptors: List<ServerInterceptor>? = interceptors?.toList()
+                override var interceptors: MutableList<ServerInterceptor> =
+                    interceptors?.toMutableList() ?: LinkedList()
             }
         }
     }
