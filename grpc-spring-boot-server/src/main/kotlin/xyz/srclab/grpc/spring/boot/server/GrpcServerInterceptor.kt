@@ -22,4 +22,10 @@ annotation class GrpcServerInterceptor(
     @get:AliasFor("value")
     @get:JvmName("servicePatterns")
     val servicePatterns: Array<String> = [],
+
+    /**
+     * Order of this interceptor, default is 0.
+     */
+    @get:JvmName("order")
+    val order: Int = 0
 )

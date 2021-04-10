@@ -28,8 +28,8 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
     //@Resource
     //private HelloService1 helloService1;
     //
-    //@Resource
-    //private HelloService2 helloService2;
+    @Resource
+    private HelloService2 helloService2;
     //
     //@Resource
     //private HelloService3 helloService3;
@@ -190,6 +190,15 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
                         //"DefaultHelloService",
                         //"HelloServiceX",
                         "HelloService3"
+                )
+        );
+
+        Assert.assertEquals(
+                helloService2.getInterceptorTraces(),
+                Arrays.asList(
+                        "HelloServerInterceptor2",
+                        "HelloServerInterceptorX",
+                        "DefaultServerInterceptor"
                 )
         );
 
