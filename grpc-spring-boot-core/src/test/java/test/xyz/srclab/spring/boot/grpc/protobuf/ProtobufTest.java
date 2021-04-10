@@ -59,7 +59,7 @@ public class ProtobufTest {
         Assert.assertEquals(javaMessageData.getNumberList(), Arrays.asList("7", "8", "9"));
         Assert.assertEquals(
                 javaMessageData.getEntryMap(),
-                Collects.putEntries(new LinkedHashMap<>(), "m1", "mm1", "m2", "mm2")
+                Collects.newMap(new LinkedHashMap<>(), "m1", "mm1", "m2", "mm2")
         );
 
         JavaRequestMessage javaRequestMessage = new JavaRequestMessage();
@@ -71,14 +71,14 @@ public class ProtobufTest {
         Assert.assertEquals(javaRequestMessage.getData().getNumberList(), Arrays.asList("7", "8", "9"));
         Assert.assertEquals(
                 javaRequestMessage.getData().getEntryMap(),
-                Collects.putEntries(new LinkedHashMap<>(), "m1", "mm1", "m2", "mm2")
+                Collects.newMap(new LinkedHashMap<>(), "m1", "mm1", "m2", "mm2")
         );
 
         javaRequestMessage.setId("999");
         javaMessageData.setType(MessageData.Type.TYPE_1);
         javaMessageData.setMessage("java");
         javaMessageData.setNumberList(Arrays.asList("5", "6", "7"));
-        javaMessageData.setEntryMap(Anys.as(Collects.putEntries(new LinkedHashMap<>(), "j1", "jj1")));
+        javaMessageData.setEntryMap(Anys.as(Collects.newMap(new LinkedHashMap<>(), "j1", "jj1")));
         javaRequestMessage.setData(javaMessageData);
 
         MessageData.Builder messageDataBuilder = MessageData.newBuilder();
@@ -92,7 +92,7 @@ public class ProtobufTest {
         Assert.assertEquals(messageDataBuilder.getNumberList(), Arrays.asList("5", "6", "7"));
         Assert.assertEquals(
                 messageDataBuilder.getEntryMap(),
-                Collects.putEntries(new LinkedHashMap<>(), "j1", "jj1")
+                Collects.newMap(new LinkedHashMap<>(), "j1", "jj1")
         );
 
         RequestMessage.Builder requestMessageBuilder = RequestMessage.newBuilder();
@@ -107,7 +107,7 @@ public class ProtobufTest {
         Assert.assertEquals(requestMessageBuilder.getData().getNumberList(), Arrays.asList("5", "6", "7"));
         Assert.assertEquals(
                 requestMessageBuilder.getData().getEntryMap(),
-                Collects.putEntries(new LinkedHashMap<>(), "j1", "jj1")
+                Collects.newMap(new LinkedHashMap<>(), "j1", "jj1")
         );
 
         RequestMessage convertRequestMessage =
@@ -122,7 +122,7 @@ public class ProtobufTest {
         Assert.assertEquals(convertRequestMessage.getData().getNumberList(), Arrays.asList("5", "6", "7"));
         Assert.assertEquals(
                 convertRequestMessage.getData().getEntryMap(),
-                Collects.putEntries(new LinkedHashMap<>(), "j1", "jj1")
+                Collects.newMap(new LinkedHashMap<>(), "j1", "jj1")
         );
     }
 
