@@ -1,17 +1,21 @@
 package test.xyz.srclab.grpc.spring.boot.client;
 
 import io.grpc.Channel;
-import io.grpc.StatusRuntimeException;
-import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.Server;
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import xyz.srclab.common.base.Loaders;
 import xyz.srclab.grpc.spring.boot.client.GrpcClient;
 import xyz.srclab.spring.boot.proto.*;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.Arrays;
 
@@ -36,16 +40,16 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
     private Channel client3Channel;
 
     @GrpcClient
-    DefaultHelloServiceGrpc.DefaultHelloServiceBlockingStub defaultDefaultStub;
+    private DefaultHelloServiceGrpc.DefaultHelloServiceBlockingStub defaultStub;
 
-    @GrpcClient
-    HelloServiceXGrpc.HelloServiceXBlockingStub defaultServiceXStub;
+    @GrpcClient("client1")
+    private HelloServiceXGrpc.HelloServiceXBlockingStub client1Stub;
 
-    @GrpcClient
-    HelloService2Grpc.HelloService2BlockingStub defaultService2Stub;
+    @GrpcClient("client2")
+    private HelloService2Grpc.HelloService2BlockingStub client2Stub;
 
-    @GrpcClient
-    HelloService3Grpc.HelloService3BlockingStub defaultService3Stub;
+    @GrpcClient(clientName = "client3")
+    private HelloService3Grpc.HelloService3BlockingStub client3Stub;
 
     @Resource
     private DefaultClientInterceptor defaultClientInterceptor;
@@ -65,182 +69,177 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
     @Resource
     private TestGrpcShadedNettyChannelConfigurer testGrpcShadedNettyClientConfigurer;
 
+    @Resource
+    private TraceService traceService;
+
+    @PostConstruct
+    private void init() throws Exception {
+        Server serverDefault = NettyServerBuilder
+                .forPort(6565)
+                .addService(new DefaultHelloService())
+                .sslContext(
+                        GrpcSslContexts.forServer(
+                                Loaders.loadResource("myServer.crt").openStream(),
+                                Loaders.loadResource("myServer.key.pkcs8").openStream()
+                        )
+                                .trustManager(Loaders.loadResource("myClient.crt").openStream())
+                                .clientAuth(ClientAuth.REQUIRE)
+                                .build()
+                )
+                .build();
+        Server server1 = NettyServerBuilder.forPort(6566).addService(new HelloServiceX()).build();
+        Server server2 = NettyServerBuilder.forPort(6567).addService(new HelloService2()).build();
+        Server server3 = NettyServerBuilder.forPort(6568).addService(new HelloService3()).build();
+        serverDefault.start();
+        server1.start();
+        server2.start();
+        server3.start();
+    }
+
     @Test
     public void testClients() throws Exception {
         HelloRequest helloRequest = HelloRequest.getDefaultInstance();
-        ////ChannelCredentials cred = TlsChannelCredentials.newBuilder().build();
-        //Channel defaultChannel = NettyChannelBuilder.forTarget("127.0.0.1:6565").usePlaintext().build();
-        ////.sslContext(
-        ////        GrpcSslContexts.forClient()
-        ////                .keyManager(
-        ////                        Loaders.loadResource("myClient.crt").openStream(),
-        ////                        Loaders.loadResource("myClient.key.pkcs8").openStream()
-        ////                )
-        ////                .trustManager(
-        ////                        Loaders.loadResource("trusts.crt").openStream()
-        ////                )
-        ////                .clientAuth(ClientAuth.REQUIRE).build()
-        ////)
-        ////.build();
-        //Channel server1Channel = NettyChannelBuilder.forTarget("127.0.0.1:6566").usePlaintext().build();
-        //Channel server2Channel = NettyChannelBuilder.forTarget("127.0.0.1:6567").usePlaintext().build();
-        //Channel server3Channel = NettyChannelBuilder.forTarget("127.0.0.1:6568").usePlaintext().build();
-        //
-        ///*
-        // * default: default
-        // * server1: default, serverX
-        // * server2: default, serverX, server2
-        // * server3: default, serverX, server3
-        // */
-        //
+
+        /*
+         * default: default
+         * client1: interceptorX, default
+         * client2: interceptor2, interceptorX, default
+         * client3: interceptor3, interceptorX, default
+         */
+
+        Assert.assertEquals(
+                DefaultHelloServiceGrpc.newBlockingStub(defaultChannel).hello(helloRequest).getMessage(),
+                "DefaultHelloService"
+        );
+        Assert.assertEquals(
+                defaultStub.hello(helloRequest).getMessage(),
+                "DefaultHelloService"
+        );
+
+        Assert.assertEquals(
+                HelloServiceXGrpc.newBlockingStub(client1Channel).hello(helloRequest).getMessage(),
+                "HelloServiceX"
+        );
+        Assert.assertEquals(
+                client1Stub.hello(helloRequest).getMessage(),
+                "HelloServiceX"
+        );
+
+        Assert.assertEquals(
+                HelloService2Grpc.newBlockingStub(client2Channel).hello(helloRequest).getMessage(),
+                "HelloService2"
+        );
+        Assert.assertEquals(
+                client2Stub.hello(helloRequest).getMessage(),
+                "HelloService2"
+        );
+
+        Assert.assertEquals(
+                HelloService3Grpc.newBlockingStub(client3Channel).hello(helloRequest).getMessage(),
+                "HelloService3"
+        );
+        Assert.assertEquals(
+                client3Stub.hello(helloRequest).getMessage(),
+                "HelloService3"
+        );
+
+        Assert.assertEquals(
+                defaultClientInterceptor.getServiceTraces(),
+                Arrays.asList(
+                        "DefaultHelloService",
+                        "DefaultHelloService",
+                        "HelloServiceX",
+                        "HelloServiceX",
+                        "HelloService2",
+                        "HelloService2",
+                        "HelloService3",
+                        "HelloService3"
+                )
+        );
+        Assert.assertEquals(
+                helloClientInterceptorX.getServiceTraces(),
+                Arrays.asList(
+                        //"DefaultHelloService",
+                        //"DefaultHelloService",
+                        "HelloServiceX",
+                        "HelloServiceX",
+                        "HelloService2",
+                        "HelloService2",
+                        "HelloService3",
+                        "HelloService3"
+                )
+        );
+        Assert.assertEquals(
+                helloClientInterceptor2.getServiceTraces(),
+                Arrays.asList(
+                        //"DefaultHelloService",
+                        //"DefaultHelloService",
+                        //"HelloServiceX",
+                        //"HelloServiceX",
+                        "HelloService2",
+                        "HelloService2"
+                        //"HelloService3",
+                        //"HelloService3"
+                )
+        );
+        Assert.assertEquals(
+                helloClientInterceptor3.getServiceTraces(),
+                Arrays.asList(
+                        //"DefaultHelloService",
+                        //"DefaultHelloService",
+                        //"HelloServiceX",
+                        //"HelloServiceX",
+                        //"HelloService2",
+                        //"HelloService2",
+                        "HelloService3",
+                        "HelloService3"
+                )
+        );
+
+        Assert.assertEquals(
+                traceService.getInterceptorTraces(),
+                Arrays.asList(
+                        "HelloClientInterceptor2",
+                        "HelloClientInterceptorX",
+                        "DefaultClientInterceptor",
+                        "HelloClientInterceptor2",
+                        "HelloClientInterceptorX",
+                        "DefaultClientInterceptor"
+                )
+        );
+
         //Assert.assertEquals(
-        //        DefaultHelloServiceGrpc.newBlockingStub(defaultChannel).hello(helloRequest).getMessage(),
-        //        "DefaultHelloService"
-        //);
-        //Assert.expectThrows(StatusRuntimeException.class, () ->
-        //        HelloServiceXGrpc.newBlockingStub(defaultChannel).hello(helloRequest));
-        //Assert.expectThrows(StatusRuntimeException.class, () ->
-        //        HelloService2Grpc.newBlockingStub(defaultChannel).hello(helloRequest));
-        //Assert.expectThrows(StatusRuntimeException.class, () ->
-        //        HelloService3Grpc.newBlockingStub(defaultChannel).hello(helloRequest));
-        //
-        //Assert.assertEquals(
-        //        DefaultHelloServiceGrpc.newBlockingStub(server1Channel).hello(helloRequest).getMessage(),
-        //        "DefaultHelloService"
-        //);
-        //Assert.assertEquals(
-        //        HelloServiceXGrpc.newBlockingStub(server1Channel).hello(helloRequest).getMessage(),
-        //        "HelloServiceX"
-        //);
-        //Assert.expectThrows(StatusRuntimeException.class, () ->
-        //        HelloService2Grpc.newBlockingStub(server1Channel).hello(helloRequest));
-        //Assert.expectThrows(StatusRuntimeException.class, () ->
-        //        HelloService3Grpc.newBlockingStub(server1Channel).hello(helloRequest));
-        //
-        //
-        //Assert.assertEquals(
-        //        DefaultHelloServiceGrpc.newBlockingStub(server2Channel).hello(helloRequest).getMessage(),
-        //        "DefaultHelloService"
-        //);
-        //Assert.assertEquals(
-        //        HelloServiceXGrpc.newBlockingStub(server2Channel).hello(helloRequest).getMessage(),
-        //        "HelloServiceX"
-        //);
-        //Assert.assertEquals(
-        //        HelloService2Grpc.newBlockingStub(server2Channel).hello(helloRequest).getMessage(),
-        //        "HelloService2"
-        //);
-        //Assert.expectThrows(StatusRuntimeException.class, () ->
-        //        HelloService3Grpc.newBlockingStub(server1Channel).hello(helloRequest));
-        //
-        //
-        //Assert.assertEquals(
-        //        DefaultHelloServiceGrpc.newBlockingStub(server3Channel).hello(helloRequest).getMessage(),
-        //        "DefaultHelloService"
-        //);
-        //Assert.assertEquals(
-        //        HelloServiceXGrpc.newBlockingStub(server3Channel).hello(helloRequest).getMessage(),
-        //        "HelloServiceX"
-        //);
-        //Assert.assertEquals(
-        //        HelloService3Grpc.newBlockingStub(server3Channel).hello(helloRequest).getMessage(),
-        //        "HelloService3"
-        //);
-        //Assert.expectThrows(StatusRuntimeException.class, () ->
-        //        HelloService2Grpc.newBlockingStub(server1Channel).hello(helloRequest));
-        //
-        //Assert.assertEquals(
-        //        defaultClientInterceptor.getServiceTraces(),
+        //        defaultClientInterceptor.getThreadTraces(),
         //        Arrays.asList(
-        //                "DefaultHelloService",
-        //                "DefaultHelloService",
-        //                "HelloServiceX",
-        //                "DefaultHelloService",
-        //                "HelloServiceX",
-        //                "HelloService2",
-        //                "DefaultHelloService",
-        //                "HelloServiceX",
-        //                "HelloService3"
+        //                "default-task-executor",
+        //                "default-task-executor",
+        //                "default-task-executor",
+        //                "default-task-executor",
+        //                "client2-task-executor",
+        //                "client2-task-executor",
+        //                "default-task-executor",
+        //                "default-task-executor"
         //        )
         //);
-        //Assert.assertEquals(
-        //        helloClientInterceptorX.getServiceTraces(),
-        //        Arrays.asList(
-        //                //"DefaultHelloService",
-        //                //"DefaultHelloService",
-        //                "HelloServiceX",
-        //                //"DefaultHelloService",
-        //                "HelloServiceX",
-        //                "HelloService2",
-        //                //"DefaultHelloService",
-        //                "HelloServiceX",
-        //                "HelloService3"
-        //        )
-        //);
-        //Assert.assertEquals(
-        //        helloClientInterceptor2.getServiceTraces(),
-        //        Arrays.asList(
-        //                //"DefaultHelloService",
-        //                //"DefaultHelloService",
-        //                //"HelloServiceX",
-        //                //"DefaultHelloService",
-        //                //"HelloServiceX",
-        //                "HelloService2"
-        //                //"DefaultHelloService",
-        //                //"HelloServiceX",
-        //                //"HelloService3"
-        //        )
-        //);
-        //Assert.assertEquals(
-        //        helloClientInterceptor3.getServiceTraces(),
-        //        Arrays.asList(
-        //                //"DefaultHelloService",
-        //                //"DefaultHelloService",
-        //                //"HelloServiceX",
-        //                //"DefaultHelloService",
-        //                //"HelloServiceX",
-        //                //"HelloService2",
-        //                //"DefaultHelloService",
-        //                //"HelloServiceX",
-        //                "HelloService3"
-        //        )
-        //);
-        //
-        //Assert.assertTrue(
-        //        DefaultHelloServiceGrpc.newBlockingStub(defaultChannel).hello(helloRequest).getThreadName()
-        //                .startsWith("default-task-executor")
-        //);
-        //Assert.assertTrue(
-        //        HelloServiceXGrpc.newBlockingStub(server1Channel).hello(helloRequest).getThreadName()
-        //                .startsWith("default-task-executor")
-        //);
-        //Assert.assertTrue(
-        //        HelloService2Grpc.newBlockingStub(server2Channel).hello(helloRequest).getThreadName()
-        //                .startsWith("server2-task-executor")
-        //);
-        //Assert.assertTrue(
-        //        HelloService3Grpc.newBlockingStub(server3Channel).hello(helloRequest).getThreadName()
-        //                .startsWith("default-task-executor")
-        //);
-        //
-        //Assert.assertEquals(
-        //        testGrpcClientFactory.getCreateTraces(),
-        //        Arrays.asList(
-        //                "default",
-        //                "server1",
-        //                "server2",
-        //                "server3"
-        //        )
-        //);
-        //
-        //Assert.assertEquals(
-        //        testGrpcShadedNettyClientConfigurer.getCreateTraces(),
-        //        Arrays.asList(
-        //                "default",
-        //                "server1",
-        //                "server2",
-        //                "server3"
-        //        )
-        //);
+
+        Assert.assertEquals(
+                testGrpcClientFactory.getCreateTraces(),
+                Arrays.asList(
+                        "default",
+                        "client1",
+                        "client2",
+                        "client3"
+                )
+        );
+
+        Assert.assertEquals(
+                testGrpcShadedNettyClientConfigurer.getCreateTraces(),
+                Arrays.asList(
+                        "default",
+                        "client1",
+                        "client2",
+                        "client3"
+                )
+        );
     }
 }

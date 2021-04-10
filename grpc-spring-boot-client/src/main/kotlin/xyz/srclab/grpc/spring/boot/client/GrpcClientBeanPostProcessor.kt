@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.context.ApplicationContext
 import org.springframework.util.AntPathMatcher
+import xyz.srclab.common.collect.sorted
 import xyz.srclab.common.reflect.searchFields
 import xyz.srclab.common.reflect.setValue
 import java.lang.reflect.Field
@@ -43,6 +44,15 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
                     it.value,
                     applicationContext.findAnnotationOnBean(it.key, GrpcClientInterceptor::class.java)
                 )
+            }
+            .sorted { e1, e2 ->
+                fun ClientInterceptorInfo.order(): Int {
+                    return if (this.annotation === null) 0 else this.annotation.order
+                }
+                //Note: gRPC interceptors follow the FILO, means first added interceptor will be called last:
+                //Add order   : interceptor1, interceptor2, interceptor3
+                //Called order: interceptor3, interceptor2, interceptor1
+                e2.order() - e1.order()
             }
     }
 

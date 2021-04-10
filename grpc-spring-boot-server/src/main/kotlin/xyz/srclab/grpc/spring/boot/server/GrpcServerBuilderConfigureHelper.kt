@@ -1,9 +1,9 @@
 package xyz.srclab.grpc.spring.boot.server
 
 import io.grpc.ServerBuilder
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder
 import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder
 import org.springframework.context.ApplicationContext
 import xyz.srclab.common.base.enumValueOfIgnoreCase
 import xyz.srclab.common.base.loadResource
@@ -65,19 +65,21 @@ open class GrpcServerBuilderConfigureHelper {
             return
         }
 
-        val sslBuilder =
-            SslContextBuilder.forServer(keyCertChainStream, privateKeyStream, serverDefinition.sslPrivateKeyPassword)
+        //builder.useTransportSecurity(keyCertChainStream, privateKeyStream)
 
-        val trustCertCollectionStream = openStream(trustCertCollectionClassPath, trustCertCollectionFile)
-        if (trustCertCollectionStream !== null) {
-            sslBuilder.trustManager(trustCertCollectionStream)
-        }
+        val sslBuilder =
+            GrpcSslContexts.forServer(keyCertChainStream, privateKeyStream, serverDefinition.sslPrivateKeyPassword)
 
         val clientAuthString = serverDefinition.sslClientAuth
         if (clientAuthString !== null) {
             val clientAuth = ClientAuth::class.java.enumValueOfIgnoreCase<ClientAuth>(clientAuthString)
-            if (clientAuth !== ClientAuth.NONE)
+            if (clientAuth !== ClientAuth.NONE) {
+                val trustCertCollectionStream = openStream(trustCertCollectionClassPath, trustCertCollectionFile)
+                if (trustCertCollectionStream !== null) {
+                    sslBuilder.trustManager(trustCertCollectionStream)
+                }
                 sslBuilder.clientAuth(clientAuth)
+            }
         }
 
         builder.sslContext(sslBuilder.build())

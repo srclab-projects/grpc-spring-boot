@@ -1,8 +1,8 @@
 plugins {
-  id 'build.protobuf'
+  id 'build.kotlin-sample'
 }
 
-description = "gRPC Spring Boot Protobuf"
+description = "gRPC Boat Spring Boot Samples"
 
 java {
   registerFeature('optionalSupport') {
@@ -11,9 +11,8 @@ java {
 }
 
 dependencies {
-  api platform(project(":grpc-spring-boot-dependencies"))
-
-  api "io.grpc:grpc-all"
+  implementation project(":grpc-spring-boot-starters:grpc-spring-boot-starter-client")
+  implementation project(":grpc-spring-boot-starters:grpc-spring-boot-starter-server")
 
   testCompile project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test")
 }

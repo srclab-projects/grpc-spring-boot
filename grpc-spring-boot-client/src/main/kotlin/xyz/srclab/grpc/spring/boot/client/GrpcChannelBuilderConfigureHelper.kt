@@ -2,9 +2,9 @@ package xyz.srclab.grpc.spring.boot.client
 
 import io.grpc.ClientInterceptor
 import io.grpc.ManagedChannelBuilder
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder
 import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder
 import org.springframework.context.ApplicationContext
 import xyz.srclab.common.base.enumValueOfIgnoreCase
 import xyz.srclab.common.base.loadResource
@@ -53,20 +53,21 @@ open class GrpcChannelBuilderConfigureHelper {
 
         val keyCertChainStream = openStream(keyCertChainClassPath, keyCertChainFile)
         if (keyCertChainStream === null) {
+            builder.usePlaintext()
             return
         }
         val privateKeyStream = openStream(privateKeyClassPath, privateKeyFile)
         if (privateKeyStream === null) {
+            builder.usePlaintext()
             return
         }
 
-        val sslBuilder = SslContextBuilder.forClient()
+        val sslBuilder = GrpcSslContexts.forClient()
             .keyManager(
                 keyCertChainStream,
                 privateKeyStream,
                 clientDefinition.sslPrivateKeyPassword
             )
-
         val trustCertCollectionStream = openStream(trustCertCollectionClassPath, trustCertCollectionFile)
         if (trustCertCollectionStream !== null) {
             sslBuilder.trustManager(trustCertCollectionStream)
@@ -79,6 +80,7 @@ open class GrpcChannelBuilderConfigureHelper {
                 sslBuilder.clientAuth(clientAuth)
         }
 
+        builder.useTransportSecurity()
         builder.sslContext(sslBuilder.build())
     }
 

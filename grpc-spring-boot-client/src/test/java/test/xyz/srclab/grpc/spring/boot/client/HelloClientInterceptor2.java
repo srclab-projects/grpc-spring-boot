@@ -1,7 +1,22 @@
 package test.xyz.srclab.grpc.spring.boot.client;
 
+import io.grpc.CallOptions;
+import io.grpc.Channel;
+import io.grpc.ClientCall;
+import io.grpc.MethodDescriptor;
 import xyz.srclab.grpc.spring.boot.client.GrpcClientInterceptor;
 
-@GrpcClientInterceptor("*2")
+import java.util.Objects;
+
+@GrpcClientInterceptor(value = "*2", order = -2)
 public class HelloClientInterceptor2 extends BaseClientInterceptor {
+
+    @Override
+    public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
+            MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
+        if (Objects.equals(method.getServiceName(), "HelloService2")) {
+            traceService.addInterceptorTrace("HelloClientInterceptor2");
+        }
+        return super.interceptCall(method, callOptions, next);
+    }
 }

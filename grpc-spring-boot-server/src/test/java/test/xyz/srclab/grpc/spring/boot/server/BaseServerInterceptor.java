@@ -4,10 +4,14 @@ import io.grpc.*;
 import xyz.srclab.annotations.Nullable;
 import xyz.srclab.common.test.TestMarker;
 
+import javax.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
 
 public class BaseServerInterceptor implements ServerInterceptor {
+
+    @Resource
+    protected HelloService2 helloService2;
 
     private final TestMarker testMarker = TestMarker.newTestMarker();
 

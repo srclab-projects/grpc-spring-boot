@@ -2,13 +2,16 @@ package test.xyz.srclab.grpc.spring.boot.server;
 
 import io.grpc.Channel;
 import io.grpc.StatusRuntimeException;
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import xyz.srclab.common.base.Loaders;
 import xyz.srclab.spring.boot.proto.*;
 
 import javax.annotation.Resource;
@@ -28,8 +31,8 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
     //@Resource
     //private HelloService1 helloService1;
     //
-    //@Resource
-    //private HelloService2 helloService2;
+    @Resource
+    private HelloService2 helloService2;
     //
     //@Resource
     //private HelloService3 helloService3;
@@ -56,19 +59,22 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
     public void testServers() throws Exception {
         HelloRequest helloRequest = HelloRequest.getDefaultInstance();
         //ChannelCredentials cred = TlsChannelCredentials.newBuilder().build();
-        Channel defaultChannel = NettyChannelBuilder.forTarget("127.0.0.1:6565").usePlaintext().build();
-        //.sslContext(
-        //        GrpcSslContexts.forClient()
-        //                .keyManager(
-        //                        Loaders.loadResource("myClient.crt").openStream(),
-        //                        Loaders.loadResource("myClient.key.pkcs8").openStream()
-        //                )
-        //                .trustManager(
-        //                        Loaders.loadResource("trusts.crt").openStream()
-        //                )
-        //                .clientAuth(ClientAuth.REQUIRE).build()
-        //)
-        //.build();
+        Channel defaultChannel = NettyChannelBuilder.forTarget("127.0.0.1:6565")//.usePlaintext().build();
+                .sslContext(
+                        GrpcSslContexts.forClient()
+                                .keyManager(
+                                        Loaders.loadResource("myClient.crt").openStream(),
+                                        Loaders.loadResource("myClient.key.pkcs8").openStream()
+                                )
+                                .trustManager(
+                                        Loaders.loadResource("myServer.crt").openStream()
+                                )
+                                .clientAuth(ClientAuth.REQUIRE)
+                                .build()
+                )
+                //.usePlaintext()
+                .useTransportSecurity()
+                .build();
         Channel server1Channel = NettyChannelBuilder.forTarget("127.0.0.1:6566").usePlaintext().build();
         Channel server2Channel = NettyChannelBuilder.forTarget("127.0.0.1:6567").usePlaintext().build();
         Channel server3Channel = NettyChannelBuilder.forTarget("127.0.0.1:6568").usePlaintext().build();
@@ -190,6 +196,15 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
                         //"DefaultHelloService",
                         //"HelloServiceX",
                         "HelloService3"
+                )
+        );
+
+        Assert.assertEquals(
+                helloService2.getInterceptorTraces(),
+                Arrays.asList(
+                        "HelloServerInterceptor2",
+                        "HelloServerInterceptorX",
+                        "DefaultServerInterceptor"
                 )
         );
 
