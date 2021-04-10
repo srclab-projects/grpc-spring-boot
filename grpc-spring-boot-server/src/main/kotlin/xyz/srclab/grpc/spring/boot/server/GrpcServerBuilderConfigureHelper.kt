@@ -2,10 +2,7 @@ package xyz.srclab.grpc.spring.boot.server
 
 import io.grpc.ServerBuilder
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder
-import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder
 import org.springframework.context.ApplicationContext
-import xyz.srclab.common.base.enumValueOfIgnoreCase
 import xyz.srclab.common.base.loadResource
 import java.io.File
 import java.io.InputStream
@@ -65,22 +62,24 @@ open class GrpcServerBuilderConfigureHelper {
             return
         }
 
-        val sslBuilder =
-            SslContextBuilder.forServer(keyCertChainStream, privateKeyStream, serverDefinition.sslPrivateKeyPassword)
+        builder.useTransportSecurity(keyCertChainStream, privateKeyStream)
 
-        val trustCertCollectionStream = openStream(trustCertCollectionClassPath, trustCertCollectionFile)
-        if (trustCertCollectionStream !== null) {
-            sslBuilder.trustManager(trustCertCollectionStream)
-        }
-
-        val clientAuthString = serverDefinition.sslClientAuth
-        if (clientAuthString !== null) {
-            val clientAuth = ClientAuth::class.java.enumValueOfIgnoreCase<ClientAuth>(clientAuthString)
-            if (clientAuth !== ClientAuth.NONE)
-                sslBuilder.clientAuth(clientAuth)
-        }
-
-        builder.sslContext(sslBuilder.build())
+        //val sslBuilder =
+        //    SslContextBuilder.forServer(keyCertChainStream, privateKeyStream, serverDefinition.sslPrivateKeyPassword)
+        //
+        //val trustCertCollectionStream = openStream(trustCertCollectionClassPath, trustCertCollectionFile)
+        //if (trustCertCollectionStream !== null) {
+        //    sslBuilder.trustManager(trustCertCollectionStream)
+        //}
+        //
+        //val clientAuthString = serverDefinition.sslClientAuth
+        //if (clientAuthString !== null) {
+        //    val clientAuth = ClientAuth::class.java.enumValueOfIgnoreCase<ClientAuth>(clientAuthString)
+        //    if (clientAuth !== ClientAuth.NONE)
+        //        sslBuilder.clientAuth(clientAuth)
+        //}
+        //
+        //builder.sslContext(sslBuilder.build())
     }
 
     open fun configureShadedNettyServerMisc(builder: NettyServerBuilder, serverDefinition: GrpcServerDefinition) {

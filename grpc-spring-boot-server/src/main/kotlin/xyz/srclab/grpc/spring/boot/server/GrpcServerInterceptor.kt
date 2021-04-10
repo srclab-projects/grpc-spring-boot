@@ -25,6 +25,8 @@ annotation class GrpcServerInterceptor(
 
     /**
      * Order of this interceptor, default is 0.
+     *
+     * gRPC will call interceptors in ascending order, for example: 0, 1, 2...
      */
     @get:JvmName("order")
     val order: Int = 0

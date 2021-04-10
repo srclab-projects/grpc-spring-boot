@@ -6,10 +6,10 @@ grpc:
     servers:
       default:
         port: 6565
-        #sslCertChainClassPath: myServer.crt
-        #sslPrivateKeyClassPath: myServer.key.pkcs8
-        #sslTrustCertCollectionClassPath: trusts.crt
-        #sslClientAuth: require
+        sslCertChainClassPath: myServer.crt
+        sslPrivateKeyClassPath: myServer.key.pkcs8
+        sslTrustCertCollectionClassPath: trusts.crt
+        sslClientAuth: require
       server1:
         port: 6566
       server2:
