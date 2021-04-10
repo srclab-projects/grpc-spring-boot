@@ -5,14 +5,10 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import xyz.srclab.grpc.spring.boot.server.GrpcServerInterceptor;
 
-import javax.annotation.Resource;
 import java.util.Objects;
 
 @GrpcServerInterceptor(value = "*2", order = -2)
 public class HelloServerInterceptor2 extends BaseServerInterceptor {
-
-    @Resource
-    private HelloService2 helloService2;
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(

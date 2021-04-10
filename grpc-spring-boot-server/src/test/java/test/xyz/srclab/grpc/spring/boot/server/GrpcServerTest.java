@@ -67,7 +67,7 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
                                         Loaders.loadResource("myClient.key.pkcs8").openStream()
                                 )
                                 .trustManager(
-                                        Loaders.loadResource("trusts.crt").openStream()
+                                        Loaders.loadResource("myServer.crt").openStream()
                                 )
                                 .clientAuth(ClientAuth.REQUIRE)
                                 .build()

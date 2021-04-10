@@ -5,14 +5,10 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.Objects;
 
 @Component
 public class DefaultServerInterceptor extends BaseServerInterceptor {
-
-    @Resource
-    private HelloService2 helloService2;
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
