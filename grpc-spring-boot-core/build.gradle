@@ -20,7 +20,7 @@ dependencies {
   compileOnly "org.springframework.boot:spring-boot-starter-web"
 
   testCompile project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test")
-  testCompile project(":grpc-spring-boot-test-protobuf")
+  testCompile project(":grpc-spring-boot-sample-protobuf")
   testCompile "org.springframework.boot:spring-boot-starter-web"
 
   kapt platform(project(":grpc-spring-boot-dependencies"))
