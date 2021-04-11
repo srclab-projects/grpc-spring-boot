@@ -1,0 +1,32 @@
+plugins {
+  id 'build.kotlin-publish-jar'
+}
+
+description = "gRPC Spring Boot Web: gRPC for Spring Boot Web."
+
+java {
+  registerFeature('optionalSupport') {
+    usingSourceSet(sourceSets.main)
+  }
+}
+
+dependencies {
+  api project(":grpc-spring-boot-core")
+  api "org.springframework.boot:spring-boot-starter-web"
+
+  testCompile project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test")
+  testCompile project(":grpc-spring-boot-sample-protobuf")
+
+  kapt platform(project(":grpc-spring-boot-dependencies"))
+  kapt "org.springframework.boot:spring-boot-autoconfigure-processor"
+  kapt "org.springframework.boot:spring-boot-configuration-processor"
+
+  //developmentOnly "org.springframework.boot:spring-boot-devtools"
+}
+
+compileJava.inputs.files(processResources)
+
+test {
+  useTestNG()
+  include("**/*Test.class", "**/*TestKt.class")
+}
