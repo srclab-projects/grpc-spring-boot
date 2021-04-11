@@ -14,14 +14,12 @@ dependencies {
   api platform(project(":grpc-spring-boot-dependencies"))
 
   api "xyz.srclab.spring.boot:boat-spring-boot-starter"
+  api "xyz.srclab.common:boat-protobuf"
   api "io.grpc:grpc-all"
   api "com.hubspot.jackson:jackson-datatype-protobuf"
 
-  compileOnly "org.springframework.boot:spring-boot-starter-web"
-
   testCompile project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test")
   testCompile project(":grpc-spring-boot-sample-protobuf")
-  testCompile "org.springframework.boot:spring-boot-starter-web"
 
   kapt platform(project(":grpc-spring-boot-dependencies"))
   kapt "org.springframework.boot:spring-boot-autoconfigure-processor"
