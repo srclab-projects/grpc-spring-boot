@@ -20,6 +20,13 @@ open class GrpcClientProperties {
     var keepAliveTimeInNanos: Long? = null
     var keepAliveTimeoutInNanos: Long? = null
     var keepAliveWithoutCalls: Boolean? = null
+    val deadlineAfterInNanos: Long? = null
+
+    /**
+     * Default: pick_first;
+     * Others: round_robin.
+     */
+    var loadBalancingPolicy: String? = null
 
     var sslCertChainClassPath: String? = null
     var sslPrivateKeyClassPath: String? = null
@@ -45,6 +52,9 @@ open class GrpcClientDefinition(
     _keepAliveTimeInNanos: Long?,
     _keepAliveTimeoutInNanos: Long?,
     _keepAliveWithoutCalls: Boolean?,
+    _deadlineAfterInNanos: Long?,
+
+    _loadBalancingPolicy: String?,
 
     _sslCertChainClassPath: String?,
     _sslPrivateKeyClassPath: String?,
@@ -67,6 +77,9 @@ open class GrpcClientDefinition(
     val keepAliveTimeInNanos: Long? = _keepAliveTimeInNanos
     val keepAliveTimeoutInNanos: Long? = _keepAliveTimeoutInNanos
     val keepAliveWithoutCalls: Boolean? = _keepAliveWithoutCalls
+    val deadlineAfterInNanos: Long? = _deadlineAfterInNanos
+
+    val loadBalancingPolicy: String? = _loadBalancingPolicy
 
     val sslCertChainClassPath: String? = _sslCertChainClassPath
     val sslPrivateKeyClassPath: String? = _sslPrivateKeyClassPath
@@ -105,6 +118,8 @@ private fun GrpcClientsProperties.getClientDefinition(name: String): GrpcClientD
             properties.keepAliveTimeInNanos,
             properties.keepAliveTimeoutInNanos,
             properties.keepAliveWithoutCalls,
+            properties.deadlineAfterInNanos,
+            properties.loadBalancingPolicy,
             properties.sslCertChainClassPath,
             properties.sslPrivateKeyClassPath,
             properties.sslTrustCertCollectionClassPath,
@@ -128,6 +143,8 @@ private fun GrpcClientsProperties.getClientDefinition(name: String): GrpcClientD
             properties.keepAliveTimeInNanos ?: defaults.keepAliveTimeInNanos,
             properties.keepAliveTimeoutInNanos ?: defaults.keepAliveTimeoutInNanos,
             properties.keepAliveWithoutCalls ?: defaults.keepAliveWithoutCalls,
+            properties.deadlineAfterInNanos ?: defaults.deadlineAfterInNanos,
+            properties.loadBalancingPolicy ?: defaults.loadBalancingPolicy,
             properties.sslCertChainClassPath ?: defaults.sslCertChainClassPath,
             properties.sslPrivateKeyClassPath ?: defaults.sslPrivateKeyClassPath,
             properties.sslTrustCertCollectionClassPath ?: defaults.sslTrustCertCollectionClassPath,
