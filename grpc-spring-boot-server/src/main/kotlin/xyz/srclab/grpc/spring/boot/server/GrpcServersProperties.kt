@@ -9,6 +9,7 @@ open class GrpcServersProperties {
 
 open class GrpcServerProperties {
     var inProcess: Boolean? = null
+    var useShaded: Boolean? = null
     var host: String? = null
     var port: Int? = null
 
@@ -39,6 +40,7 @@ open class GrpcServerProperties {
 open class GrpcServerDefinition(
     val name: String,
     _inProcess: Boolean?,
+    _useShaded: Boolean?,
     _host: String?,
     _port: Int?,
 
@@ -66,6 +68,7 @@ open class GrpcServerDefinition(
     _sslClientAuth: String?,
 ) {
     val inProcess: Boolean = _inProcess ?: false
+    val useShaded: Boolean = _inProcess ?: false
     val host: String = _host ?: "127.0.0.1"
     val port: Int = _port ?: 6565
 
@@ -108,6 +111,7 @@ private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerD
         return GrpcServerDefinition(
             name,
             properties.inProcess,
+            properties.useShaded,
             properties.host,
             properties.port,
             properties.threadPoolBeanName,
@@ -136,6 +140,7 @@ private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerD
         return GrpcServerDefinition(
             name,
             properties.inProcess ?: defaults.inProcess,
+            properties.useShaded ?: defaults.useShaded,
             properties.host ?: defaults.host,
             properties.port ?: defaults.port,
             properties.threadPoolBeanName ?: defaults.threadPoolBeanName,
