@@ -101,7 +101,7 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
             if (grpcClient === null) {
                 continue
             }
-            val clientName = grpcClient.clientNameOrDefaultName(grpcClientsProperties)
+            val clientName = grpcClient.clientNameOrDefaultName(clientDefinitions)
             val channel = newOrExistedChannel(clientName)
             if (channel === null) {
                 throw IllegalArgumentException(

@@ -5,6 +5,7 @@ grpc:
       threadPoolBeanName: defaultExecutor
     servers:
       default:
+        useShaded: true
         port: 6565
         sslCertChainClassPath: myServer.crt
         sslPrivateKeyClassPath: myServer.key.pkcs8

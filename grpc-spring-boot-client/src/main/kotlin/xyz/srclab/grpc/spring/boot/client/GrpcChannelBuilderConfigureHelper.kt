@@ -113,5 +113,9 @@ open class GrpcChannelBuilderConfigureHelper {
         if (keepAliveWithoutCalls !== null) {
             builder.keepAliveWithoutCalls(keepAliveWithoutCalls)
         }
+        val loadBalancingPolicy = clientDefinition.loadBalancingPolicy
+        if (loadBalancingPolicy !== null) {
+            builder.defaultLoadBalancingPolicy(loadBalancingPolicy)
+        }
     }
 }

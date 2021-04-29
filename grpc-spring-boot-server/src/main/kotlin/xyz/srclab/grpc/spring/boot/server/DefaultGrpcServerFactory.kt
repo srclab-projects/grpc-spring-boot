@@ -2,13 +2,14 @@ package xyz.srclab.grpc.spring.boot.server
 
 import io.grpc.Server
 import io.grpc.inprocess.InProcessServerBuilder
-import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder
+import io.grpc.netty.NettyServerBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext
 import java.net.InetSocketAddress
 import javax.annotation.PostConstruct
 import javax.annotation.Resource
+import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder as ShadedNettyServerBuilder
 
 open class DefaultGrpcServerFactory : GrpcServerFactory {
 
@@ -18,18 +19,13 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
     @Resource
     private lateinit var grpcServerBuilderConfigureHelper: GrpcServerBuilderConfigureHelper
 
-    private lateinit var grpcShadedNettyServerConfigurers: List<GrpcShadedNettyServerConfigurer>
+    private lateinit var grpcServerConfigurers: List<DefaultGrpcServerConfigurer>
 
     @PostConstruct
     private fun init() {
-        val shadedConfigurer = try {
-            applicationContext.getBeansOfType(GrpcShadedNettyServerConfigurer::class.java)
+        grpcServerConfigurers = try {
+            applicationContext.getBeansOfType(DefaultGrpcServerConfigurer::class.java).values.toList()
         } catch (e: Exception) {
-            null
-        }
-        grpcShadedNettyServerConfigurers = if (shadedConfigurer !== null) {
-            shadedConfigurer.values.toList()
-        } else {
             emptyList()
         }
     }
@@ -62,15 +58,45 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
         serverDefinition: GrpcServerDefinition,
         serviceGroupBuilders: Set<GrpcServiceDefinitionBuilder>
     ): Server {
+        return if (serverDefinition.useShaded) useShadedNettyServerBuilder(
+            serverDefinition,
+            serviceGroupBuilders
+        ) else useNettyServerBuilder(serverDefinition, serviceGroupBuilders)
+    }
+
+    private fun useNettyServerBuilder(
+        serverDefinition: GrpcServerDefinition,
+        serviceGroupBuilders: Set<GrpcServiceDefinitionBuilder>
+    ): Server {
         val builder = NettyServerBuilder.forAddress(InetSocketAddress(serverDefinition.host, serverDefinition.port))
         grpcServerBuilderConfigureHelper.configureServices(builder, serverDefinition, serviceGroupBuilders)
         grpcServerBuilderConfigureHelper.configureExecutor(builder, serverDefinition)
         grpcServerBuilderConfigureHelper.configureSsl(builder, serverDefinition)
-        grpcServerBuilderConfigureHelper.configureShadedNettyServerMisc(builder, serverDefinition)
+        grpcServerBuilderConfigureHelper.configureServerMisc(builder, serverDefinition)
 
-        //custom configure
-        for (grpcShadedNettyServerConfigurer in grpcShadedNettyServerConfigurers) {
-            grpcShadedNettyServerConfigurer.configureServerBuilder(builder, serverDefinition)
+        //configurers
+        for (grpcServerConfigurer in grpcServerConfigurers) {
+            grpcServerConfigurer.configureNettyServerBuilder(builder, serverDefinition)
+        }
+
+        logger.info("gRPC netty-server created: ${serverDefinition.name}")
+        return builder.build()
+    }
+
+    private fun useShadedNettyServerBuilder(
+        serverDefinition: GrpcServerDefinition,
+        serviceGroupBuilders: Set<GrpcServiceDefinitionBuilder>
+    ): Server {
+        val builder =
+            ShadedNettyServerBuilder.forAddress(InetSocketAddress(serverDefinition.host, serverDefinition.port))
+        grpcServerBuilderConfigureHelper.configureServices(builder, serverDefinition, serviceGroupBuilders)
+        grpcServerBuilderConfigureHelper.configureExecutor(builder, serverDefinition)
+        grpcServerBuilderConfigureHelper.configureSsl(builder, serverDefinition)
+        grpcServerBuilderConfigureHelper.configureServerMisc(builder, serverDefinition)
+
+        //configurers
+        for (grpcServerConfigurer in grpcServerConfigurers) {
+            grpcServerConfigurer.configureShadedNettyServerBuilder(builder, serverDefinition)
         }
 
         logger.info("gRPC shaded-netty-server created: ${serverDefinition.name}")

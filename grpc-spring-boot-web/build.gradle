@@ -2,7 +2,7 @@ plugins {
   id 'build.kotlin-publish-jar'
 }
 
-description = "gRPC Spring Boot Core: Core and basic gRPC interfaces, functions and utilities for Spring Boot."
+description = "gRPC Spring Boot Web: gRPC for Spring Boot Web."
 
 java {
   registerFeature('optionalSupport') {
@@ -11,12 +11,8 @@ java {
 }
 
 dependencies {
-  api platform(project(":grpc-spring-boot-dependencies"))
-
-  api "xyz.srclab.spring.boot:boat-spring-boot-starter"
-  api "xyz.srclab.common:boat-protobuf"
-  api "io.grpc:grpc-all"
-  api "com.hubspot.jackson:jackson-datatype-protobuf"
+  api project(":grpc-spring-boot-core")
+  api "org.springframework.boot:spring-boot-starter-web"
 
   testCompile project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test")
   testCompile project(":grpc-spring-boot-sample-protobuf")

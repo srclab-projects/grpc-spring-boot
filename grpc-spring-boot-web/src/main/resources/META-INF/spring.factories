@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  xyz.srclab.grpc.spring.boot.core.GrpcAutoConfiguration
+  xyz.srclab.grpc.spring.boot.web.GrpcWebAutoConfiguration
