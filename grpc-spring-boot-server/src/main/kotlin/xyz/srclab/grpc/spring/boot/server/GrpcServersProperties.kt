@@ -13,6 +13,13 @@ open class GrpcServerProperties {
     var host: String? = null
     var port: Int? = null
 
+    /**
+     * True if support spring bean annotation such as @Component, @Service.
+     *
+     * Default is true.
+     */
+    var supportSpringAnnotation: Boolean? = true
+
     var threadPoolBeanName: String? = null
     var maxConcurrentCallsPerConnection: Int? = null
     var initialFlowControlWindow: Int? = null
@@ -34,6 +41,10 @@ open class GrpcServerProperties {
     var sslPrivateKeyFile: String? = null
     var sslTrustCertCollectionFile: String? = null
     var sslPrivateKeyPassword: String? = null
+
+    /**
+     * Enum with case-ignore: none, optional, require.
+     */
     var sslClientAuth: String? = null
 }
 
@@ -44,6 +55,7 @@ open class GrpcServerDefinition(
     _host: String?,
     _port: Int?,
 
+    _supportSpringAnnotation: Boolean?,
     _threadPoolBeanName: String?,
     _maxConcurrentCallsPerConnection: Int?,
     _initialFlowControlWindow: Int?,
@@ -72,6 +84,7 @@ open class GrpcServerDefinition(
     val host: String = _host ?: "127.0.0.1"
     val port: Int = _port ?: 6565
 
+    val supportSpringAnnotation: Boolean? = _supportSpringAnnotation
     val threadPoolBeanName: String? = _threadPoolBeanName
     val maxConcurrentCallsPerConnection: Int? = _maxConcurrentCallsPerConnection
     val initialFlowControlWindow: Int? = _initialFlowControlWindow
@@ -114,6 +127,7 @@ private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerD
             properties.useShaded,
             properties.host,
             properties.port,
+            properties.supportSpringAnnotation,
             properties.threadPoolBeanName,
             properties.maxConcurrentCallsPerConnection,
             properties.initialFlowControlWindow,
@@ -143,6 +157,7 @@ private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerD
             properties.useShaded ?: defaults.useShaded,
             properties.host ?: defaults.host,
             properties.port ?: defaults.port,
+            properties.supportSpringAnnotation ?: defaults.supportSpringAnnotation,
             properties.threadPoolBeanName ?: defaults.threadPoolBeanName,
             properties.maxConcurrentCallsPerConnection ?: defaults.maxConcurrentCallsPerConnection,
             properties.initialFlowControlWindow ?: defaults.initialFlowControlWindow,

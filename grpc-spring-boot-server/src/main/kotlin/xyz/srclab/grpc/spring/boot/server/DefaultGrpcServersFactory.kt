@@ -25,7 +25,18 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
             mutableMapOf<String, MutableSet<GrpcServiceDefinitionBuilder>>().toMutableSetMap()
 
         fun BindableService.matchServers(beanName: String, serviceAnnotation: GrpcService?) {
-            if (serviceAnnotation === null || serviceAnnotation.valueOrServerPatterns.isEmpty()) {
+            if (serviceAnnotation === null) {
+                for (serverDefinition in serverDefinitions) {
+                    if (serverDefinition.supportSpringAnnotation == true) {
+                        servers.add(
+                            serverDefinition.name,
+                            GrpcServiceDefinitionBuilder.newGrpcServiceDefinitionBuilder(beanName, this, null)
+                        )
+                    }
+                }
+                return
+            }
+            if (serviceAnnotation.valueOrServerPatterns.isEmpty()) {
                 for (serverDefinition in serverDefinitions) {
                     servers.add(
                         serverDefinition.name,
