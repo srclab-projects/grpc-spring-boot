@@ -68,7 +68,7 @@ open class GrpcServerDefinition(
     _sslClientAuth: String?,
 ) {
     val inProcess: Boolean = _inProcess ?: false
-    val useShaded: Boolean = _inProcess ?: false
+    val useShaded: Boolean = _useShaded ?: false
     val host: String = _host ?: "127.0.0.1"
     val port: Int = _port ?: 6565
 

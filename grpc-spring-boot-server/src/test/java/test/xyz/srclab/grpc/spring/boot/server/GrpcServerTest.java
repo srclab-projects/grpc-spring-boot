@@ -53,7 +53,7 @@ public class GrpcServerTest extends AbstractTestNGSpringContextTests {
     private TestGrpcServerFactory testGrpcServerFactory;
 
     @Resource
-    private TestGrpcServerConfigurer testGrpcShadedNettyServerConfigurer;
+    private TestDefaultGrpcServerConfigurer testGrpcShadedNettyServerConfigurer;
 
     @Test
     public void testServers() throws Exception {
