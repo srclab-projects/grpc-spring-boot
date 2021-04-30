@@ -1,24 +1,23 @@
 package test.xyz.srclab.grpc.spring.boot.server;
 
-import io.grpc.Metadata;
-import io.grpc.ServerCall;
-import io.grpc.ServerCallHandler;
-import io.grpc.Status;
+import io.grpc.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import xyz.srclab.grpc.spring.boot.server.GrpcServerInterceptor;
 import xyz.srclab.grpc.spring.boot.server.interceptors.SimpleServerInterceptor;
 
-@Component
+@GrpcServerInterceptor(servicePatterns = "*3", order = 2)
 public class TestSimpleInterceptor2 implements SimpleServerInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(TestSimpleInterceptor2.class);
 
-    public <ReqT, RespT> void intercept(
+    @Override
+    public <ReqT, RespT> Context intercept(
             ServerCall<ReqT, RespT> call,
             Metadata headers,
             ServerCallHandler<ReqT, RespT> next) {
         logger.info(">>>>intercept2");
+        return Context.current().withValue(Context.key("testKey1"), "testValue1");
     }
 
     public <ReqT> void onMessage(ReqT message) {
