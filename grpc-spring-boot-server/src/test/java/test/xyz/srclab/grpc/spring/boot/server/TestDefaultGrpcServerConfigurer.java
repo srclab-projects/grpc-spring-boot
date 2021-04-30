@@ -6,7 +6,8 @@ import org.springframework.stereotype.Component;
 import xyz.srclab.annotations.Nullable;
 import xyz.srclab.common.test.TestMarker;
 import xyz.srclab.grpc.spring.boot.server.DefaultGrpcServerConfigurer;
-import xyz.srclab.grpc.spring.boot.server.GrpcServerDefinition;
+import xyz.srclab.grpc.spring.boot.server.GrpcServerConfig;
+import xyz.srclab.grpc.spring.boot.server.GrpcServersConfig;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,17 +18,21 @@ public class TestDefaultGrpcServerConfigurer implements DefaultGrpcServerConfigu
     private final TestMarker testMarker = TestMarker.newTestMarker();
 
     @Override
-    public void configureNettyServerBuilder(
-            @NotNull NettyServerBuilder builder, @NotNull GrpcServerDefinition serverDefinition) {
-        addCreateTrace(serverDefinition.getName());
+    public void configureNettyBuilder(
+            @NotNull NettyServerBuilder builder,
+            @NotNull GrpcServersConfig serversConfig,
+            @NotNull GrpcServerConfig serverConfig
+    ) {
+        addCreateTrace(serverConfig.getName());
     }
 
     @Override
-    public void configureShadedNettyServerBuilder(
+    public void configureShadedNettyBuilder(
             @NotNull io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder builder,
-            @NotNull GrpcServerDefinition serverDefinition
+            @NotNull GrpcServersConfig serversConfig,
+            @NotNull GrpcServerConfig serverConfig
     ) {
-        addCreateTrace(serverDefinition.getName());
+        addCreateTrace(serverConfig.getName());
     }
 
     private void addCreateTrace(String serverName) {

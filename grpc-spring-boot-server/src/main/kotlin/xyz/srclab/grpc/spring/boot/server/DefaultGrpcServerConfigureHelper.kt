@@ -16,23 +16,27 @@ import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts as ShadedGrpcSslContex
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder as ShadedNettyServerBuilder
 import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth as ShadedClientAuth
 
-open class GrpcServerBuilderConfigureHelper {
+open class DefaultGrpcServerConfigureHelper {
 
     @Resource
     private lateinit var applicationContext: ApplicationContext
 
     open fun configureServices(
-        builder: ServerBuilder<*>,
-        serverDefinition: GrpcServerDefinition,
-        serviceBuilders: Set<GrpcServiceDefinitionBuilder>,
+        builder: ServerBuilder<*>, serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig,
+        serviceBuilders: Set<GrpcServiceBuilder>,
     ) {
         for (serviceBuilder in serviceBuilders) {
             builder.addService(serviceBuilder.build())
         }
     }
 
-    open fun configureExecutor(builder: ServerBuilder<*>, serverDefinition: GrpcServerDefinition) {
-        val threadPoolBeanName = serverDefinition.threadPoolBeanName
+    open fun configureExecutor(
+        builder: ServerBuilder<*>,
+        serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig
+    ) {
+        val threadPoolBeanName = serverConfig.threadPoolBeanName
         if (threadPoolBeanName === null) {
             return
         }
@@ -43,13 +47,17 @@ open class GrpcServerBuilderConfigureHelper {
         builder.executor(executor)
     }
 
-    open fun configureSsl(builder: NettyServerBuilder, serverDefinition: GrpcServerDefinition) {
-        val keyCertChainClassPath = serverDefinition.sslCertChainClassPath
-        val privateKeyClassPath = serverDefinition.sslPrivateKeyClassPath
-        val trustCertCollectionClassPath = serverDefinition.sslTrustCertCollectionClassPath
-        val keyCertChainFile = serverDefinition.sslCertChainFile
-        val privateKeyFile = serverDefinition.sslPrivateKeyFile
-        val trustCertCollectionFile = serverDefinition.sslTrustCertCollectionFile
+    open fun configureSsl(
+        builder: NettyServerBuilder,
+        serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig
+    ) {
+        val keyCertChainClassPath = serverConfig.sslCertChainClassPath
+        val privateKeyClassPath = serverConfig.sslPrivateKeyClassPath
+        val trustCertCollectionClassPath = serverConfig.sslTrustCertCollectionClassPath
+        val keyCertChainFile = serverConfig.sslCertChainFile
+        val privateKeyFile = serverConfig.sslPrivateKeyFile
+        val trustCertCollectionFile = serverConfig.sslTrustCertCollectionFile
 
         fun openStream(classPath: String?, file: String?): InputStream? {
             return when {
@@ -71,9 +79,9 @@ open class GrpcServerBuilderConfigureHelper {
         //builder.useTransportSecurity(keyCertChainStream, privateKeyStream)
 
         val sslBuilder =
-            GrpcSslContexts.forServer(keyCertChainStream, privateKeyStream, serverDefinition.sslPrivateKeyPassword)
+            GrpcSslContexts.forServer(keyCertChainStream, privateKeyStream, serverConfig.sslPrivateKeyPassword)
 
-        val clientAuthString = serverDefinition.sslClientAuth
+        val clientAuthString = serverConfig.sslClientAuth
         if (clientAuthString !== null) {
             val clientAuth = ClientAuth::class.java.valueOfEnumIgnoreCase<ClientAuth>(clientAuthString)
             if (clientAuth !== ClientAuth.NONE) {
@@ -88,13 +96,17 @@ open class GrpcServerBuilderConfigureHelper {
         builder.sslContext(sslBuilder.build())
     }
 
-    open fun configureSsl(builder: ShadedNettyServerBuilder, serverDefinition: GrpcServerDefinition) {
-        val keyCertChainClassPath = serverDefinition.sslCertChainClassPath
-        val privateKeyClassPath = serverDefinition.sslPrivateKeyClassPath
-        val trustCertCollectionClassPath = serverDefinition.sslTrustCertCollectionClassPath
-        val keyCertChainFile = serverDefinition.sslCertChainFile
-        val privateKeyFile = serverDefinition.sslPrivateKeyFile
-        val trustCertCollectionFile = serverDefinition.sslTrustCertCollectionFile
+    open fun configureSsl(
+        builder: ShadedNettyServerBuilder,
+        serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig
+    ) {
+        val keyCertChainClassPath = serverConfig.sslCertChainClassPath
+        val privateKeyClassPath = serverConfig.sslPrivateKeyClassPath
+        val trustCertCollectionClassPath = serverConfig.sslTrustCertCollectionClassPath
+        val keyCertChainFile = serverConfig.sslCertChainFile
+        val privateKeyFile = serverConfig.sslPrivateKeyFile
+        val trustCertCollectionFile = serverConfig.sslTrustCertCollectionFile
 
         fun openStream(classPath: String?, file: String?): InputStream? {
             return when {
@@ -119,10 +131,10 @@ open class GrpcServerBuilderConfigureHelper {
             ShadedGrpcSslContexts.forServer(
                 keyCertChainStream,
                 privateKeyStream,
-                serverDefinition.sslPrivateKeyPassword
+                serverConfig.sslPrivateKeyPassword
             )
 
-        val clientAuthString = serverDefinition.sslClientAuth
+        val clientAuthString = serverConfig.sslClientAuth
         if (clientAuthString !== null) {
             val clientAuth = ShadedClientAuth::class.java.valueOfEnumIgnoreCase<ShadedClientAuth>(clientAuthString)
             if (clientAuth !== ShadedClientAuth.NONE) {
@@ -137,103 +149,111 @@ open class GrpcServerBuilderConfigureHelper {
         builder.sslContext(sslBuilder.build())
     }
 
-    open fun configureServerMisc(builder: NettyServerBuilder, serverDefinition: GrpcServerDefinition) {
-        val maxConcurrentCallsPerConnection = serverDefinition.maxConcurrentCallsPerConnection
+    open fun configureConnection(
+        builder: NettyServerBuilder,
+        serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig
+    ) {
+        val maxConcurrentCallsPerConnection = serverConfig.maxConcurrentCallsPerConnection
         if (maxConcurrentCallsPerConnection !== null) {
             builder.maxConcurrentCallsPerConnection(maxConcurrentCallsPerConnection)
         }
-        val initialFlowControlWindow = serverDefinition.initialFlowControlWindow
+        val initialFlowControlWindow = serverConfig.initialFlowControlWindow
         if (initialFlowControlWindow !== null) {
             builder.initialFlowControlWindow(initialFlowControlWindow)
         }
-        val flowControlWindow = serverDefinition.flowControlWindow
+        val flowControlWindow = serverConfig.flowControlWindow
         if (flowControlWindow !== null) {
             builder.flowControlWindow(flowControlWindow)
         }
-        val maxMessageSize = serverDefinition.maxMessageSize
+        val maxMessageSize = serverConfig.maxMessageSize
         if (maxMessageSize !== null) {
             builder.maxInboundMessageSize(maxMessageSize)
         }
-        val maxHeaderListSize = serverDefinition.maxHeaderListSize
+        val maxHeaderListSize = serverConfig.maxHeaderListSize
         if (maxHeaderListSize !== null) {
             builder.maxInboundMetadataSize(maxHeaderListSize)
         }
-        val keepAliveTimeInNanos = serverDefinition.keepAliveTimeInNanos
+        val keepAliveTimeInNanos = serverConfig.keepAliveTimeInNanos
         if (keepAliveTimeInNanos !== null) {
             builder.keepAliveTime(keepAliveTimeInNanos, TimeUnit.NANOSECONDS)
         }
-        val keepAliveTimeoutInNanos = serverDefinition.keepAliveTimeoutInNanos
+        val keepAliveTimeoutInNanos = serverConfig.keepAliveTimeoutInNanos
         if (keepAliveTimeoutInNanos !== null) {
             builder.keepAliveTimeout(keepAliveTimeoutInNanos, TimeUnit.NANOSECONDS)
         }
-        val maxConnectionIdleInNanos = serverDefinition.maxConnectionIdleInNanos
+        val maxConnectionIdleInNanos = serverConfig.maxConnectionIdleInNanos
         if (maxConnectionIdleInNanos !== null) {
             builder.maxConnectionIdle(maxConnectionIdleInNanos, TimeUnit.NANOSECONDS)
         }
-        val maxConnectionAgeInNanos = serverDefinition.maxConnectionAgeInNanos
+        val maxConnectionAgeInNanos = serverConfig.maxConnectionAgeInNanos
         if (maxConnectionAgeInNanos !== null) {
             builder.maxConnectionAge(maxConnectionAgeInNanos, TimeUnit.NANOSECONDS)
         }
-        val maxConnectionAgeGraceInNanos = serverDefinition.maxConnectionAgeGraceInNanos
+        val maxConnectionAgeGraceInNanos = serverConfig.maxConnectionAgeGraceInNanos
         if (maxConnectionAgeGraceInNanos !== null) {
             builder.maxConnectionAgeGrace(maxConnectionAgeGraceInNanos, TimeUnit.NANOSECONDS)
         }
-        val permitKeepAliveWithoutCalls = serverDefinition.permitKeepAliveWithoutCalls
+        val permitKeepAliveWithoutCalls = serverConfig.permitKeepAliveWithoutCalls
         if (permitKeepAliveWithoutCalls !== null) {
             builder.permitKeepAliveWithoutCalls(permitKeepAliveWithoutCalls)
         }
-        val permitKeepAliveTimeInNanos = serverDefinition.permitKeepAliveTimeInNanos
+        val permitKeepAliveTimeInNanos = serverConfig.permitKeepAliveTimeInNanos
         if (permitKeepAliveTimeInNanos !== null) {
             builder.permitKeepAliveTime(permitKeepAliveTimeInNanos, TimeUnit.NANOSECONDS)
         }
     }
 
-    open fun configureServerMisc(builder: ShadedNettyServerBuilder, serverDefinition: GrpcServerDefinition) {
-        val maxConcurrentCallsPerConnection = serverDefinition.maxConcurrentCallsPerConnection
+    open fun configureConnection(
+        builder: ShadedNettyServerBuilder,
+        serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig
+    ) {
+        val maxConcurrentCallsPerConnection = serverConfig.maxConcurrentCallsPerConnection
         if (maxConcurrentCallsPerConnection !== null) {
             builder.maxConcurrentCallsPerConnection(maxConcurrentCallsPerConnection)
         }
-        val initialFlowControlWindow = serverDefinition.initialFlowControlWindow
+        val initialFlowControlWindow = serverConfig.initialFlowControlWindow
         if (initialFlowControlWindow !== null) {
             builder.initialFlowControlWindow(initialFlowControlWindow)
         }
-        val flowControlWindow = serverDefinition.flowControlWindow
+        val flowControlWindow = serverConfig.flowControlWindow
         if (flowControlWindow !== null) {
             builder.flowControlWindow(flowControlWindow)
         }
-        val maxMessageSize = serverDefinition.maxMessageSize
+        val maxMessageSize = serverConfig.maxMessageSize
         if (maxMessageSize !== null) {
             builder.maxInboundMessageSize(maxMessageSize)
         }
-        val maxHeaderListSize = serverDefinition.maxHeaderListSize
+        val maxHeaderListSize = serverConfig.maxHeaderListSize
         if (maxHeaderListSize !== null) {
             builder.maxInboundMetadataSize(maxHeaderListSize)
         }
-        val keepAliveTimeInNanos = serverDefinition.keepAliveTimeInNanos
+        val keepAliveTimeInNanos = serverConfig.keepAliveTimeInNanos
         if (keepAliveTimeInNanos !== null) {
             builder.keepAliveTime(keepAliveTimeInNanos, TimeUnit.NANOSECONDS)
         }
-        val keepAliveTimeoutInNanos = serverDefinition.keepAliveTimeoutInNanos
+        val keepAliveTimeoutInNanos = serverConfig.keepAliveTimeoutInNanos
         if (keepAliveTimeoutInNanos !== null) {
             builder.keepAliveTimeout(keepAliveTimeoutInNanos, TimeUnit.NANOSECONDS)
         }
-        val maxConnectionIdleInNanos = serverDefinition.maxConnectionIdleInNanos
+        val maxConnectionIdleInNanos = serverConfig.maxConnectionIdleInNanos
         if (maxConnectionIdleInNanos !== null) {
             builder.maxConnectionIdle(maxConnectionIdleInNanos, TimeUnit.NANOSECONDS)
         }
-        val maxConnectionAgeInNanos = serverDefinition.maxConnectionAgeInNanos
+        val maxConnectionAgeInNanos = serverConfig.maxConnectionAgeInNanos
         if (maxConnectionAgeInNanos !== null) {
             builder.maxConnectionAge(maxConnectionAgeInNanos, TimeUnit.NANOSECONDS)
         }
-        val maxConnectionAgeGraceInNanos = serverDefinition.maxConnectionAgeGraceInNanos
+        val maxConnectionAgeGraceInNanos = serverConfig.maxConnectionAgeGraceInNanos
         if (maxConnectionAgeGraceInNanos !== null) {
             builder.maxConnectionAgeGrace(maxConnectionAgeGraceInNanos, TimeUnit.NANOSECONDS)
         }
-        val permitKeepAliveWithoutCalls = serverDefinition.permitKeepAliveWithoutCalls
+        val permitKeepAliveWithoutCalls = serverConfig.permitKeepAliveWithoutCalls
         if (permitKeepAliveWithoutCalls !== null) {
             builder.permitKeepAliveWithoutCalls(permitKeepAliveWithoutCalls)
         }
-        val permitKeepAliveTimeInNanos = serverDefinition.permitKeepAliveTimeInNanos
+        val permitKeepAliveTimeInNanos = serverConfig.permitKeepAliveTimeInNanos
         if (permitKeepAliveTimeInNanos !== null) {
             builder.permitKeepAliveTime(permitKeepAliveTimeInNanos, TimeUnit.NANOSECONDS)
         }
