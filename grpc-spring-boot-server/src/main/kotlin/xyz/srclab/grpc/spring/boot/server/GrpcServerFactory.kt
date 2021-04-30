@@ -7,5 +7,9 @@ import io.grpc.Server
  */
 interface GrpcServerFactory {
 
-    fun create(serverDefinition: GrpcServerDefinition, serviceBuilders: Set<GrpcServiceDefinitionBuilder>): Server
+    fun create(
+        serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig,
+        serviceBuilders: Set<GrpcServiceBuilder>
+    ): Server
 }

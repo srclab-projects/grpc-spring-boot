@@ -34,8 +34,8 @@ open class GrpcServerAutoConfiguration {
     }
 
     @ConditionalOnMissingBean
-    @Bean("xyz.srclab.spring.boot.grpc.server.GrpcServerBuilderConfigureHelper")
-    open fun grpcServerBuilderConfigureHelper(): GrpcServerBuilderConfigureHelper {
-        return GrpcServerBuilderConfigureHelper()
+    @Bean("xyz.srclab.spring.boot.grpc.server.DefaultGrpcServerConfigureHelper")
+    open fun defaultGrpcServerConfigureHelper(): DefaultGrpcServerConfigureHelper {
+        return DefaultGrpcServerConfigureHelper()
     }
 }

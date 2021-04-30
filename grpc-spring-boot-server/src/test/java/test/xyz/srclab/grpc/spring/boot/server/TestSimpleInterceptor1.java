@@ -1,55 +1,64 @@
 package test.xyz.srclab.grpc.spring.boot.server;
 
-import io.grpc.Metadata;
-import io.grpc.ServerCall;
-import io.grpc.ServerCallHandler;
-import io.grpc.Status;
+import io.grpc.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import xyz.srclab.grpc.spring.boot.server.GrpcServerInterceptor;
 import xyz.srclab.grpc.spring.boot.server.interceptors.SimpleServerInterceptor;
 
-@Component
+@GrpcServerInterceptor(servicePatterns = "*3", order = 1)
 public class TestSimpleInterceptor1 implements SimpleServerInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(TestSimpleInterceptor1.class);
 
-    public <ReqT, RespT> void intercept(
+    private static final Context.Key<String> KEY = Context.key("testKey1");
+
+    @Override
+    public <ReqT, RespT> Context intercept(
             ServerCall<ReqT, RespT> call,
             Metadata headers,
             ServerCallHandler<ReqT, RespT> next) {
         logger.info(">>>>intercept1");
+        return Context.current().withValue(KEY, "testValue1");
     }
 
-    public <ReqT> void onMessage(ReqT message) {
-        logger.info(">>>>onMessage1");
+    @Override
+    public <ReqT> void onMessage(ReqT message, Metadata requestHeaders) {
+        logger.info(">>>>onMessage1: {}", KEY.get());
     }
 
-    public void onHalfClose() {
-        logger.info(">>>>onHalfClose1");
+    @Override
+    public void onHalfClose(Metadata requestHeaders) {
+        logger.info(">>>>onHalfClose1: {}", KEY.get());
     }
 
-    public void onCancel() {
-        logger.info(">>>>onCancel1");
+    @Override
+    public void onCancel(Metadata requestHeaders) {
+        logger.info(">>>>onCancel1: {}", KEY.get());
     }
 
-    public void onComplete() {
-        logger.info(">>>>onComplete1");
+    @Override
+    public void onComplete(Metadata requestHeaders) {
+        logger.info(">>>>onComplete1: {}", KEY.get());
     }
 
-    public void onReady() {
-        logger.info(">>>>onReady1");
+    @Override
+    public void onReady(Metadata requestHeaders) {
+        logger.info(">>>>onReady1: {}", KEY.get());
     }
 
+    @Override
     public <RespT> void sendMessage(RespT message) {
-        logger.info(">>>>sendMessage1");
+        logger.info(">>>>sendMessage1: {}", KEY.get());
     }
 
+    @Override
     public void sendHeaders(Metadata headers) {
-        logger.info(">>>>sendHeaders1");
+        logger.info(">>>>sendHeaders1: {}", KEY.get());
     }
 
+    @Override
     public void close(Status status, Metadata trailers) {
-        logger.info(">>>>close1");
+        logger.info(">>>>close1: {}", KEY.get());
     }
 }

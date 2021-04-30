@@ -17,7 +17,7 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
     private lateinit var applicationContext: ApplicationContext
 
     @Resource
-    private lateinit var grpcServerBuilderConfigureHelper: GrpcServerBuilderConfigureHelper
+    private lateinit var defaultGrpcServerConfigureHelper: DefaultGrpcServerConfigureHelper
 
     private lateinit var grpcServerConfigurers: List<DefaultGrpcServerConfigurer>
 
@@ -31,75 +31,83 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
     }
 
     override fun create(
-        serverDefinition: GrpcServerDefinition,
-        serviceBuilders: Set<GrpcServiceDefinitionBuilder>
+        serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig,
+        serviceBuilders: Set<GrpcServiceBuilder>
     ): Server {
-        return if (serverDefinition.inProcess) createInProcessServer(
-            serverDefinition,
+        return if (serverConfig.inProcess) createInProcessServer(
+            serversConfig,
+            serverConfig,
             serviceBuilders
-        ) else createNettyServer(serverDefinition, serviceBuilders)
+        ) else createNettyServer(serversConfig, serverConfig, serviceBuilders)
     }
 
     private fun createInProcessServer(
-        serverDefinition: GrpcServerDefinition,
-        serviceBuilders: Set<GrpcServiceDefinitionBuilder>
+        serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig,
+        serviceBuilders: Set<GrpcServiceBuilder>
     ): Server {
-        val builder = InProcessServerBuilder.forName(serverDefinition.name)
-        grpcServerBuilderConfigureHelper.configureServices(
+        val builder = InProcessServerBuilder.forName(serverConfig.name)
+        defaultGrpcServerConfigureHelper.configureServices(
             builder,
-            serverDefinition,
+            serversConfig,
+            serverConfig,
             serviceBuilders
         )
-        logger.info("gRPC in-process-server created: ${serverDefinition.name}")
+        logger.info("gRPC in-process-server created: ${serverConfig.name}")
         return builder.build()
     }
 
     private fun createNettyServer(
-        serverDefinition: GrpcServerDefinition,
-        serviceGroupBuilders: Set<GrpcServiceDefinitionBuilder>
+        serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig,
+        serviceGroupBuilders: Set<GrpcServiceBuilder>
     ): Server {
-        return if (serverDefinition.useShaded) useShadedNettyServerBuilder(
-            serverDefinition,
+        return if (serverConfig.useShaded) useShadedNettyServerBuilder(
+            serversConfig,
+            serverConfig,
             serviceGroupBuilders
-        ) else useNettyServerBuilder(serverDefinition, serviceGroupBuilders)
+        ) else useNettyServerBuilder(serversConfig, serverConfig, serviceGroupBuilders)
     }
 
     private fun useNettyServerBuilder(
-        serverDefinition: GrpcServerDefinition,
-        serviceGroupBuilders: Set<GrpcServiceDefinitionBuilder>
+        serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig,
+        serviceGroupBuilders: Set<GrpcServiceBuilder>
     ): Server {
-        val builder = NettyServerBuilder.forAddress(InetSocketAddress(serverDefinition.host, serverDefinition.port))
-        grpcServerBuilderConfigureHelper.configureServices(builder, serverDefinition, serviceGroupBuilders)
-        grpcServerBuilderConfigureHelper.configureExecutor(builder, serverDefinition)
-        grpcServerBuilderConfigureHelper.configureSsl(builder, serverDefinition)
-        grpcServerBuilderConfigureHelper.configureServerMisc(builder, serverDefinition)
+        val builder = NettyServerBuilder.forAddress(InetSocketAddress(serverConfig.host, serverConfig.port))
+        defaultGrpcServerConfigureHelper.configureServices(builder, serversConfig, serverConfig, serviceGroupBuilders)
+        defaultGrpcServerConfigureHelper.configureExecutor(builder, serversConfig, serverConfig)
+        defaultGrpcServerConfigureHelper.configureSsl(builder, serversConfig, serverConfig)
+        defaultGrpcServerConfigureHelper.configureConnection(builder, serversConfig, serverConfig)
 
         //configurers
         for (grpcServerConfigurer in grpcServerConfigurers) {
-            grpcServerConfigurer.configureNettyServerBuilder(builder, serverDefinition)
+            grpcServerConfigurer.configureNettyBuilder(builder, serversConfig, serverConfig)
         }
 
-        logger.info("gRPC netty-server created: ${serverDefinition.name}")
+        logger.info("gRPC netty-server created: ${serverConfig.name}")
         return builder.build()
     }
 
     private fun useShadedNettyServerBuilder(
-        serverDefinition: GrpcServerDefinition,
-        serviceGroupBuilders: Set<GrpcServiceDefinitionBuilder>
+        serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig,
+        serviceGroupBuilders: Set<GrpcServiceBuilder>
     ): Server {
         val builder =
-            ShadedNettyServerBuilder.forAddress(InetSocketAddress(serverDefinition.host, serverDefinition.port))
-        grpcServerBuilderConfigureHelper.configureServices(builder, serverDefinition, serviceGroupBuilders)
-        grpcServerBuilderConfigureHelper.configureExecutor(builder, serverDefinition)
-        grpcServerBuilderConfigureHelper.configureSsl(builder, serverDefinition)
-        grpcServerBuilderConfigureHelper.configureServerMisc(builder, serverDefinition)
+            ShadedNettyServerBuilder.forAddress(InetSocketAddress(serverConfig.host, serverConfig.port))
+        defaultGrpcServerConfigureHelper.configureServices(builder, serversConfig, serverConfig, serviceGroupBuilders)
+        defaultGrpcServerConfigureHelper.configureExecutor(builder, serversConfig, serverConfig)
+        defaultGrpcServerConfigureHelper.configureSsl(builder, serversConfig, serverConfig)
+        defaultGrpcServerConfigureHelper.configureConnection(builder, serversConfig, serverConfig)
 
         //configurers
         for (grpcServerConfigurer in grpcServerConfigurers) {
-            grpcServerConfigurer.configureShadedNettyServerBuilder(builder, serverDefinition)
+            grpcServerConfigurer.configureShadedNettyBuilder(builder, serversConfig, serverConfig)
         }
 
-        logger.info("gRPC shaded-netty-server created: ${serverDefinition.name}")
+        logger.info("gRPC shaded-netty-server created: ${serverConfig.name}")
         return builder.build()
     }
 

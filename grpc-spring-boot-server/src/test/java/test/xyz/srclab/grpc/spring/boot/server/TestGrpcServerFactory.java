@@ -6,8 +6,9 @@ import org.springframework.stereotype.Component;
 import xyz.srclab.annotations.Nullable;
 import xyz.srclab.common.test.TestMarker;
 import xyz.srclab.grpc.spring.boot.server.DefaultGrpcServerFactory;
-import xyz.srclab.grpc.spring.boot.server.GrpcServerDefinition;
-import xyz.srclab.grpc.spring.boot.server.GrpcServiceDefinitionBuilder;
+import xyz.srclab.grpc.spring.boot.server.GrpcServerConfig;
+import xyz.srclab.grpc.spring.boot.server.GrpcServersConfig;
+import xyz.srclab.grpc.spring.boot.server.GrpcServiceBuilder;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -21,11 +22,12 @@ public class TestGrpcServerFactory extends DefaultGrpcServerFactory {
     @NotNull
     @Override
     public Server create(
-            @NotNull GrpcServerDefinition serverDefinition,
-            @NotNull Set<? extends GrpcServiceDefinitionBuilder> serviceBuilders
+            @NotNull GrpcServersConfig serversConfig,
+            @NotNull GrpcServerConfig serverDefinition,
+            @NotNull Set<? extends GrpcServiceBuilder> serviceBuilders
     ) {
         addCreateTrace(serverDefinition.getName());
-        return super.create(serverDefinition, serviceBuilders);
+        return super.create(serversConfig, serverDefinition, serviceBuilders);
     }
 
     private void addCreateTrace(String serverName) {

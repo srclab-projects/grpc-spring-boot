@@ -5,6 +5,13 @@ import xyz.srclab.common.collect.toImmutableSet
 open class GrpcServersProperties {
     var defaults: GrpcServerProperties? = null
     var servers: Map<String, GrpcServerProperties> = emptyMap()
+
+    /**
+     * Whether gRPC bean should be annotated by gRPC annotation ([GrpcService] and [GrpcServerInterceptor]).
+     *
+     * Default is false.
+     */
+    var needGrpcAnnotation: Boolean? = false
 }
 
 open class GrpcServerProperties {
@@ -12,13 +19,6 @@ open class GrpcServerProperties {
     var useShaded: Boolean? = null
     var host: String? = null
     var port: Int? = null
-
-    /**
-     * True if support spring bean annotation such as @Component, @Service.
-     *
-     * Default is true.
-     */
-    var supportSpringAnnotation: Boolean? = true
 
     var threadPoolBeanName: String? = null
     var maxConcurrentCallsPerConnection: Int? = null
@@ -48,14 +48,29 @@ open class GrpcServerProperties {
     var sslClientAuth: String? = null
 }
 
-open class GrpcServerDefinition(
+open class GrpcServersConfig(
+    _needGrpcAnnotation: Boolean?,
+) {
+
+    /**
+     * Whether gRPC bean should be annotated by gRPC annotation ([GrpcService] and [GrpcServerInterceptor]).
+     *
+     * Default is false.
+     */
+    val needGrpcAnnotation: Boolean = _needGrpcAnnotation ?: false
+}
+
+fun GrpcServersProperties.toServersConfig(): GrpcServersConfig {
+    return GrpcServersConfig(this.needGrpcAnnotation)
+}
+
+open class GrpcServerConfig(
     val name: String,
     _inProcess: Boolean?,
     _useShaded: Boolean?,
     _host: String?,
     _port: Int?,
 
-    _supportSpringAnnotation: Boolean?,
     _threadPoolBeanName: String?,
     _maxConcurrentCallsPerConnection: Int?,
     _initialFlowControlWindow: Int?,
@@ -84,7 +99,6 @@ open class GrpcServerDefinition(
     val host: String = _host ?: "127.0.0.1"
     val port: Int = _port ?: 6565
 
-    val supportSpringAnnotation: Boolean? = _supportSpringAnnotation
     val threadPoolBeanName: String? = _threadPoolBeanName
     val maxConcurrentCallsPerConnection: Int? = _maxConcurrentCallsPerConnection
     val initialFlowControlWindow: Int? = _initialFlowControlWindow
@@ -113,21 +127,20 @@ open class GrpcServerDefinition(
     val sslClientAuth: String? = _sslClientAuth
 }
 
-fun GrpcServersProperties.toDefinitions(): Set<GrpcServerDefinition> {
+fun GrpcServersProperties.toServerConfigs(): Set<GrpcServerConfig> {
     return this.servers.entries.map { getServerDefinition(it.key) }.toImmutableSet()
 }
 
-private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerDefinition {
+private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerConfig {
     val defaults = this.defaults
     val properties = this.servers[name] ?: throw IllegalArgumentException("Server properties $name not found")
     if (defaults === null) {
-        return GrpcServerDefinition(
+        return GrpcServerConfig(
             name,
             properties.inProcess,
             properties.useShaded,
             properties.host,
             properties.port,
-            properties.supportSpringAnnotation,
             properties.threadPoolBeanName,
             properties.maxConcurrentCallsPerConnection,
             properties.initialFlowControlWindow,
@@ -151,13 +164,12 @@ private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerD
             properties.sslClientAuth,
         )
     } else {
-        return GrpcServerDefinition(
+        return GrpcServerConfig(
             name,
             properties.inProcess ?: defaults.inProcess,
             properties.useShaded ?: defaults.useShaded,
             properties.host ?: defaults.host,
             properties.port ?: defaults.port,
-            properties.supportSpringAnnotation ?: defaults.supportSpringAnnotation,
             properties.threadPoolBeanName ?: defaults.threadPoolBeanName,
             properties.maxConcurrentCallsPerConnection ?: defaults.maxConcurrentCallsPerConnection,
             properties.initialFlowControlWindow ?: defaults.initialFlowControlWindow,

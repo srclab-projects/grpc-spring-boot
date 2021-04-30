@@ -7,7 +7,7 @@ import io.grpc.ServerServiceDefinition
 import xyz.srclab.common.base.INAPPLICABLE_JVM_NAME
 import java.util.*
 
-interface GrpcServiceDefinitionBuilder {
+interface GrpcServiceBuilder {
 
     @Suppress(INAPPLICABLE_JVM_NAME)
     @get:JvmName("beanName")
@@ -40,8 +40,8 @@ interface GrpcServiceDefinitionBuilder {
             beanName: String,
             service: BindableService,
             interceptors: Iterable<ServerInterceptor>?
-        ): GrpcServiceDefinitionBuilder {
-            return object : GrpcServiceDefinitionBuilder {
+        ): GrpcServiceBuilder {
+            return object : GrpcServiceBuilder {
                 override var beanName: String = beanName
                 override var service: BindableService = service
                 override var interceptors: MutableList<ServerInterceptor> =

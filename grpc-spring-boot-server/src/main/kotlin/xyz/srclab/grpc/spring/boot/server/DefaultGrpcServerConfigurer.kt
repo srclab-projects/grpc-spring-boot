@@ -8,7 +8,15 @@ import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder as ShadedNettyServe
  */
 interface DefaultGrpcServerConfigurer {
 
-    fun configureNettyServerBuilder(builder: NettyServerBuilder, serverDefinition: GrpcServerDefinition)
+    fun configureNettyBuilder(
+        builder: NettyServerBuilder,
+        serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig
+    )
 
-    fun configureShadedNettyServerBuilder(builder: ShadedNettyServerBuilder, serverDefinition: GrpcServerDefinition)
+    fun configureShadedNettyBuilder(
+        builder: ShadedNettyServerBuilder,
+        serversConfig: GrpcServersConfig,
+        serverConfig: GrpcServerConfig
+    )
 }

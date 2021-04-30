@@ -21,7 +21,9 @@ open class GrpcServerLifecycle : SmartLifecycle {
 
     @PostConstruct
     private fun init() {
-        servers = grpcServersFactory.create(grpcServersProperties.toDefinitions())
+        servers = grpcServersFactory.create(
+            grpcServersProperties.toServersConfig(), grpcServersProperties.toServerConfigs()
+        )
     }
 
     override fun start() {

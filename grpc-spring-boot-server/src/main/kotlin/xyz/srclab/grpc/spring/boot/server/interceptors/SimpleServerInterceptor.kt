@@ -4,7 +4,21 @@ import io.grpc.*
 import io.grpc.ForwardingServerCall.SimpleForwardingServerCall
 
 /**
- * Provides a skeletal implementation of [ServerInterceptor]
+ * Provides a skeletal implementation of [ServerInterceptor]. Execute order (assume there are twe interceptors):
+ *
+ * * intercept1 -> intercept2 ->
+ * * onReady1 -> onReady2 ->
+ * * onMessage1 -> onMessage2 ->
+ * * onHalfClose1 -> onHalfClose2 ->
+ * * service executing ->
+ * * responseObserver.onNext ->
+ * * sendHeaders2 -> sendHeaders1 ->
+ * * sendMessage2 -> sendMessage1 ->
+ * * after responseObserver.onNext ->
+ * * responseObserver.onCompleted ->
+ * * close2 -> close1 ->
+ * * after responseObserver.onCompleted ->
+ * * onComplete1 -> onComplete2
  */
 interface SimpleServerInterceptor : ServerInterceptor {
 
@@ -13,31 +27,24 @@ interface SimpleServerInterceptor : ServerInterceptor {
         call: ServerCall<ReqT, RespT>,
         headers: Metadata,
         next: ServerCallHandler<ReqT, RespT>
-    ) {
+    ): Context? {
+        return null
     }
 
     @JvmDefault
-    fun <ReqT : Any> onMessage(message: ReqT) {
+    fun onReady(requestHeaders: Metadata) {
     }
 
     @JvmDefault
-    fun onHalfClose() {
+    fun <ReqT : Any> onMessage(message: ReqT, requestHeaders: Metadata) {
     }
 
     @JvmDefault
-    fun onCancel() {
+    fun onHalfClose(requestHeaders: Metadata) {
     }
 
     @JvmDefault
-    fun onComplete() {
-    }
-
-    @JvmDefault
-    fun onReady() {
-    }
-
-    @JvmDefault
-    fun <RespT : Any> sendMessage(message: RespT) {
+    fun onCancel(requestHeaders: Metadata) {
     }
 
     @JvmDefault
@@ -45,7 +52,15 @@ interface SimpleServerInterceptor : ServerInterceptor {
     }
 
     @JvmDefault
+    fun <RespT : Any> sendMessage(message: RespT) {
+    }
+
+    @JvmDefault
     fun close(status: Status, trailers: Metadata) {
+    }
+
+    @JvmDefault
+    fun onComplete(requestHeaders: Metadata) {
     }
 
     @JvmDefault
@@ -55,53 +70,57 @@ interface SimpleServerInterceptor : ServerInterceptor {
         next: ServerCallHandler<ReqT, RespT>
     ): ServerCall.Listener<ReqT> {
 
-        intercept(call, headers, next)
+        val context = intercept(call, headers, next)
+        val delegatedCall = object : SimpleForwardingServerCall<ReqT, RespT>(call) {
 
-        val delegate = next.startCall(
-            object : SimpleForwardingServerCall<ReqT, RespT>(call) {
+            override fun sendMessage(message: RespT) {
+                this@SimpleServerInterceptor.sendMessage(message)
+                super.sendMessage(message)
+            }
 
-                override fun sendMessage(message: RespT) {
-                    this@SimpleServerInterceptor.sendMessage(message)
-                    super.sendMessage(message)
-                }
+            override fun sendHeaders(headers: Metadata) {
+                this@SimpleServerInterceptor.sendHeaders(headers)
+                super.sendHeaders(headers)
+            }
 
-                override fun sendHeaders(headers: Metadata) {
-                    this@SimpleServerInterceptor.sendHeaders(headers)
-                    super.sendHeaders(headers)
-                }
+            override fun close(status: Status, trailers: Metadata) {
+                this@SimpleServerInterceptor.close(status, trailers)
+                super.close(status, trailers)
+            }
+        }
+        val delegatedListener: ServerCall.Listener<ReqT> =
+            if (context === null)
+                next.startCall(
+                    delegatedCall,
+                    headers
+                )
+            else
+                Contexts.interceptCall(context, delegatedCall, headers, next)
 
-                override fun close(status: Status, trailers: Metadata) {
-                    this@SimpleServerInterceptor.close(status, trailers)
-                    super.close(status, trailers)
-                }
-            },
-            headers
-        )
-
-        return object : ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(delegate) {
+        return object : ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(delegatedListener) {
 
             override fun onMessage(message: ReqT) {
-                this@SimpleServerInterceptor.onMessage(message)
+                this@SimpleServerInterceptor.onMessage(message, headers)
                 super.onMessage(message)
             }
 
             override fun onHalfClose() {
-                this@SimpleServerInterceptor.onHalfClose()
+                this@SimpleServerInterceptor.onHalfClose(headers)
                 super.onHalfClose()
             }
 
             override fun onCancel() {
-                this@SimpleServerInterceptor.onCancel()
+                this@SimpleServerInterceptor.onCancel(headers)
                 super.onCancel()
             }
 
             override fun onComplete() {
-                this@SimpleServerInterceptor.onComplete()
+                this@SimpleServerInterceptor.onComplete(headers)
                 super.onComplete()
             }
 
             override fun onReady() {
-                this@SimpleServerInterceptor.onReady()
+                this@SimpleServerInterceptor.onReady(headers)
                 super.onReady()
             }
         }
