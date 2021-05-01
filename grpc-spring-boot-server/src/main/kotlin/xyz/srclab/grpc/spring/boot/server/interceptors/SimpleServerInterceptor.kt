@@ -14,10 +14,10 @@ import io.grpc.ForwardingServerCall.SimpleForwardingServerCall
  * * responseObserver.onNext ->
  * * sendHeaders2 -> sendHeaders1 ->
  * * sendMessage2 -> sendMessage1 ->
- * * after responseObserver.onNext ->
+ * * responseObserver.afterOnNext ->
  * * responseObserver.onCompleted ->
  * * close2 -> close1 ->
- * * after responseObserver.onCompleted ->
+ * * responseObserver.afterOnCompleted ->
  * * onComplete1 -> onComplete2
  */
 interface SimpleServerInterceptor : ServerInterceptor {
@@ -70,59 +70,56 @@ interface SimpleServerInterceptor : ServerInterceptor {
         next: ServerCallHandler<ReqT, RespT>
     ): ServerCall.Listener<ReqT> {
 
-        val context = intercept(call, headers, next)
-        val delegatedCall = object : SimpleForwardingServerCall<ReqT, RespT>(call) {
+val context = intercept(call, headers, next)
+val delegatedCall = object : SimpleForwardingServerCall<ReqT, RespT>(call) {
 
-            override fun sendMessage(message: RespT) {
-                this@SimpleServerInterceptor.sendMessage(message)
-                super.sendMessage(message)
-            }
+    override fun sendMessage(message: RespT) {
+        this@SimpleServerInterceptor.sendMessage(message)
+        super.sendMessage(message)
+    }
 
-            override fun sendHeaders(headers: Metadata) {
-                this@SimpleServerInterceptor.sendHeaders(headers)
-                super.sendHeaders(headers)
-            }
+    override fun sendHeaders(headers: Metadata) {
+        this@SimpleServerInterceptor.sendHeaders(headers)
+        super.sendHeaders(headers)
+    }
 
-            override fun close(status: Status, trailers: Metadata) {
-                this@SimpleServerInterceptor.close(status, trailers)
-                super.close(status, trailers)
-            }
-        }
-        val delegatedListener: ServerCall.Listener<ReqT> =
-            if (context === null)
-                next.startCall(
-                    delegatedCall,
-                    headers
-                )
-            else
-                Contexts.interceptCall(context, delegatedCall, headers, next)
+    override fun close(status: Status, trailers: Metadata) {
+        this@SimpleServerInterceptor.close(status, trailers)
+        super.close(status, trailers)
+    }
+}
+val delegatedListener: ServerCall.Listener<ReqT> =
+    if (context === null)
+        next.startCall(delegatedCall, headers)
+    else
+        Contexts.interceptCall(context, delegatedCall, headers, next)
 
-        return object : ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(delegatedListener) {
+return object : ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(delegatedListener) {
 
-            override fun onMessage(message: ReqT) {
-                this@SimpleServerInterceptor.onMessage(message, headers)
-                super.onMessage(message)
-            }
+    override fun onMessage(message: ReqT) {
+        this@SimpleServerInterceptor.onMessage(message, headers)
+        super.onMessage(message)
+    }
 
-            override fun onHalfClose() {
-                this@SimpleServerInterceptor.onHalfClose(headers)
-                super.onHalfClose()
-            }
+    override fun onHalfClose() {
+        this@SimpleServerInterceptor.onHalfClose(headers)
+        super.onHalfClose()
+    }
 
-            override fun onCancel() {
-                this@SimpleServerInterceptor.onCancel(headers)
-                super.onCancel()
-            }
+    override fun onCancel() {
+        this@SimpleServerInterceptor.onCancel(headers)
+        super.onCancel()
+    }
 
-            override fun onComplete() {
-                this@SimpleServerInterceptor.onComplete(headers)
-                super.onComplete()
-            }
+    override fun onComplete() {
+        this@SimpleServerInterceptor.onComplete(headers)
+        super.onComplete()
+    }
 
-            override fun onReady() {
-                this@SimpleServerInterceptor.onReady(headers)
-                super.onReady()
-            }
-        }
+    override fun onReady() {
+        this@SimpleServerInterceptor.onReady(headers)
+        super.onReady()
+    }
+}
     }
 }

@@ -15,14 +15,14 @@ public class HelloService3 extends HelloService3Grpc.HelloService3ImplBase {
 
     @Override
     public void hello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
-        logger.info("HelloService3.hello");
+        logger.info("HelloService3.hello: {}", TestConstants.CONTEXT_KEY.get());
         responseObserver.onNext(HelloResponse.newBuilder()
                 .setMessage("HelloService3")
                 .setThreadName(Thread.currentThread().getName())
                 .build()
         );
-        logger.info("HelloService3.onNext");
+        logger.info("HelloService3.afterOnNext: {}", TestConstants.CONTEXT_KEY.get());
         responseObserver.onCompleted();
-        logger.info("HelloService3.onCompleted");
+        logger.info("HelloService3.afterOnCompleted: {}", TestConstants.CONTEXT_KEY.get());
     }
 }

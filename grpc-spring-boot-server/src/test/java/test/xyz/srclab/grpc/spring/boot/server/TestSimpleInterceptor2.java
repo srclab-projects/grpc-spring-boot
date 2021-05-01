@@ -16,39 +16,39 @@ public class TestSimpleInterceptor2 implements SimpleServerInterceptor {
             ServerCall<ReqT, RespT> call,
             Metadata headers,
             ServerCallHandler<ReqT, RespT> next) {
-        logger.info(">>>>intercept2");
-        return Context.current().withValue(Context.key("testKey1"), "testValue1");
+        logger.info(">>>>intercept2: {}", TestConstants.CONTEXT_KEY.get());
+        return Context.current().withValue(TestConstants.CONTEXT_KEY, "testValue2");
     }
 
     public <ReqT> void onMessage(ReqT message) {
-        logger.info(">>>>onMessage2");
+        logger.info(">>>>onMessage2: {}", TestConstants.CONTEXT_KEY.get());
     }
 
     public void onHalfClose() {
-        logger.info(">>>>onHalfClose2");
+        logger.info(">>>>onHalfClose2: {}", TestConstants.CONTEXT_KEY.get());
     }
 
     public void onCancel() {
-        logger.info(">>>>onCancel2");
+        logger.info(">>>>onCancel2: {}", TestConstants.CONTEXT_KEY.get());
     }
 
     public void onComplete() {
-        logger.info(">>>>onComplete2");
+        logger.info(">>>>onComplete2: {}", TestConstants.CONTEXT_KEY.get());
     }
 
     public void onReady() {
-        logger.info(">>>>onReady2");
+        logger.info(">>>>onReady2: {}", TestConstants.CONTEXT_KEY.get());
     }
 
     public <RespT> void sendMessage(RespT message) {
-        logger.info(">>>>sendMessage2");
+        logger.info(">>>>sendMessage2: {}", TestConstants.CONTEXT_KEY.get());
     }
 
     public void sendHeaders(Metadata headers) {
-        logger.info(">>>>sendHeaders2");
+        logger.info(">>>>sendHeaders2: {}", TestConstants.CONTEXT_KEY.get());
     }
 
     public void close(Status status, Metadata trailers) {
-        logger.info(">>>>close2");
+        logger.info(">>>>close2: {}", TestConstants.CONTEXT_KEY.get());
     }
 }
