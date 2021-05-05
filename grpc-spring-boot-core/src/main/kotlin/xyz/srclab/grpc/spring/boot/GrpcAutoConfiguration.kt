@@ -1,4 +1,4 @@
-package xyz.srclab.grpc.spring.boot.core
+package xyz.srclab.grpc.spring.boot
 
 import org.springframework.context.annotation.Configuration
 
