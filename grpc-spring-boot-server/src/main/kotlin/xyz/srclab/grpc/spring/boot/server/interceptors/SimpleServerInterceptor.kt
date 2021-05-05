@@ -2,6 +2,8 @@ package xyz.srclab.grpc.spring.boot.server.interceptors
 
 import io.grpc.*
 import io.grpc.ForwardingServerCall.SimpleForwardingServerCall
+import io.grpc.ForwardingServerCallListener.SimpleForwardingServerCallListener
+import xyz.srclab.grpc.spring.boot.context.GrpcContext
 
 /**
  * Provides a skeletal implementation of [ServerInterceptor]. Execute order (assume there are twe interceptors):
@@ -19,107 +21,178 @@ import io.grpc.ForwardingServerCall.SimpleForwardingServerCall
  * * close2 -> close1 ->
  * * responseObserver.afterOnCompleted ->
  * * onComplete1 -> onComplete2
+ *
+ * It is recommended that using [GrpcContext] instead of using [Context] directly.
+ *
+ * @see GrpcContext
  */
 interface SimpleServerInterceptor : ServerInterceptor {
 
     @JvmDefault
     fun <ReqT : Any, RespT : Any> intercept(
-        call: ServerCall<ReqT, RespT>,
-        headers: Metadata,
-        next: ServerCallHandler<ReqT, RespT>
-    ): Context? {
-        return null
+            call: ServerCall<ReqT, RespT>,
+            headers: Metadata,
+            context: GrpcContext,
+    ) {
     }
 
     @JvmDefault
-    fun onReady(requestHeaders: Metadata) {
+    fun <ReqT : Any, RespT : Any> onReady(
+            call: ServerCall<ReqT, RespT>,
+            headers: Metadata,
+            context: GrpcContext,
+    ) {
     }
 
     @JvmDefault
-    fun <ReqT : Any> onMessage(message: ReqT, requestHeaders: Metadata) {
+    fun <ReqT : Any, RespT : Any> onMessage(
+            message: ReqT,
+            call: ServerCall<ReqT, RespT>,
+            headers: Metadata,
+            context: GrpcContext,
+    ) {
     }
 
     @JvmDefault
-    fun onHalfClose(requestHeaders: Metadata) {
+    fun <ReqT : Any, RespT : Any> onHalfClose(
+            call: ServerCall<ReqT, RespT>,
+            headers: Metadata,
+            context: GrpcContext,
+    ) {
     }
 
     @JvmDefault
-    fun onCancel(requestHeaders: Metadata) {
+    fun <ReqT : Any, RespT : Any> sendHeaders(
+            sentHeader: Metadata,
+            call: ServerCall<ReqT, RespT>,
+            headers: Metadata,
+            context: GrpcContext,
+    ) {
     }
 
     @JvmDefault
-    fun sendHeaders(headers: Metadata) {
+    fun <ReqT : Any, RespT : Any> sendMessage(
+            sentMessage: RespT,
+            call: ServerCall<ReqT, RespT>,
+            headers: Metadata,
+            context: GrpcContext,
+    ) {
     }
 
     @JvmDefault
-    fun <RespT : Any> sendMessage(message: RespT) {
+    fun <ReqT : Any, RespT : Any> close(
+            status: Status, trailers: Metadata,
+            call: ServerCall<ReqT, RespT>,
+            headers: Metadata,
+            context: GrpcContext,
+    ) {
     }
 
     @JvmDefault
-    fun close(status: Status, trailers: Metadata) {
+    fun <ReqT : Any, RespT : Any> onCancel(
+            call: ServerCall<ReqT, RespT>,
+            headers: Metadata,
+            context: GrpcContext,
+    ) {
     }
 
     @JvmDefault
-    fun onComplete(requestHeaders: Metadata) {
+    fun <ReqT : Any, RespT : Any> onComplete(
+            call: ServerCall<ReqT, RespT>,
+            headers: Metadata,
+            context: GrpcContext,
+    ) {
     }
 
     @JvmDefault
     override fun <ReqT : Any, RespT : Any> interceptCall(
-        call: ServerCall<ReqT, RespT>,
-        headers: Metadata,
-        next: ServerCallHandler<ReqT, RespT>
+            call: ServerCall<ReqT, RespT>,
+            headers: Metadata,
+            next: ServerCallHandler<ReqT, RespT>
     ): ServerCall.Listener<ReqT> {
 
-val context = intercept(call, headers, next)
-val delegatedCall = object : SimpleForwardingServerCall<ReqT, RespT>(call) {
+        val grpcContext = GrpcContext.current()
+        intercept(call, headers, grpcContext)
 
-    override fun sendMessage(message: RespT) {
-        this@SimpleServerInterceptor.sendMessage(message)
-        super.sendMessage(message)
-    }
+        val delegateCall = object : SimpleForwardingServerCall<ReqT, RespT>(call) {
 
-    override fun sendHeaders(headers: Metadata) {
-        this@SimpleServerInterceptor.sendHeaders(headers)
-        super.sendHeaders(headers)
-    }
+            override fun sendMessage(message: RespT) {
+                super.sendMessage(message)
+                this@SimpleServerInterceptor.sendMessage(message, call, headers, grpcContext)
+            }
 
-    override fun close(status: Status, trailers: Metadata) {
-        this@SimpleServerInterceptor.close(status, trailers)
-        super.close(status, trailers)
-    }
-}
-val delegatedListener: ServerCall.Listener<ReqT> =
-    if (context === null)
-        next.startCall(delegatedCall, headers)
-    else
-        Contexts.interceptCall(context, delegatedCall, headers, next)
+            override fun sendHeaders(sentHeaders: Metadata) {
+                super.sendHeaders(headers)
+                this@SimpleServerInterceptor.sendHeaders(sentHeaders, call, headers, grpcContext)
+            }
 
-return object : ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(delegatedListener) {
+            override fun close(status: Status, trailers: Metadata) {
+                super.close(status, trailers)
+                this@SimpleServerInterceptor.close(status, trailers, call, headers, grpcContext)
+            }
+        }
 
-    override fun onMessage(message: ReqT) {
-        this@SimpleServerInterceptor.onMessage(message, headers)
-        super.onMessage(message)
-    }
+        class ContextualizedServerCallListener(
+                delegate: ServerCall.Listener<ReqT>, private val rawContext: Context)
+            : SimpleForwardingServerCallListener<ReqT>(delegate) {
 
-    override fun onHalfClose() {
-        this@SimpleServerInterceptor.onHalfClose(headers)
-        super.onHalfClose()
-    }
+            override fun onReady() {
+                val previous = rawContext.attach()
+                try {
+                    super.onReady()
+                    this@SimpleServerInterceptor.onReady(call, headers, grpcContext)
+                } finally {
+                    rawContext.detach(previous)
+                }
+            }
 
-    override fun onCancel() {
-        this@SimpleServerInterceptor.onCancel(headers)
-        super.onCancel()
-    }
+            override fun onMessage(message: ReqT) {
+                val previous = rawContext.attach()
+                try {
+                    super.onMessage(message)
+                    this@SimpleServerInterceptor.onMessage(message, call, headers, grpcContext)
+                } finally {
+                    rawContext.detach(previous)
+                }
+            }
 
-    override fun onComplete() {
-        this@SimpleServerInterceptor.onComplete(headers)
-        super.onComplete()
-    }
+            override fun onHalfClose() {
+                val previous = rawContext.attach()
+                try {
+                    super.onHalfClose()
+                    this@SimpleServerInterceptor.onHalfClose(call, headers, grpcContext)
+                } finally {
+                    rawContext.detach(previous)
+                }
+            }
 
-    override fun onReady() {
-        this@SimpleServerInterceptor.onReady(headers)
-        super.onReady()
-    }
-}
+            override fun onCancel() {
+                val previous = rawContext.attach()
+                try {
+                    super.onCancel()
+                    this@SimpleServerInterceptor.onCancel(call, headers, grpcContext)
+                } finally {
+                    rawContext.detach(previous)
+                }
+            }
+
+            override fun onComplete() {
+                val previous = rawContext.attach()
+                try {
+                    super.onComplete()
+                    this@SimpleServerInterceptor.onComplete(call, headers, grpcContext)
+                } finally {
+                    rawContext.detach(previous)
+                }
+            }
+        }
+
+        val rawContext = grpcContext.rawContext
+        val previous = rawContext.attach()
+        return try {
+            ContextualizedServerCallListener(next.startCall(delegateCall, headers), rawContext)
+        } finally {
+            rawContext.detach(previous)
+        }
     }
 }
