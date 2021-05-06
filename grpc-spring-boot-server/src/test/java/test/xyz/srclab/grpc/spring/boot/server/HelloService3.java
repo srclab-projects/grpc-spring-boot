@@ -18,22 +18,22 @@ public class HelloService3 extends HelloService3Grpc.HelloService3ImplBase {
     public void hello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
         GrpcContext context = GrpcContext.current();
         logger.info("HelloService3.hello: {} | {}",
-                context.getString(TestConstants.CONTEXT_KEY_1),
-                context.getString(TestConstants.CONTEXT_KEY_2)
+            context.getString(TestConstants.CONTEXT_KEY_1),
+            context.getString(TestConstants.CONTEXT_KEY_2)
         );
         responseObserver.onNext(HelloResponse.newBuilder()
-                .setMessage("HelloService3")
-                .setThreadName(Thread.currentThread().getName())
-                .build()
+            .setMessage("HelloService3")
+            .setThreadName(Thread.currentThread().getName())
+            .build()
         );
         logger.info("HelloService3.afterOnNext: {} | {}",
-                context.getString(TestConstants.CONTEXT_KEY_1),
-                context.getString(TestConstants.CONTEXT_KEY_2)
+            context.getString(TestConstants.CONTEXT_KEY_1),
+            context.getString(TestConstants.CONTEXT_KEY_2)
         );
         responseObserver.onCompleted();
         logger.info("HelloService3.afterOnCompleted: {} | {}",
-                context.getString(TestConstants.CONTEXT_KEY_1),
-                context.getString(TestConstants.CONTEXT_KEY_2)
+            context.getString(TestConstants.CONTEXT_KEY_1),
+            context.getString(TestConstants.CONTEXT_KEY_2)
         );
     }
 }

@@ -17,26 +17,26 @@ public class BaseServerInterceptor implements ServerInterceptor {
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
-            ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+        ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
         addServiceTrace(call.getMethodDescriptor().getServiceName());
         return next.startCall(
-                new ForwardingServerCall.SimpleForwardingServerCall<ReqT, RespT>(call) {
-                    @Override
-                    public void sendMessage(RespT message) {
-                        super.sendMessage(message);
-                    }
+            new ForwardingServerCall.SimpleForwardingServerCall<ReqT, RespT>(call) {
+                @Override
+                public void sendMessage(RespT message) {
+                    super.sendMessage(message);
+                }
 
-                    @Override
-                    public void sendHeaders(Metadata headers) {
-                        super.sendHeaders(headers);
-                    }
+                @Override
+                public void sendHeaders(Metadata headers) {
+                    super.sendHeaders(headers);
+                }
 
-                    @Override
-                    public void close(Status status, Metadata trailers) {
-                        super.close(status, trailers);
-                    }
-                },
-                headers
+                @Override
+                public void close(Status status, Metadata trailers) {
+                    super.close(status, trailers);
+                }
+            },
+            headers
         );
     }
 

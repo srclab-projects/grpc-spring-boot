@@ -19,18 +19,18 @@ public class TestDefaultGrpcServerConfigurer implements DefaultGrpcServerConfigu
 
     @Override
     public void configureNettyBuilder(
-            @NotNull NettyServerBuilder builder,
-            @NotNull GrpcServersConfig serversConfig,
-            @NotNull GrpcServerConfig serverConfig
+        @NotNull NettyServerBuilder builder,
+        @NotNull GrpcServersConfig serversConfig,
+        @NotNull GrpcServerConfig serverConfig
     ) {
         addCreateTrace(serverConfig.getName());
     }
 
     @Override
     public void configureShadedNettyBuilder(
-            @NotNull io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder builder,
-            @NotNull GrpcServersConfig serversConfig,
-            @NotNull GrpcServerConfig serverConfig
+        @NotNull io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder builder,
+        @NotNull GrpcServersConfig serversConfig,
+        @NotNull GrpcServerConfig serverConfig
     ) {
         addCreateTrace(serverConfig.getName());
     }

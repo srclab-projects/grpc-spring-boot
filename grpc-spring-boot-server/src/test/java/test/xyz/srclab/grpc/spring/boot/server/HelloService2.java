@@ -19,9 +19,9 @@ public class HelloService2 extends HelloService2Grpc.HelloService2ImplBase {
     @Override
     public void hello(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
         responseObserver.onNext(HelloResponse.newBuilder()
-                .setMessage("HelloService2")
-                .setThreadName(Thread.currentThread().getName())
-                .build()
+            .setMessage("HelloService2")
+            .setThreadName(Thread.currentThread().getName())
+            .build()
         );
         responseObserver.onCompleted();
     }

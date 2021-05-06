@@ -49,7 +49,7 @@ open class GrpcServerProperties {
 }
 
 open class GrpcServersConfig(
-        _needGrpcAnnotation: Boolean?,
+    _needGrpcAnnotation: Boolean?,
 ) {
 
     /**
@@ -61,34 +61,34 @@ open class GrpcServersConfig(
 }
 
 open class GrpcServerConfig(
-        val name: String,
-        _inProcess: Boolean?,
-        _useShaded: Boolean?,
-        _host: String?,
-        _port: Int?,
+    val name: String,
+    _inProcess: Boolean?,
+    _useShaded: Boolean?,
+    _host: String?,
+    _port: Int?,
 
-        _threadPoolBeanName: String?,
-        _maxConcurrentCallsPerConnection: Int?,
-        _initialFlowControlWindow: Int?,
-        _flowControlWindow: Int?,
-        _maxMessageSize: Int?,
-        _maxHeaderListSize: Int?,
-        _keepAliveTimeInNanos: Long?,
-        _keepAliveTimeoutInNanos: Long?,
-        _maxConnectionIdleInNanos: Long?,
-        _maxConnectionAgeInNanos: Long?,
-        _maxConnectionAgeGraceInNanos: Long?,
-        _permitKeepAliveWithoutCalls: Boolean?,
-        _permitKeepAliveTimeInNanos: Long?,
+    _threadPoolBeanName: String?,
+    _maxConcurrentCallsPerConnection: Int?,
+    _initialFlowControlWindow: Int?,
+    _flowControlWindow: Int?,
+    _maxMessageSize: Int?,
+    _maxHeaderListSize: Int?,
+    _keepAliveTimeInNanos: Long?,
+    _keepAliveTimeoutInNanos: Long?,
+    _maxConnectionIdleInNanos: Long?,
+    _maxConnectionAgeInNanos: Long?,
+    _maxConnectionAgeGraceInNanos: Long?,
+    _permitKeepAliveWithoutCalls: Boolean?,
+    _permitKeepAliveTimeInNanos: Long?,
 
-        _sslCertChainClassPath: String?,
-        _sslPrivateKeyClassPath: String?,
-        _sslTrustCertCollectionClassPath: String?,
-        _sslCertChainFile: String?,
-        _sslPrivateKeyFile: String?,
-        _sslTrustCertCollectionFile: String?,
-        _sslPrivateKeyPassword: String?,
-        _sslClientAuth: String?,
+    _sslCertChainClassPath: String?,
+    _sslPrivateKeyClassPath: String?,
+    _sslTrustCertCollectionClassPath: String?,
+    _sslCertChainFile: String?,
+    _sslPrivateKeyFile: String?,
+    _sslTrustCertCollectionFile: String?,
+    _sslPrivateKeyPassword: String?,
+    _sslClientAuth: String?,
 ) {
     val inProcess: Boolean = _inProcess ?: false
     val useShaded: Boolean = _useShaded ?: false
@@ -123,11 +123,11 @@ open class GrpcServerConfig(
     val sslClientAuth: String? = _sslClientAuth
 }
 
-private fun GrpcServersProperties.toServersConfig(): GrpcServersConfig {
+internal fun GrpcServersProperties.toServersConfig(): GrpcServersConfig {
     return GrpcServersConfig(this.needGrpcAnnotation)
 }
 
-private fun GrpcServersProperties.toServerConfigs(): Set<GrpcServerConfig> {
+internal fun GrpcServersProperties.toServerConfigs(): Set<GrpcServerConfig> {
     return this.servers.entries.map { toServerConfigs(it.key) }.toImmutableSet()
 }
 
@@ -136,61 +136,61 @@ private fun GrpcServersProperties.toServerConfigs(name: String): GrpcServerConfi
     val properties = this.servers[name] ?: throw IllegalArgumentException("Server properties $name not found")
     if (defaults === null) {
         return GrpcServerConfig(
-                name,
-                properties.inProcess,
-                properties.useShaded,
-                properties.host,
-                properties.port,
-                properties.threadPoolBeanName,
-                properties.maxConcurrentCallsPerConnection,
-                properties.initialFlowControlWindow,
-                properties.flowControlWindow,
-                properties.maxMessageSize,
-                properties.maxHeaderListSize,
-                properties.keepAliveTimeInNanos,
-                properties.keepAliveTimeoutInNanos,
-                properties.maxConnectionIdleInNanos,
-                properties.maxConnectionAgeInNanos,
-                properties.maxConnectionAgeGraceInNanos,
-                properties.permitKeepAliveWithoutCalls,
-                properties.permitKeepAliveTimeInNanos,
-                properties.sslCertChainClassPath,
-                properties.sslPrivateKeyClassPath,
-                properties.sslTrustCertCollectionClassPath,
-                properties.sslCertChainFile,
-                properties.sslPrivateKeyFile,
-                properties.sslTrustCertCollectionFile,
-                properties.sslPrivateKeyPassword,
-                properties.sslClientAuth,
+            name,
+            properties.inProcess,
+            properties.useShaded,
+            properties.host,
+            properties.port,
+            properties.threadPoolBeanName,
+            properties.maxConcurrentCallsPerConnection,
+            properties.initialFlowControlWindow,
+            properties.flowControlWindow,
+            properties.maxMessageSize,
+            properties.maxHeaderListSize,
+            properties.keepAliveTimeInNanos,
+            properties.keepAliveTimeoutInNanos,
+            properties.maxConnectionIdleInNanos,
+            properties.maxConnectionAgeInNanos,
+            properties.maxConnectionAgeGraceInNanos,
+            properties.permitKeepAliveWithoutCalls,
+            properties.permitKeepAliveTimeInNanos,
+            properties.sslCertChainClassPath,
+            properties.sslPrivateKeyClassPath,
+            properties.sslTrustCertCollectionClassPath,
+            properties.sslCertChainFile,
+            properties.sslPrivateKeyFile,
+            properties.sslTrustCertCollectionFile,
+            properties.sslPrivateKeyPassword,
+            properties.sslClientAuth,
         )
     } else {
         return GrpcServerConfig(
-                name,
-                properties.inProcess ?: defaults.inProcess,
-                properties.useShaded ?: defaults.useShaded,
-                properties.host ?: defaults.host,
-                properties.port ?: defaults.port,
-                properties.threadPoolBeanName ?: defaults.threadPoolBeanName,
-                properties.maxConcurrentCallsPerConnection ?: defaults.maxConcurrentCallsPerConnection,
-                properties.initialFlowControlWindow ?: defaults.initialFlowControlWindow,
-                properties.flowControlWindow ?: defaults.flowControlWindow,
-                properties.maxMessageSize ?: defaults.maxMessageSize,
-                properties.maxHeaderListSize ?: defaults.maxHeaderListSize,
-                properties.keepAliveTimeInNanos ?: defaults.keepAliveTimeInNanos,
-                properties.keepAliveTimeoutInNanos ?: defaults.keepAliveTimeoutInNanos,
-                properties.maxConnectionIdleInNanos ?: defaults.maxConnectionIdleInNanos,
-                properties.maxConnectionAgeInNanos ?: defaults.maxConnectionAgeInNanos,
-                properties.maxConnectionAgeGraceInNanos ?: defaults.maxConnectionAgeGraceInNanos,
-                properties.permitKeepAliveWithoutCalls ?: defaults.permitKeepAliveWithoutCalls,
-                properties.permitKeepAliveTimeInNanos ?: defaults.permitKeepAliveTimeInNanos,
-                properties.sslCertChainClassPath ?: defaults.sslCertChainClassPath,
-                properties.sslPrivateKeyClassPath ?: defaults.sslPrivateKeyClassPath,
-                properties.sslTrustCertCollectionClassPath ?: defaults.sslTrustCertCollectionClassPath,
-                properties.sslCertChainFile ?: defaults.sslCertChainFile,
-                properties.sslPrivateKeyFile ?: defaults.sslPrivateKeyFile,
-                properties.sslTrustCertCollectionFile ?: defaults.sslTrustCertCollectionFile,
-                properties.sslPrivateKeyPassword ?: defaults.sslPrivateKeyPassword,
-                properties.sslClientAuth ?: defaults.sslClientAuth,
+            name,
+            properties.inProcess ?: defaults.inProcess,
+            properties.useShaded ?: defaults.useShaded,
+            properties.host ?: defaults.host,
+            properties.port ?: defaults.port,
+            properties.threadPoolBeanName ?: defaults.threadPoolBeanName,
+            properties.maxConcurrentCallsPerConnection ?: defaults.maxConcurrentCallsPerConnection,
+            properties.initialFlowControlWindow ?: defaults.initialFlowControlWindow,
+            properties.flowControlWindow ?: defaults.flowControlWindow,
+            properties.maxMessageSize ?: defaults.maxMessageSize,
+            properties.maxHeaderListSize ?: defaults.maxHeaderListSize,
+            properties.keepAliveTimeInNanos ?: defaults.keepAliveTimeInNanos,
+            properties.keepAliveTimeoutInNanos ?: defaults.keepAliveTimeoutInNanos,
+            properties.maxConnectionIdleInNanos ?: defaults.maxConnectionIdleInNanos,
+            properties.maxConnectionAgeInNanos ?: defaults.maxConnectionAgeInNanos,
+            properties.maxConnectionAgeGraceInNanos ?: defaults.maxConnectionAgeGraceInNanos,
+            properties.permitKeepAliveWithoutCalls ?: defaults.permitKeepAliveWithoutCalls,
+            properties.permitKeepAliveTimeInNanos ?: defaults.permitKeepAliveTimeInNanos,
+            properties.sslCertChainClassPath ?: defaults.sslCertChainClassPath,
+            properties.sslPrivateKeyClassPath ?: defaults.sslPrivateKeyClassPath,
+            properties.sslTrustCertCollectionClassPath ?: defaults.sslTrustCertCollectionClassPath,
+            properties.sslCertChainFile ?: defaults.sslCertChainFile,
+            properties.sslPrivateKeyFile ?: defaults.sslPrivateKeyFile,
+            properties.sslTrustCertCollectionFile ?: defaults.sslTrustCertCollectionFile,
+            properties.sslPrivateKeyPassword ?: defaults.sslPrivateKeyPassword,
+            properties.sslClientAuth ?: defaults.sslClientAuth,
         )
     }
 }

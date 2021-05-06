@@ -33,8 +33,8 @@ open class GrpcServerLifecycle : SmartLifecycle {
             server.start()
             logger.info(
                 "gRPC server $serverName was started " +
-                        "on ${server.listenSockets.joinToString()} " +
-                        "with ${server.services.size} services"
+                    "on ${server.listenSockets.joinToString()} " +
+                    "with ${server.services.size} services"
             )
         }
         runAsync {

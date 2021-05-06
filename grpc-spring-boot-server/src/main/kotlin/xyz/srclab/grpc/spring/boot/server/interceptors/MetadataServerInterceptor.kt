@@ -14,14 +14,14 @@ abstract class MetadataServerInterceptor : ServerInterceptor {
      * Do with metadata (headers).
      */
     abstract fun <ReqT : Any, RespT : Any> doMetadata(
-            call: ServerCall<ReqT, RespT>,
-            headers: Metadata,
+        call: ServerCall<ReqT, RespT>,
+        headers: Metadata,
     )
 
     override fun <ReqT : Any, RespT : Any> interceptCall(
-            call: ServerCall<ReqT, RespT>,
-            headers: Metadata,
-            next: ServerCallHandler<ReqT, RespT>
+        call: ServerCall<ReqT, RespT>,
+        headers: Metadata,
+        next: ServerCallHandler<ReqT, RespT>
     ): ServerCall.Listener<ReqT> {
         doMetadata(call, headers)
         return next.startCall(call, headers)

@@ -17,12 +17,12 @@ public class TestSimpleInterceptor1 implements SimpleServerInterceptor {
 
     @Override
     public <ReqT, RespT> void intercept(
-            ServerCall<ReqT, RespT> call,
-            Metadata headers,
-            GrpcContext context) {
+        ServerCall<ReqT, RespT> call,
+        Metadata headers,
+        GrpcContext context) {
         logger.info(">>>>intercept1: {} | {}",
-                context.getString(TestConstants.CONTEXT_KEY_1),
-                context.getString(TestConstants.CONTEXT_KEY_2)
+            context.getString(TestConstants.CONTEXT_KEY_1),
+            context.getString(TestConstants.CONTEXT_KEY_2)
         );
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_1), null);
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_2), null);
@@ -30,12 +30,12 @@ public class TestSimpleInterceptor1 implements SimpleServerInterceptor {
 
     @Override
     public <ReqT, RespT> void onReady(
-            ServerCall<ReqT, RespT> call,
-            Metadata headers,
-            GrpcContext context) {
+        ServerCall<ReqT, RespT> call,
+        Metadata headers,
+        GrpcContext context) {
         logger.info(">>>>onReady1: {} | {}",
-                context.getString(TestConstants.CONTEXT_KEY_1),
-                context.getString(TestConstants.CONTEXT_KEY_2)
+            context.getString(TestConstants.CONTEXT_KEY_1),
+            context.getString(TestConstants.CONTEXT_KEY_2)
         );
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_1), TestConstants.CONTEXT_VALUE_1);
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_2), null);
@@ -43,14 +43,14 @@ public class TestSimpleInterceptor1 implements SimpleServerInterceptor {
 
     @Override
     public <ReqT, RespT> void onMessage(
-            ReqT message,
-            ServerCall<ReqT, RespT> call,
-            Metadata headers,
-            GrpcContext context) {
+        ReqT message,
+        ServerCall<ReqT, RespT> call,
+        Metadata headers,
+        GrpcContext context) {
         context.set(TestConstants.CONTEXT_KEY_2, TestConstants.CONTEXT_VALUE_2);
         logger.info(">>>>onMessage1: {} | {}",
-                context.getString(TestConstants.CONTEXT_KEY_1),
-                context.getString(TestConstants.CONTEXT_KEY_2)
+            context.getString(TestConstants.CONTEXT_KEY_1),
+            context.getString(TestConstants.CONTEXT_KEY_2)
         );
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_1), TestConstants.CONTEXT_VALUE_1);
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_2), TestConstants.CONTEXT_VALUE_2);
@@ -58,12 +58,12 @@ public class TestSimpleInterceptor1 implements SimpleServerInterceptor {
 
     @Override
     public <ReqT, RespT> void onHalfClose(
-            ServerCall<ReqT, RespT> call,
-            Metadata headers,
-            GrpcContext context) {
+        ServerCall<ReqT, RespT> call,
+        Metadata headers,
+        GrpcContext context) {
         logger.info(">>>>onHalfClose1: {} | {}",
-                context.getString(TestConstants.CONTEXT_KEY_1),
-                context.getString(TestConstants.CONTEXT_KEY_2)
+            context.getString(TestConstants.CONTEXT_KEY_1),
+            context.getString(TestConstants.CONTEXT_KEY_2)
         );
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_1), TestConstants.CONTEXT_VALUE_1);
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_2), TestConstants.CONTEXT_VALUE_2);
@@ -71,14 +71,14 @@ public class TestSimpleInterceptor1 implements SimpleServerInterceptor {
 
     @Override
     public <ReqT, RespT> void sendHeaders(
-            Metadata sentHeaders,
-            ServerCall<ReqT, RespT> call,
-            Metadata headers,
-            GrpcContext context) {
+        Metadata sentHeaders,
+        ServerCall<ReqT, RespT> call,
+        Metadata headers,
+        GrpcContext context) {
         logger.info("sendHeaders1: {}", sentHeaders);
         logger.info(">>>>sendHeaders1: {} | {}",
-                context.getString(TestConstants.CONTEXT_KEY_1),
-                context.getString(TestConstants.CONTEXT_KEY_2)
+            context.getString(TestConstants.CONTEXT_KEY_1),
+            context.getString(TestConstants.CONTEXT_KEY_2)
         );
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_1), TestConstants.CONTEXT_VALUE_1);
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_2), TestConstants.CONTEXT_VALUE_2);
@@ -86,13 +86,13 @@ public class TestSimpleInterceptor1 implements SimpleServerInterceptor {
 
     @Override
     public <ReqT, RespT> void sendMessage(
-            RespT sentMessage,
-            ServerCall<ReqT, RespT> call,
-            Metadata headers,
-            GrpcContext context) {
+        RespT sentMessage,
+        ServerCall<ReqT, RespT> call,
+        Metadata headers,
+        GrpcContext context) {
         logger.info(">>>>sendMessage1: {} | {}",
-                context.getString(TestConstants.CONTEXT_KEY_1),
-                context.getString(TestConstants.CONTEXT_KEY_2)
+            context.getString(TestConstants.CONTEXT_KEY_1),
+            context.getString(TestConstants.CONTEXT_KEY_2)
         );
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_1), TestConstants.CONTEXT_VALUE_1);
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_2), TestConstants.CONTEXT_VALUE_2);
@@ -100,14 +100,14 @@ public class TestSimpleInterceptor1 implements SimpleServerInterceptor {
 
     @Override
     public <ReqT, RespT> void close(
-            Status status,
-            Metadata trailers,
-            ServerCall<ReqT, RespT> call,
-            Metadata headers,
-            GrpcContext context) {
+        Status status,
+        Metadata trailers,
+        ServerCall<ReqT, RespT> call,
+        Metadata headers,
+        GrpcContext context) {
         logger.info(">>>>close1: {} | {}",
-                context.getString(TestConstants.CONTEXT_KEY_1),
-                context.getString(TestConstants.CONTEXT_KEY_2)
+            context.getString(TestConstants.CONTEXT_KEY_1),
+            context.getString(TestConstants.CONTEXT_KEY_2)
         );
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_1), TestConstants.CONTEXT_VALUE_1);
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_2), TestConstants.CONTEXT_VALUE_2);
@@ -115,12 +115,12 @@ public class TestSimpleInterceptor1 implements SimpleServerInterceptor {
 
     @Override
     public <ReqT, RespT> void onCancel(
-            ServerCall<ReqT, RespT> call,
-            Metadata headers,
-            GrpcContext context) {
+        ServerCall<ReqT, RespT> call,
+        Metadata headers,
+        GrpcContext context) {
         logger.info(">>>>onCancel1: {} | {}",
-                context.getString(TestConstants.CONTEXT_KEY_1),
-                context.getString(TestConstants.CONTEXT_KEY_2)
+            context.getString(TestConstants.CONTEXT_KEY_1),
+            context.getString(TestConstants.CONTEXT_KEY_2)
         );
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_1), TestConstants.CONTEXT_VALUE_1);
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_2), TestConstants.CONTEXT_VALUE_2);
@@ -128,12 +128,12 @@ public class TestSimpleInterceptor1 implements SimpleServerInterceptor {
 
     @Override
     public <ReqT, RespT> void onComplete(
-            ServerCall<ReqT, RespT> call,
-            Metadata headers,
-            GrpcContext context) {
+        ServerCall<ReqT, RespT> call,
+        Metadata headers,
+        GrpcContext context) {
         logger.info(">>>>onComplete1: {} | {}",
-                context.getString(TestConstants.CONTEXT_KEY_1),
-                context.getString(TestConstants.CONTEXT_KEY_2)
+            context.getString(TestConstants.CONTEXT_KEY_1),
+            context.getString(TestConstants.CONTEXT_KEY_2)
         );
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_1), TestConstants.CONTEXT_VALUE_1);
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_2), TestConstants.CONTEXT_VALUE_2);
