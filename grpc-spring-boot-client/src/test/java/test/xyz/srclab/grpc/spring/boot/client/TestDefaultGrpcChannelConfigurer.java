@@ -1,38 +1,38 @@
-package test.xyz.srclab.grpc.spring.boot.server;
+package test.xyz.srclab.grpc.spring.boot.client;
 
-import io.grpc.netty.NettyServerBuilder;
+import io.grpc.netty.NettyChannelBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import xyz.srclab.annotations.Nullable;
 import xyz.srclab.common.test.TestMarker;
-import xyz.srclab.grpc.spring.boot.server.DefaultGrpcServerConfigurer;
-import xyz.srclab.grpc.spring.boot.server.GrpcServerConfig;
-import xyz.srclab.grpc.spring.boot.server.GrpcServersConfig;
+import xyz.srclab.grpc.spring.boot.client.DefaultGrpcChannelConfigurer;
+import xyz.srclab.grpc.spring.boot.client.GrpcClientConfig;
+import xyz.srclab.grpc.spring.boot.client.GrpcClientsConfig;
 
 import java.util.LinkedList;
 import java.util.List;
 
 @Component
-public class TestDefaultGrpcServerConfigurer implements DefaultGrpcServerConfigurer {
+public class TestDefaultGrpcChannelConfigurer implements DefaultGrpcChannelConfigurer {
 
     private final TestMarker testMarker = TestMarker.newTestMarker();
 
     @Override
     public void configureNettyBuilder(
-        @NotNull NettyServerBuilder builder,
-        @NotNull GrpcServersConfig serversConfig,
-        @NotNull GrpcServerConfig serverConfig
+        @NotNull NettyChannelBuilder builder,
+        @NotNull GrpcClientsConfig clientsConfig,
+        @NotNull GrpcClientConfig clientConfig
     ) {
-        addCreateTrace(serverConfig.getName());
+        addCreateTrace(clientConfig.getName());
     }
 
     @Override
     public void configureShadedNettyBuilder(
-        @NotNull io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder builder,
-        @NotNull GrpcServersConfig serversConfig,
-        @NotNull GrpcServerConfig serverConfig
+        @NotNull io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder builder,
+        @NotNull GrpcClientsConfig clientsConfig,
+        @NotNull GrpcClientConfig clientConfig
     ) {
-        addCreateTrace(serverConfig.getName());
+        addCreateTrace(clientConfig.getName());
     }
 
     private void addCreateTrace(String serverName) {

@@ -12,7 +12,7 @@ public class HelloServerInterceptor2 extends BaseServerInterceptor {
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
-            ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+        ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
         if (Objects.equals(call.getMethodDescriptor().getServiceName(), "HelloService2")) {
             helloService2.addInterceptorTrace("HelloServerInterceptor2");
         }

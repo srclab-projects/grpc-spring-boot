@@ -22,9 +22,9 @@ public class TestGrpcServerFactory extends DefaultGrpcServerFactory {
     @NotNull
     @Override
     public Server create(
-            @NotNull GrpcServersConfig serversConfig,
-            @NotNull GrpcServerConfig serverDefinition,
-            @NotNull Set<? extends GrpcServiceBuilder> serviceBuilders
+        @NotNull GrpcServersConfig serversConfig,
+        @NotNull GrpcServerConfig serverDefinition,
+        @NotNull Set<? extends GrpcServiceBuilder> serviceBuilders
     ) {
         addCreateTrace(serverDefinition.getName());
         return super.create(serversConfig, serverDefinition, serviceBuilders);

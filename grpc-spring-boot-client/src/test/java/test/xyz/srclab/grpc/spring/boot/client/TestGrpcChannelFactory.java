@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import xyz.srclab.annotations.Nullable;
 import xyz.srclab.common.test.TestMarker;
 import xyz.srclab.grpc.spring.boot.client.DefaultGrpcChannelFactory;
-import xyz.srclab.grpc.spring.boot.client.GrpcClientDefinition;
+import xyz.srclab.grpc.spring.boot.client.GrpcClientConfig;
+import xyz.srclab.grpc.spring.boot.client.GrpcClientsConfig;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,11 +21,12 @@ public class TestGrpcChannelFactory extends DefaultGrpcChannelFactory {
     @NotNull
     @Override
     public Channel create(
-            @NotNull GrpcClientDefinition grpcClientDefinition,
-            @NotNull List<? extends ClientInterceptor> interceptors
+        @NotNull GrpcClientsConfig grpcClientsConfig,
+        @NotNull GrpcClientConfig grpcClientConfig,
+        @NotNull List<? extends ClientInterceptor> interceptors
     ) {
-        addCreateTrace(grpcClientDefinition.getName());
-        return super.create(grpcClientDefinition, interceptors);
+        addCreateTrace(grpcClientConfig.getName());
+        return super.create(grpcClientsConfig, grpcClientConfig, interceptors);
     }
 
     private void addCreateTrace(String serverName) {

@@ -20,8 +20,8 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 
 @SpringBootTest(
-        classes = Starter.class
-        //webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    classes = Starter.class
+    //webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 public class GrpcClientTest extends AbstractTestNGSpringContextTests {
 
@@ -67,7 +67,7 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
     private TestGrpcChannelFactory testGrpcClientFactory;
 
     @Resource
-    private TestGrpcShadedNettyChannelConfigurer testGrpcShadedNettyClientConfigurer;
+    private TestDefaultGrpcChannelConfigurer testGrpcShadedNettyClientConfigurer;
 
     @Resource
     private TraceService traceService;
@@ -75,18 +75,18 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
     @PostConstruct
     private void init() throws Exception {
         Server serverDefault = NettyServerBuilder
-                .forPort(6565)
-                .addService(new DefaultHelloService())
-                .sslContext(
-                        GrpcSslContexts.forServer(
-                                Loaders.loadResource("myServer.crt").openStream(),
-                                Loaders.loadResource("myServer.key.pkcs8").openStream()
-                        )
-                                .trustManager(Loaders.loadResource("myClient.crt").openStream())
-                                .clientAuth(ClientAuth.REQUIRE)
-                                .build()
+            .forPort(6565)
+            .addService(new DefaultHelloService())
+            .sslContext(
+                GrpcSslContexts.forServer(
+                    Loaders.loadResource("myServer.crt").openStream(),
+                    Loaders.loadResource("myServer.key.pkcs8").openStream()
                 )
-                .build();
+                    .trustManager(Loaders.loadResource("myClient.crt").openStream())
+                    .clientAuth(ClientAuth.REQUIRE)
+                    .build()
+            )
+            .build();
         Server server1 = NettyServerBuilder.forPort(6566).addService(new HelloServiceX()).build();
         Server server2 = NettyServerBuilder.forPort(6567).addService(new HelloService2()).build();
         Server server3 = NettyServerBuilder.forPort(6568).addService(new HelloService3()).build();
@@ -108,104 +108,104 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
          */
 
         Assert.assertEquals(
-                DefaultHelloServiceGrpc.newBlockingStub(defaultChannel).hello(helloRequest).getMessage(),
-                "DefaultHelloService"
+            DefaultHelloServiceGrpc.newBlockingStub(defaultChannel).hello(helloRequest).getMessage(),
+            "DefaultHelloService"
         );
         Assert.assertEquals(
-                defaultStub.hello(helloRequest).getMessage(),
-                "DefaultHelloService"
-        );
-
-        Assert.assertEquals(
-                HelloServiceXGrpc.newBlockingStub(client1Channel).hello(helloRequest).getMessage(),
-                "HelloServiceX"
-        );
-        Assert.assertEquals(
-                client1Stub.hello(helloRequest).getMessage(),
-                "HelloServiceX"
+            defaultStub.hello(helloRequest).getMessage(),
+            "DefaultHelloService"
         );
 
         Assert.assertEquals(
-                HelloService2Grpc.newBlockingStub(client2Channel).hello(helloRequest).getMessage(),
-                "HelloService2"
+            HelloServiceXGrpc.newBlockingStub(client1Channel).hello(helloRequest).getMessage(),
+            "HelloServiceX"
         );
         Assert.assertEquals(
-                client2Stub.hello(helloRequest).getMessage(),
-                "HelloService2"
+            client1Stub.hello(helloRequest).getMessage(),
+            "HelloServiceX"
         );
 
         Assert.assertEquals(
-                HelloService3Grpc.newBlockingStub(client3Channel).hello(helloRequest).getMessage(),
+            HelloService2Grpc.newBlockingStub(client2Channel).hello(helloRequest).getMessage(),
+            "HelloService2"
+        );
+        Assert.assertEquals(
+            client2Stub.hello(helloRequest).getMessage(),
+            "HelloService2"
+        );
+
+        Assert.assertEquals(
+            HelloService3Grpc.newBlockingStub(client3Channel).hello(helloRequest).getMessage(),
+            "HelloService3"
+        );
+        Assert.assertEquals(
+            client3Stub.hello(helloRequest).getMessage(),
+            "HelloService3"
+        );
+
+        Assert.assertEquals(
+            defaultClientInterceptor.getServiceTraces(),
+            Arrays.asList(
+                "DefaultHelloService",
+                "DefaultHelloService",
+                "HelloServiceX",
+                "HelloServiceX",
+                "HelloService2",
+                "HelloService2",
+                "HelloService3",
                 "HelloService3"
+            )
         );
         Assert.assertEquals(
-                client3Stub.hello(helloRequest).getMessage(),
+            helloClientInterceptorX.getServiceTraces(),
+            Arrays.asList(
+                //"DefaultHelloService",
+                //"DefaultHelloService",
+                "HelloServiceX",
+                "HelloServiceX",
+                "HelloService2",
+                "HelloService2",
+                "HelloService3",
                 "HelloService3"
+            )
+        );
+        Assert.assertEquals(
+            helloClientInterceptor2.getServiceTraces(),
+            Arrays.asList(
+                //"DefaultHelloService",
+                //"DefaultHelloService",
+                //"HelloServiceX",
+                //"HelloServiceX",
+                "HelloService2",
+                "HelloService2"
+                //"HelloService3",
+                //"HelloService3"
+            )
+        );
+        Assert.assertEquals(
+            helloClientInterceptor3.getServiceTraces(),
+            Arrays.asList(
+                //"DefaultHelloService",
+                //"DefaultHelloService",
+                //"HelloServiceX",
+                //"HelloServiceX",
+                //"HelloService2",
+                //"HelloService2",
+                "HelloService3",
+                "HelloService3"
+            )
         );
 
         Assert.assertEquals(
-                defaultClientInterceptor.getServiceTraces(),
-                Arrays.asList(
-                        "DefaultHelloService",
-                        "DefaultHelloService",
-                        "HelloServiceX",
-                        "HelloServiceX",
-                        "HelloService2",
-                        "HelloService2",
-                        "HelloService3",
-                        "HelloService3"
-                )
-        );
-        Assert.assertEquals(
-                helloClientInterceptorX.getServiceTraces(),
-                Arrays.asList(
-                        //"DefaultHelloService",
-                        //"DefaultHelloService",
-                        "HelloServiceX",
-                        "HelloServiceX",
-                        "HelloService2",
-                        "HelloService2",
-                        "HelloService3",
-                        "HelloService3"
-                )
-        );
-        Assert.assertEquals(
-                helloClientInterceptor2.getServiceTraces(),
-                Arrays.asList(
-                        //"DefaultHelloService",
-                        //"DefaultHelloService",
-                        //"HelloServiceX",
-                        //"HelloServiceX",
-                        "HelloService2",
-                        "HelloService2"
-                        //"HelloService3",
-                        //"HelloService3"
-                )
-        );
-        Assert.assertEquals(
-                helloClientInterceptor3.getServiceTraces(),
-                Arrays.asList(
-                        //"DefaultHelloService",
-                        //"DefaultHelloService",
-                        //"HelloServiceX",
-                        //"HelloServiceX",
-                        //"HelloService2",
-                        //"HelloService2",
-                        "HelloService3",
-                        "HelloService3"
-                )
-        );
-
-        Assert.assertEquals(
-                traceService.getInterceptorTraces(),
-                Arrays.asList(
-                        "HelloClientInterceptor2",
-                        "HelloClientInterceptorX",
-                        "DefaultClientInterceptor",
-                        "HelloClientInterceptor2",
-                        "HelloClientInterceptorX",
-                        "DefaultClientInterceptor"
-                )
+            traceService.getInterceptorTraces(),
+            Arrays.asList(
+                "HelloClientInterceptor2",
+                "HelloClientInterceptorX",
+                "DefaultClientInterceptor",
+                "HelloClientInterceptor2",
+                "HelloClientInterceptorX",
+                "DefaultClientInterceptor"
+            )
         );
 
         //Assert.assertEquals(
@@ -223,23 +223,23 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
         //);
 
         Assert.assertEquals(
-                testGrpcClientFactory.getCreateTraces(),
-                Arrays.asList(
-                        "default",
-                        "client1",
-                        "client2",
-                        "client3"
-                )
+            testGrpcClientFactory.getCreateTraces(),
+            Arrays.asList(
+                "default",
+                "client1",
+                "client2",
+                "client3"
+            )
         );
 
         Assert.assertEquals(
-                testGrpcShadedNettyClientConfigurer.getCreateTraces(),
-                Arrays.asList(
-                        "default",
-                        "client1",
-                        "client2",
-                        "client3"
-                )
+            testGrpcShadedNettyClientConfigurer.getCreateTraces(),
+            Arrays.asList(
+                "default",
+                "client1",
+                "client2",
+                "client3"
+            )
         );
     }
 }

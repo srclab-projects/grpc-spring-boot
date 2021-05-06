@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.context.ApplicationContext
 import org.springframework.util.AntPathMatcher
+import xyz.srclab.common.collect.filter
 import xyz.srclab.common.collect.sorted
 import xyz.srclab.common.reflect.searchFields
 import xyz.srclab.common.reflect.setValue
@@ -30,14 +31,17 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
     @Resource
     private lateinit var grpcChannelFactory: GrpcChannelFactory
 
-    private lateinit var clientDefinitions: Map<String, GrpcClientDefinition>
+    private lateinit var clientsConfig: GrpcClientsConfig
+    private lateinit var clientConfigs: Map<String, GrpcClientConfig>
     private lateinit var interceptors: List<ClientInterceptorInfo>
+
     private val channels: MutableMap<String, Channel> = HashMap()
     private val antPathMatcher = AntPathMatcher()
 
     @PostConstruct
     private fun init() {
-        clientDefinitions = grpcClientsProperties.toDefinitions()
+        clientsConfig = grpcClientsProperties.toClientsConfig()
+        clientConfigs = grpcClientsProperties.toClientConfigs()
         interceptors = applicationContext.getBeansOfType(ClientInterceptor::class.java)
             .map {
                 ClientInterceptorInfo(
@@ -54,13 +58,22 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
                 //Called order: interceptor3, interceptor2, interceptor1
                 e2.order() - e1.order()
             }
+            .let {
+                if (clientsConfig.needGrpcAnnotation) {
+                    it.filter { e ->
+                        e.annotation !== null
+                    }
+                } else {
+                    it
+                }
+            }
     }
 
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
 
         fun newOrExistedChannel(clientName: String): Channel? {
-            val clientDefinition = clientDefinitions[clientName]
-            if (clientDefinition === null) {
+            val clientConfig = clientConfigs[clientName]
+            if (clientConfig === null) {
                 return null
             }
             val existedChannel = channels[clientName]
@@ -81,7 +94,7 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
                     }
                 }
             }
-            return grpcChannelFactory.create(clientDefinition, matchedInterceptors)
+            return grpcChannelFactory.create(clientsConfig, clientConfig, matchedInterceptors)
         }
 
         fun <S : AbstractStub<S>> Field.generateStub(channel: Channel): S? {
@@ -101,7 +114,7 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
             if (grpcClient === null) {
                 continue
             }
-            val clientName = grpcClient.clientNameOrDefaultName(clientDefinitions)
+            val clientName = grpcClient.clientNameOrDefaultName(clientConfigs)
             val channel = newOrExistedChannel(clientName)
             if (channel === null) {
                 throw IllegalArgumentException(

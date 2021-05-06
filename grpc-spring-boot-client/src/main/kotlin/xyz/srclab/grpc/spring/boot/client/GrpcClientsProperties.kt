@@ -5,12 +5,19 @@ import xyz.srclab.common.collect.map
 open class GrpcClientsProperties {
     var defaults: GrpcClientProperties? = null
     var clients: Map<String, GrpcClientProperties> = emptyMap()
+
+    /**
+     * Whether gRPC bean should be annotated by gRPC annotation ([GrpcClientInterceptor]).
+     *
+     * Default is false.
+     */
+    var needGrpcAnnotation: Boolean? = false
 }
 
 open class GrpcClientProperties {
     var inProcess: Boolean? = null
+    var useShaded: Boolean? = null
     var targets: String? = null
-    var groupPatterns: List<String>? = null
     var threadPoolBeanName: String? = null
 
     var initialFlowControlWindow: Int? = null
@@ -38,11 +45,23 @@ open class GrpcClientProperties {
     var sslClientAuth: String? = null
 }
 
-open class GrpcClientDefinition(
+open class GrpcClientsConfig(
+    _needGrpcAnnotation: Boolean?,
+) {
+
+    /**
+     * Whether gRPC bean should be annotated by gRPC annotation ([GrpcClientInterceptor]).
+     *
+     * Default is false.
+     */
+    val needGrpcAnnotation: Boolean = _needGrpcAnnotation ?: false
+}
+
+open class GrpcClientConfig(
     val name: String,
     _inProcess: Boolean?,
+    _useShaded: Boolean?,
     _target: String?,
-    _groupPatterns: List<String>?,
     _threadPoolBeanName: String?,
 
     _initialFlowControlWindow: Int?,
@@ -66,8 +85,8 @@ open class GrpcClientDefinition(
     _sslClientAuth: String?,
 ) {
     val inProcess: Boolean = _inProcess ?: false
+    val useShaded: Boolean = _useShaded ?: false
     val target: String = _target ?: "127.0.0.1"
-    val groupPatterns: List<String> = _groupPatterns ?: emptyList()
     val threadPoolBeanName: String? = _threadPoolBeanName
 
     val initialFlowControlWindow: Int? = _initialFlowControlWindow
@@ -95,21 +114,25 @@ open class GrpcClientDefinition(
     val sslClientAuth: String? = _sslClientAuth
 }
 
-fun GrpcClientsProperties.toDefinitions(): Map<String, GrpcClientDefinition> {
+internal fun GrpcClientsProperties.toClientsConfig(): GrpcClientsConfig {
+    return GrpcClientsConfig(this.needGrpcAnnotation)
+}
+
+internal fun GrpcClientsProperties.toClientConfigs(): Map<String, GrpcClientConfig> {
     return this.clients.map { name, _ ->
-        name to getClientDefinition(name)
+        name to toClientConfig(name)
     }
 }
 
-private fun GrpcClientsProperties.getClientDefinition(name: String): GrpcClientDefinition {
+private fun GrpcClientsProperties.toClientConfig(name: String): GrpcClientConfig {
     val defaults = this.defaults
     val properties = this.clients[name] ?: throw IllegalArgumentException("Server properties $name not found")
     if (defaults === null) {
-        return GrpcClientDefinition(
+        return GrpcClientConfig(
             name,
             properties.inProcess,
+            properties.useShaded,
             properties.targets,
-            properties.groupPatterns,
             properties.threadPoolBeanName,
             properties.initialFlowControlWindow,
             properties.flowControlWindow,
@@ -130,11 +153,11 @@ private fun GrpcClientsProperties.getClientDefinition(name: String): GrpcClientD
             properties.sslClientAuth,
         )
     } else {
-        return GrpcClientDefinition(
+        return GrpcClientConfig(
             name,
             properties.inProcess ?: defaults.inProcess,
+            properties.useShaded ?: defaults.useShaded,
             properties.targets ?: defaults.targets,
-            properties.groupPatterns ?: defaults.groupPatterns,
             properties.threadPoolBeanName ?: defaults.threadPoolBeanName,
             properties.initialFlowControlWindow ?: defaults.initialFlowControlWindow,
             properties.flowControlWindow ?: defaults.flowControlWindow,

@@ -60,10 +60,6 @@ open class GrpcServersConfig(
     val needGrpcAnnotation: Boolean = _needGrpcAnnotation ?: false
 }
 
-fun GrpcServersProperties.toServersConfig(): GrpcServersConfig {
-    return GrpcServersConfig(this.needGrpcAnnotation)
-}
-
 open class GrpcServerConfig(
     val name: String,
     _inProcess: Boolean?,
@@ -127,11 +123,15 @@ open class GrpcServerConfig(
     val sslClientAuth: String? = _sslClientAuth
 }
 
-fun GrpcServersProperties.toServerConfigs(): Set<GrpcServerConfig> {
-    return this.servers.entries.map { getServerDefinition(it.key) }.toImmutableSet()
+internal fun GrpcServersProperties.toServersConfig(): GrpcServersConfig {
+    return GrpcServersConfig(this.needGrpcAnnotation)
 }
 
-private fun GrpcServersProperties.getServerDefinition(name: String): GrpcServerConfig {
+internal fun GrpcServersProperties.toServerConfigs(): Set<GrpcServerConfig> {
+    return this.servers.entries.map { toServerConfigs(it.key) }.toImmutableSet()
+}
+
+private fun GrpcServersProperties.toServerConfigs(name: String): GrpcServerConfig {
     val defaults = this.defaults
     val properties = this.servers[name] ?: throw IllegalArgumentException("Server properties $name not found")
     if (defaults === null) {

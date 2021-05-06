@@ -13,7 +13,7 @@ public class DefaultClientInterceptor extends BaseClientInterceptor {
 
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
-            MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
+        MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
         if (Objects.equals(method.getServiceName(), "HelloService2")) {
             traceService.addInterceptorTrace("DefaultClientInterceptor");
         }

@@ -8,5 +8,9 @@ import io.grpc.ClientInterceptor
  */
 interface GrpcChannelFactory {
 
-    fun create(clientDefinition: GrpcClientDefinition, interceptors: List<ClientInterceptor>): Channel
+    fun create(
+        clientsConfig: GrpcClientsConfig,
+        clientConfig: GrpcClientConfig,
+        interceptors: List<ClientInterceptor>
+    ): Channel
 }

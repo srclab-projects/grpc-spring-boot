@@ -8,15 +8,15 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import xyz.srclab.spring.boot.grpc.protobuf.ProtobufJsons;
+import xyz.srclab.common.protobuf.ProtobufJsons;
 import xyz.srclab.spring.boot.proto.MessageData;
 import xyz.srclab.spring.boot.proto.ResponseMessage;
 
 import javax.annotation.Resource;
 
 @SpringBootTest(
-        classes = Starter.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    classes = Starter.class,
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 public class MessageConverterTest extends AbstractTestNGSpringContextTests {
 
@@ -31,19 +31,19 @@ public class MessageConverterTest extends AbstractTestNGSpringContextTests {
     @Test
     public void testMessageConverter() throws Exception {
         String result = restTemplate.getForObject(
-                "http://localhost:" + port + "/test/testProtobuf?code=123&state=456&message=666",
-                String.class
+            "http://localhost:" + port + "/test/testProtobuf?code=123&state=456&message=666",
+            String.class
         );
         logger.info("/test/testProtobuf?code=123&state=456&message=666: " + result);
         Assert.assertEquals(
-                result,
-                ProtobufJsons.PROTOBUF_JSON_SERIALIZER.toJsonString(
-                        ResponseMessage.newBuilder()
-                                .setCode("123")
-                                .setState("456")
-                                .setData(MessageData.newBuilder().setMessage("666").build())
-                                .build()
-                )
+            result,
+            ProtobufJsons.PROTOBUF_JSON_SERIALIZER.toJsonString(
+                ResponseMessage.newBuilder()
+                    .setCode("123")
+                    .setState("456")
+                    .setData(MessageData.newBuilder().setMessage("666").build())
+                    .build()
+            )
         );
     }
 }
