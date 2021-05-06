@@ -29,10 +29,10 @@ interface GrpcContext {
     companion object {
 
         private val ARGS_KEY: Context.Key<MutableMap<Any, Any?>> =
-                Context.key("MAP_KEY")
+            Context.key("MAP_KEY")
 
         private val CONTEXT_KEY: Context.Key<GrpcContext> =
-                Context.key("CONTEXT_KEY")
+            Context.key("CONTEXT_KEY")
 
         @JvmStatic
         fun current(): GrpcContext {
@@ -53,7 +53,7 @@ interface GrpcContext {
         }
 
         private class GrpcContextImpl(
-                override var rawContext: Context
+            override var rawContext: Context
         ) : GrpcContext {
 
             override fun <V> get(key: Any): V {
