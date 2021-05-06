@@ -14,6 +14,18 @@ open class GrpcServersProperties {
     var needGrpcAnnotation: Boolean? = false
 }
 
+open class GrpcServersConfig(
+    _needGrpcAnnotation: Boolean?,
+) {
+
+    /**
+     * Whether gRPC bean should be annotated by gRPC annotation ([GrpcService] and [GrpcServerInterceptor]).
+     *
+     * Default is false.
+     */
+    val needGrpcAnnotation: Boolean = _needGrpcAnnotation ?: false
+}
+
 open class GrpcServerProperties {
     var inProcess: Boolean? = null
     var useShaded: Boolean? = null
@@ -46,18 +58,6 @@ open class GrpcServerProperties {
      * Enum with case-ignore: none, optional, require.
      */
     var sslClientAuth: String? = null
-}
-
-open class GrpcServersConfig(
-    _needGrpcAnnotation: Boolean?,
-) {
-
-    /**
-     * Whether gRPC bean should be annotated by gRPC annotation ([GrpcClient] and [GrpcServerInterceptor]).
-     *
-     * Default is false.
-     */
-    val needGrpcAnnotation: Boolean = _needGrpcAnnotation ?: false
 }
 
 open class GrpcServerConfig(
