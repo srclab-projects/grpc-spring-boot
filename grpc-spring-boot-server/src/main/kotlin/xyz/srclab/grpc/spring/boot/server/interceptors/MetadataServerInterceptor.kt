@@ -13,7 +13,7 @@ abstract class MetadataServerInterceptor : ServerInterceptor {
     /**
      * Do with metadata (headers).
      */
-    abstract fun <ReqT : Any, RespT : Any> doMetadata(
+    protected abstract fun <ReqT : Any, RespT : Any> doMetadata(
         call: ServerCall<ReqT, RespT>,
         headers: Metadata,
     )
