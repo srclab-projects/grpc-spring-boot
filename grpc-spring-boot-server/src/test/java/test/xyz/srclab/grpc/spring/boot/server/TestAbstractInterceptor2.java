@@ -8,15 +8,15 @@ import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import xyz.srclab.grpc.spring.boot.context.GrpcContext;
 import xyz.srclab.grpc.spring.boot.server.GrpcServerInterceptor;
-import xyz.srclab.grpc.spring.boot.server.interceptors.SimpleServerInterceptor;
+import xyz.srclab.grpc.spring.boot.server.interceptors.AbstractServerInterceptor;
 
 @GrpcServerInterceptor(servicePatterns = "*3", order = 2)
-public class TestSimpleInterceptor2 implements SimpleServerInterceptor {
+public class TestAbstractInterceptor2 extends AbstractServerInterceptor {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestSimpleInterceptor2.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestAbstractInterceptor2.class);
 
     @Override
-    public <ReqT, RespT> void intercept(
+    protected <ReqT, RespT> void intercept(
         ServerCall<ReqT, RespT> call,
         Metadata headers,
         GrpcContext context) {
@@ -30,7 +30,7 @@ public class TestSimpleInterceptor2 implements SimpleServerInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void onReady(
+    protected <ReqT, RespT> void onReady(
         ServerCall<ReqT, RespT> call,
         Metadata headers,
         GrpcContext context) {
@@ -43,7 +43,7 @@ public class TestSimpleInterceptor2 implements SimpleServerInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void onMessage(
+    protected <ReqT, RespT> void onMessage(
         ReqT message,
         ServerCall<ReqT, RespT> call,
         Metadata headers,
@@ -57,7 +57,7 @@ public class TestSimpleInterceptor2 implements SimpleServerInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void onHalfClose(
+    protected <ReqT, RespT> void onHalfClose(
         ServerCall<ReqT, RespT> call,
         Metadata headers,
         GrpcContext context) {
@@ -70,7 +70,7 @@ public class TestSimpleInterceptor2 implements SimpleServerInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void sendHeaders(
+    protected <ReqT, RespT> void sendHeaders(
         Metadata sentHeaders,
         ServerCall<ReqT, RespT> call,
         Metadata headers,
@@ -85,7 +85,7 @@ public class TestSimpleInterceptor2 implements SimpleServerInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void sendMessage(
+    protected <ReqT, RespT> void sendMessage(
         RespT sentMessage,
         ServerCall<ReqT, RespT> call,
         Metadata headers,
@@ -99,7 +99,7 @@ public class TestSimpleInterceptor2 implements SimpleServerInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void close(
+    protected <ReqT, RespT> void close(
         Status status,
         Metadata trailers,
         ServerCall<ReqT, RespT> call,
@@ -114,7 +114,7 @@ public class TestSimpleInterceptor2 implements SimpleServerInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void onCancel(
+    protected <ReqT, RespT> void onCancel(
         ServerCall<ReqT, RespT> call,
         Metadata headers,
         GrpcContext context) {
@@ -127,7 +127,7 @@ public class TestSimpleInterceptor2 implements SimpleServerInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void onComplete(
+    protected <ReqT, RespT> void onComplete(
         ServerCall<ReqT, RespT> call,
         Metadata headers,
         GrpcContext context) {

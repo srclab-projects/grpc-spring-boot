@@ -1,0 +1,60 @@
+= image:../logo.svg[Boat Spring Boot] Boat Spring Boot: SrcLab核心基础Spring Boot库
+:toc:
+:toclevels: 3
+:toc-title: 目录
+:last-update-label!:
+Sun Qian <fredsuvn@163.com>
+:encoding: UTF-8
+:emaill: fredsuvn@163.com
+:url: https://github.com/srclab-projects/grpc-spring-boot
+:license: https://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license]
+
+:qq-group: QQ group: 1037555759
+:grpc-spring-boot-version: 0.0.0
+
+== 简介
+
+== 获取
+
+.Gradle
+[source,groovy,subs="attributes+"]
+----
+implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-server:{grpc-spring-boot-version}")
+implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-client:{grpc-spring-boot-version}")
+implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-web:{grpc-spring-boot-version}")
+----
+
+.Maven
+[source,xml,subs="attributes+"]
+----
+<dependency>
+    <groupId>xyz.srclab.spring.boot.grpc</groupId>
+    <artifactId>grpc-spring-boot-starter-server</artifactId>
+    <version>{grpc-spring-boot-version}</version>
+</dependency>
+<dependency>
+    <groupId>xyz.srclab.spring.boot.grpc</groupId>
+    <artifactId>grpc-spring-boot-starter-client</artifactId>
+    <version>{grpc-spring-boot-version}</version>
+</dependency>
+<dependency>
+    <groupId>xyz.srclab.spring.boot.grpc</groupId>
+    <artifactId>grpc-spring-boot-starter-web</artifactId>
+    <version>{grpc-spring-boot-version}</version>
+</dependency>
+----
+
+.Source Code
+{url}
+
+== 使用
+
+== 共享和联系方式
+
+* {emaill}
+* {url}
+* {qq-group}
+
+== License
+
+{license}
