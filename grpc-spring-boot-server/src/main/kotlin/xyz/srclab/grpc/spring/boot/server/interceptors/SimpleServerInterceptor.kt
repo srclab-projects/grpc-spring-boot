@@ -81,7 +81,8 @@ interface SimpleServerInterceptor : ServerInterceptor {
 
     @JvmDefault
     fun <ReqT : Any, RespT : Any> close(
-        status: Status, trailers: Metadata,
+        status: Status,
+        trailers: Metadata,
         call: ServerCall<ReqT, RespT>,
         headers: Metadata,
         context: GrpcContext,
