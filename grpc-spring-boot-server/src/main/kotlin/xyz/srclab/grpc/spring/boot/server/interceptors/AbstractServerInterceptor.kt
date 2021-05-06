@@ -9,18 +9,18 @@ import xyz.srclab.grpc.spring.boot.context.GrpcContext
  * Provides a skeletal implementation of [ServerInterceptor]. Execute order (assume there are twe interceptors):
  *
  * * intercept1 -> intercept2 ->
- * * onReady1 -> onReady2 ->
- * * onMessage1 -> onMessage2 ->
- * * onHalfClose1 -> onHalfClose2 ->
+ * * onReady2 -> onReady1 ->
+ * * onMessage2 -> onMessage1 ->
  * * service executing ->
  * * responseObserver.onNext ->
- * * sendHeaders2 -> sendHeaders1 ->
- * * sendMessage2 -> sendMessage1 ->
+ * * sendHeaders1 -> sendHeaders2 ->
+ * * sendMessage1 -> sendMessage2 ->
  * * responseObserver.afterOnNext ->
  * * responseObserver.onCompleted ->
- * * close2 -> close1 ->
+ * * close1 -> close2 ->
  * * responseObserver.afterOnCompleted ->
- * * onComplete1 -> onComplete2
+ * * onHalfClose2 -> onHalfClose1 ->
+ * * onComplete2 -> onComplete1
  *
  * It is recommended that using [GrpcContext] instead of using [Context] directly.
  *
@@ -96,6 +96,14 @@ abstract class AbstractServerInterceptor : ServerInterceptor {
     ) {
     }
 
+    protected open fun <ReqT : Any, RespT : Any> onException(
+        cause: Throwable,
+        call: ServerCall<ReqT, RespT>,
+        headers: Metadata,
+        context: GrpcContext,
+    ) {
+    }
+
     override fun <ReqT : Any, RespT : Any> interceptCall(
         call: ServerCall<ReqT, RespT>,
         headers: Metadata,
@@ -108,18 +116,30 @@ abstract class AbstractServerInterceptor : ServerInterceptor {
         val delegateCall = object : SimpleForwardingServerCall<ReqT, RespT>(call) {
 
             override fun sendMessage(message: RespT) {
-                super.sendMessage(message)
-                this@AbstractServerInterceptor.sendMessage(message, call, headers, grpcContext)
+                try {
+                    super.sendMessage(message)
+                    sendMessage(message, call, headers, grpcContext)
+                } catch (e: Throwable) {
+                    onException(e, call, headers, grpcContext)
+                }
             }
 
             override fun sendHeaders(sentHeaders: Metadata) {
-                super.sendHeaders(headers)
-                this@AbstractServerInterceptor.sendHeaders(sentHeaders, call, headers, grpcContext)
+                try {
+                    super.sendHeaders(headers)
+                    sendHeaders(sentHeaders, call, headers, grpcContext)
+                } catch (e: Throwable) {
+                    onException(e, call, headers, grpcContext)
+                }
             }
 
             override fun close(status: Status, trailers: Metadata) {
-                super.close(status, trailers)
-                this@AbstractServerInterceptor.close(status, trailers, call, headers, grpcContext)
+                try {
+                    super.close(status, trailers)
+                    close(status, trailers, call, headers, grpcContext)
+                } catch (e: Throwable) {
+                    onException(e, call, headers, grpcContext)
+                }
             }
         }
 
@@ -131,7 +151,9 @@ abstract class AbstractServerInterceptor : ServerInterceptor {
                 val previous = rawContext.attach()
                 try {
                     super.onReady()
-                    this@AbstractServerInterceptor.onReady(call, headers, grpcContext)
+                    onReady(call, headers, grpcContext)
+                } catch (e: Throwable) {
+                    onException(e, call, headers, grpcContext)
                 } finally {
                     rawContext.detach(previous)
                 }
@@ -141,7 +163,9 @@ abstract class AbstractServerInterceptor : ServerInterceptor {
                 val previous = rawContext.attach()
                 try {
                     super.onMessage(message)
-                    this@AbstractServerInterceptor.onMessage(message, call, headers, grpcContext)
+                    onMessage(message, call, headers, grpcContext)
+                } catch (e: Throwable) {
+                    onException(e, call, headers, grpcContext)
                 } finally {
                     rawContext.detach(previous)
                 }
@@ -151,7 +175,9 @@ abstract class AbstractServerInterceptor : ServerInterceptor {
                 val previous = rawContext.attach()
                 try {
                     super.onHalfClose()
-                    this@AbstractServerInterceptor.onHalfClose(call, headers, grpcContext)
+                    onHalfClose(call, headers, grpcContext)
+                } catch (e: Throwable) {
+                    onException(e, call, headers, grpcContext)
                 } finally {
                     rawContext.detach(previous)
                 }
@@ -161,7 +187,9 @@ abstract class AbstractServerInterceptor : ServerInterceptor {
                 val previous = rawContext.attach()
                 try {
                     super.onCancel()
-                    this@AbstractServerInterceptor.onCancel(call, headers, grpcContext)
+                    onCancel(call, headers, grpcContext)
+                } catch (e: Throwable) {
+                    onException(e, call, headers, grpcContext)
                 } finally {
                     rawContext.detach(previous)
                 }
@@ -171,7 +199,9 @@ abstract class AbstractServerInterceptor : ServerInterceptor {
                 val previous = rawContext.attach()
                 try {
                     super.onComplete()
-                    this@AbstractServerInterceptor.onComplete(call, headers, grpcContext)
+                    onComplete(call, headers, grpcContext)
+                } catch (e: Throwable) {
+                    onException(e, call, headers, grpcContext)
                 } finally {
                     rawContext.detach(previous)
                 }
@@ -180,8 +210,9 @@ abstract class AbstractServerInterceptor : ServerInterceptor {
 
         val rawContext = grpcContext.rawContext
         val previous = rawContext.attach()
+        val delegateListener = next.startCall(delegateCall, headers)
         return try {
-            ContextualizedServerCallListener(next.startCall(delegateCall, headers), rawContext)
+            ContextualizedServerCallListener(delegateListener, rawContext)
         } finally {
             rawContext.detach(previous)
         }
