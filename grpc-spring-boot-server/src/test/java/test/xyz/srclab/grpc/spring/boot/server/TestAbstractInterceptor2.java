@@ -138,4 +138,20 @@ public class TestAbstractInterceptor2 extends AbstractServerInterceptor {
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_1), TestConstants.CONTEXT_VALUE_1);
         Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_2), TestConstants.CONTEXT_VALUE_2);
     }
+
+    @Override
+    protected <ReqT, RespT> void onException(
+        Throwable cause,
+        ServerCall<ReqT, RespT> call,
+        Metadata headers,
+        GrpcContext context) {
+        logger.info(">>>>onException2: {} | {}",
+            context.getString(TestConstants.CONTEXT_KEY_1),
+            context.getString(TestConstants.CONTEXT_KEY_2),
+            cause
+        );
+        Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_1), TestConstants.CONTEXT_VALUE_1);
+        Assert.assertEquals(context.getString(TestConstants.CONTEXT_KEY_2), TestConstants.CONTEXT_VALUE_2);
+        call.close(Status.INTERNAL, headers);
+    }
 }

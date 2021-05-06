@@ -21,6 +21,9 @@ public class HelloService3 extends HelloService3Grpc.HelloService3ImplBase {
             context.getString(TestConstants.CONTEXT_KEY_1),
             context.getString(TestConstants.CONTEXT_KEY_2)
         );
+        //if (1 != 2) {
+        //    throw new RuntimeException("ssss");
+        //}
         responseObserver.onNext(HelloResponse.newBuilder()
             .setMessage("HelloService3")
             .setThreadName(Thread.currentThread().getName())
@@ -35,5 +38,6 @@ public class HelloService3 extends HelloService3Grpc.HelloService3ImplBase {
             context.getString(TestConstants.CONTEXT_KEY_1),
             context.getString(TestConstants.CONTEXT_KEY_2)
         );
+        //throw new RuntimeException("ssss");
     }
 }
