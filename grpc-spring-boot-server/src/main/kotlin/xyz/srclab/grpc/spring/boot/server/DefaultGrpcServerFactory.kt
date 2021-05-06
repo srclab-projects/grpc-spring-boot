@@ -35,11 +35,10 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
         serverConfig: GrpcServerConfig,
         serviceBuilders: Set<GrpcServiceBuilder>
     ): Server {
-        return if (serverConfig.inProcess) createInProcessServer(
-            serversConfig,
-            serverConfig,
-            serviceBuilders
-        ) else createNettyServer(serversConfig, serverConfig, serviceBuilders)
+        return if (serverConfig.inProcess)
+            createInProcessServer(serversConfig, serverConfig, serviceBuilders)
+        else
+            createNettyServer(serversConfig, serverConfig, serviceBuilders)
     }
 
     private fun createInProcessServer(
@@ -63,11 +62,10 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
         serverConfig: GrpcServerConfig,
         serviceGroupBuilders: Set<GrpcServiceBuilder>
     ): Server {
-        return if (serverConfig.useShaded) useShadedNettyServerBuilder(
-            serversConfig,
-            serverConfig,
-            serviceGroupBuilders
-        ) else useNettyServerBuilder(serversConfig, serverConfig, serviceGroupBuilders)
+        return if (serverConfig.useShaded)
+            useShadedNettyServerBuilder(serversConfig, serverConfig, serviceGroupBuilders)
+        else
+            useNettyServerBuilder(serversConfig, serverConfig, serviceGroupBuilders)
     }
 
     private fun useNettyServerBuilder(
