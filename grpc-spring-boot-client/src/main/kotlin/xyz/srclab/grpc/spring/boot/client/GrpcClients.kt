@@ -22,21 +22,21 @@ val GrpcClientInterceptor.valueOrClientPatterns: List<String>
         else -> emptyList()
     }
 
-fun GrpcClient.clientNameOrDefaultName(clientDefinitions: Map<String, GrpcClientDefinition>): String {
+fun GrpcClient.clientNameOrDefaultName(clientConfigs: Map<String, GrpcClientConfig>): String {
     val valueOrClientName = this.valueOrClientName
     if (valueOrClientName.isNotEmpty()) {
         return valueOrClientName
     }
-    return clientDefinitions.keys.firstOrNull()
+    return clientConfigs.keys.firstOrNull()
         ?: throw IllegalArgumentException("No gRPC client properties found.")
 }
 
 fun <S : AbstractStub<S>> Class<*>.newStub(
-    channel: Channel, clientDefinition: GrpcClientDefinition? = null
+    channel: Channel, clientConfig: GrpcClientConfig? = null
 ): S {
     val stub: S = this.method("newStub", Channel::class.java).invoke(null, channel).asAny()
-    return if (clientDefinition !== null && clientDefinition.deadlineAfterInNanos !== null) {
-        stub.withDeadlineAfter(clientDefinition.deadlineAfterInNanos, TimeUnit.NANOSECONDS)
+    return if (clientConfig !== null && clientConfig.deadlineAfterInNanos !== null) {
+        stub.withDeadlineAfter(clientConfig.deadlineAfterInNanos, TimeUnit.NANOSECONDS)
     } else {
         stub
     }
@@ -44,22 +44,22 @@ fun <S : AbstractStub<S>> Class<*>.newStub(
 
 fun <S : AbstractStub<S>> Class<*>.newBlockingStub(
     channel: Channel,
-    clientDefinition: GrpcClientDefinition? = null
+    clientConfig: GrpcClientConfig? = null
 ): S {
     val stub: S = this.method("newBlockingStub", Channel::class.java).invoke(null, channel).asAny()
-    return if (clientDefinition !== null && clientDefinition.deadlineAfterInNanos !== null) {
-        stub.withDeadlineAfter(clientDefinition.deadlineAfterInNanos, TimeUnit.NANOSECONDS)
+    return if (clientConfig !== null && clientConfig.deadlineAfterInNanos !== null) {
+        stub.withDeadlineAfter(clientConfig.deadlineAfterInNanos, TimeUnit.NANOSECONDS)
     } else {
         stub
     }
 }
 
 fun <S : AbstractStub<S>> Class<*>.newFutureStub(
-    channel: Channel, clientDefinition: GrpcClientDefinition? = null
+    channel: Channel, clientConfig: GrpcClientConfig? = null
 ): S {
     val stub: S = this.method("newFutureStub", Channel::class.java).invoke(null, channel).asAny()
-    return if (clientDefinition !== null && clientDefinition.deadlineAfterInNanos !== null) {
-        stub.withDeadlineAfter(clientDefinition.deadlineAfterInNanos, TimeUnit.NANOSECONDS)
+    return if (clientConfig !== null && clientConfig.deadlineAfterInNanos !== null) {
+        stub.withDeadlineAfter(clientConfig.deadlineAfterInNanos, TimeUnit.NANOSECONDS)
     } else {
         stub
     }

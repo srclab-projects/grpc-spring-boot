@@ -16,20 +16,20 @@ open class GrpcClientAutoConfiguration {
     }
 
     @ConditionalOnMissingBean
-    @Bean("xyz.srclab.spring.boot.grpc.client.GrpcClientBeanPostProcessor")
-    open fun grpcClientBeanPostProcessor(): GrpcClientBeanPostProcessor {
-        return GrpcClientBeanPostProcessor()
-    }
-
-    @ConditionalOnMissingBean
     @Bean("xyz.srclab.spring.boot.grpc.client.GrpcChannelFactory")
     open fun grpcChannelFactory(): GrpcChannelFactory {
         return DefaultGrpcChannelFactory()
     }
 
     @ConditionalOnMissingBean
-    @Bean("xyz.srclab.spring.boot.grpc.client.GrpcChannelBuilderConfigureHelper")
-    open fun grpcChannelBuilderConfigureHelper(): GrpcChannelBuilderConfigureHelper {
-        return GrpcChannelBuilderConfigureHelper()
+    @Bean("xyz.srclab.spring.boot.grpc.client.GrpcClientBeanPostProcessor")
+    open fun grpcClientBeanPostProcessor(): GrpcClientBeanPostProcessor {
+        return GrpcClientBeanPostProcessor()
+    }
+
+    @ConditionalOnMissingBean
+    @Bean("xyz.srclab.spring.boot.grpc.client.DefaultGrpcChannelConfigureHelper")
+    open fun defaultGrpcChannelConfigureHelper(): DefaultGrpcChannelConfigureHelper {
+        return DefaultGrpcChannelConfigureHelper()
     }
 }

@@ -3,12 +3,13 @@ package xyz.srclab.grpc.spring.boot.client
 import io.grpc.Channel
 import io.grpc.ClientInterceptor
 import io.grpc.inprocess.InProcessChannelBuilder
-import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder
+import io.grpc.netty.NettyChannelBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext
 import javax.annotation.PostConstruct
 import javax.annotation.Resource
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder as ShadedNettyChannelBuilder
 
 open class DefaultGrpcChannelFactory : GrpcChannelFactory {
 
@@ -16,57 +17,89 @@ open class DefaultGrpcChannelFactory : GrpcChannelFactory {
     private lateinit var applicationContext: ApplicationContext
 
     @Resource
-    private lateinit var grpcChannelBuilderConfigureHelper: GrpcChannelBuilderConfigureHelper
+    private lateinit var defaultGrpcChannelConfigureHelper: DefaultGrpcChannelConfigureHelper
 
-    private lateinit var grpcShadedNettyChannelConfigurers: List<GrpcShadedNettyChannelConfigurer>
+    private lateinit var defaultGrpcChannelConfigurers: List<DefaultGrpcChannelConfigurer>
 
     @PostConstruct
     private fun init() {
-        val shadedConfigurer = try {
-            applicationContext.getBeansOfType(GrpcShadedNettyChannelConfigurer::class.java)
+        defaultGrpcChannelConfigurers = try {
+            applicationContext.getBeansOfType(DefaultGrpcChannelConfigurer::class.java).values.toList()
         } catch (e: Exception) {
-            null
-        }
-        grpcShadedNettyChannelConfigurers = if (shadedConfigurer !== null) {
-            shadedConfigurer.values.toList()
-        } else {
             emptyList()
         }
     }
 
-    override fun create(clientDefinition: GrpcClientDefinition, interceptors: List<ClientInterceptor>): Channel {
-        return if (clientDefinition.inProcess) createInProcessChannel(
-            clientDefinition,
-            interceptors
-        ) else createNettyChannel(clientDefinition, interceptors)
+    override fun create(
+        clientsConfig: GrpcClientsConfig,
+        clientConfig: GrpcClientConfig,
+        interceptors: List<ClientInterceptor>
+    ): Channel {
+        return if (clientConfig.inProcess)
+            createInProcessChannel(clientsConfig, clientConfig, interceptors)
+        else
+            createNettyChannel(clientsConfig, clientConfig, interceptors)
     }
 
     private fun createInProcessChannel(
-        clientDefinition: GrpcClientDefinition,
+        clientsConfig: GrpcClientsConfig,
+        clientConfig: GrpcClientConfig,
         interceptors: List<ClientInterceptor>
     ): Channel {
-        val builder = InProcessChannelBuilder.forName(clientDefinition.name)
-        grpcChannelBuilderConfigureHelper.configureInterceptors(builder, interceptors)
-        logger.info("gRPC in-process-channel created: ${clientDefinition.name}")
+        val builder = InProcessChannelBuilder.forName(clientConfig.name)
+        defaultGrpcChannelConfigureHelper.configureInterceptors(builder, interceptors)
+        logger.info("gRPC in-process-channel created: ${clientConfig.name}")
         return builder.build()
     }
 
     private fun createNettyChannel(
-        clientDefinition: GrpcClientDefinition,
+        clientsConfig: GrpcClientsConfig,
+        clientConfig: GrpcClientConfig,
         interceptors: List<ClientInterceptor>
     ): Channel {
-        val builder = NettyChannelBuilder.forTarget(clientDefinition.target)
-        grpcChannelBuilderConfigureHelper.configureInterceptors(builder, interceptors)
-        grpcChannelBuilderConfigureHelper.configureExecutor(builder, clientDefinition)
-        grpcChannelBuilderConfigureHelper.configureSsl(builder, clientDefinition)
-        grpcChannelBuilderConfigureHelper.configureShadedNettyChannelMisc(builder, clientDefinition)
+        return if (clientConfig.useShaded)
+            useShadedNettyChannelBuilder(clientsConfig, clientConfig, interceptors)
+        else
+            useNettyChannelBuilder(clientsConfig, clientConfig, interceptors)
+    }
+
+    private fun useNettyChannelBuilder(
+        clientsConfig: GrpcClientsConfig,
+        clientConfig: GrpcClientConfig,
+        interceptors: List<ClientInterceptor>
+    ): Channel {
+        val builder = NettyChannelBuilder.forTarget(clientConfig.target)
+        defaultGrpcChannelConfigureHelper.configureInterceptors(builder, interceptors)
+        defaultGrpcChannelConfigureHelper.configureExecutor(builder, clientConfig)
+        defaultGrpcChannelConfigureHelper.configureSsl(builder, clientConfig)
+        defaultGrpcChannelConfigureHelper.configureConnection(builder, clientConfig)
 
         //custom configure
-        for (grpcShadedNettyChannelConfigurer in grpcShadedNettyChannelConfigurers) {
-            grpcShadedNettyChannelConfigurer.configureChannelBuilder(builder, clientDefinition)
+        for (grpcShadedNettyChannelConfigurer in defaultGrpcChannelConfigurers) {
+            grpcShadedNettyChannelConfigurer.configureNettyBuilder(builder, clientsConfig, clientConfig)
         }
 
-        logger.info("gRPC shaded-netty-channel created: ${clientDefinition.name}")
+        logger.info("gRPC netty-channel created: ${clientConfig.name}")
+        return builder.build()
+    }
+
+    private fun useShadedNettyChannelBuilder(
+        clientsConfig: GrpcClientsConfig,
+        clientConfig: GrpcClientConfig,
+        interceptors: List<ClientInterceptor>
+    ): Channel {
+        val builder = ShadedNettyChannelBuilder.forTarget(clientConfig.target)
+        defaultGrpcChannelConfigureHelper.configureInterceptors(builder, interceptors)
+        defaultGrpcChannelConfigureHelper.configureExecutor(builder, clientConfig)
+        defaultGrpcChannelConfigureHelper.configureSsl(builder, clientConfig)
+        defaultGrpcChannelConfigureHelper.configureConnection(builder, clientConfig)
+
+        //custom configure
+        for (grpcShadedNettyChannelConfigurer in defaultGrpcChannelConfigurers) {
+            grpcShadedNettyChannelConfigurer.configureShadedNettyBuilder(builder, clientsConfig, clientConfig)
+        }
+
+        logger.info("gRPC shaded-netty-channel created: ${clientConfig.name}")
         return builder.build()
     }
 
