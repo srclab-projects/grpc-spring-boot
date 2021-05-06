@@ -8,16 +8,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import xyz.srclab.grpc.spring.boot.client.GrpcClientInterceptor;
-import xyz.srclab.grpc.spring.boot.client.interceptors.SimpleClientInterceptor;
+import xyz.srclab.grpc.spring.boot.client.interceptors.AbstractClientInterceptor;
 import xyz.srclab.grpc.spring.boot.context.GrpcContext;
 
 @GrpcClientInterceptor(clientPatterns = "*3", order = 1)
-public class TestSimpleInterceptor1 implements SimpleClientInterceptor {
+public class TestAbstractInterceptor1 extends AbstractClientInterceptor {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestSimpleInterceptor1.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestAbstractInterceptor1.class);
 
     @Override
-    public <ReqT, RespT> void intercept(
+    protected <ReqT, RespT> void intercept(
         MethodDescriptor<ReqT, RespT> method,
         CallOptions callOptions,
         GrpcContext context
@@ -32,7 +32,7 @@ public class TestSimpleInterceptor1 implements SimpleClientInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void sendHeaders(
+    protected <ReqT, RespT> void sendHeaders(
         Metadata sentHeader,
         MethodDescriptor<ReqT, RespT> method,
         CallOptions callOptions,
@@ -47,7 +47,7 @@ public class TestSimpleInterceptor1 implements SimpleClientInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void sendMessage(
+    protected <ReqT, RespT> void sendMessage(
         ReqT sentMessage,
         MethodDescriptor<ReqT, RespT> method,
         CallOptions callOptions,
@@ -62,7 +62,7 @@ public class TestSimpleInterceptor1 implements SimpleClientInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void onReady(
+    protected <ReqT, RespT> void onReady(
         MethodDescriptor<ReqT, RespT> method,
         CallOptions callOptions,
         GrpcContext context
@@ -76,7 +76,7 @@ public class TestSimpleInterceptor1 implements SimpleClientInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void onHeaders(
+    protected <ReqT, RespT> void onHeaders(
         Metadata headers,
         MethodDescriptor<ReqT, RespT> method,
         CallOptions callOptions,
@@ -91,7 +91,7 @@ public class TestSimpleInterceptor1 implements SimpleClientInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void onMessage(
+    protected <ReqT, RespT> void onMessage(
         RespT message,
         MethodDescriptor<ReqT, RespT> method,
         CallOptions callOptions,
@@ -106,7 +106,7 @@ public class TestSimpleInterceptor1 implements SimpleClientInterceptor {
     }
 
     @Override
-    public <ReqT, RespT> void onClose(
+    protected <ReqT, RespT> void onClose(
         Status status,
         Metadata trailers,
         MethodDescriptor<ReqT, RespT> method,
