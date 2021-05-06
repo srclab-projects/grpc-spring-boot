@@ -26,26 +26,23 @@ import xyz.srclab.grpc.spring.boot.context.GrpcContext
  *
  * @see GrpcContext
  */
-interface SimpleServerInterceptor : ServerInterceptor {
+abstract class AbstractServerInterceptor : ServerInterceptor {
 
-    @JvmDefault
-    fun <ReqT : Any, RespT : Any> intercept(
+    protected open fun <ReqT : Any, RespT : Any> intercept(
         call: ServerCall<ReqT, RespT>,
         headers: Metadata,
         context: GrpcContext,
     ) {
     }
 
-    @JvmDefault
-    fun <ReqT : Any, RespT : Any> onReady(
+    protected open fun <ReqT : Any, RespT : Any> onReady(
         call: ServerCall<ReqT, RespT>,
         headers: Metadata,
         context: GrpcContext,
     ) {
     }
 
-    @JvmDefault
-    fun <ReqT : Any, RespT : Any> onMessage(
+    protected open fun <ReqT : Any, RespT : Any> onMessage(
         message: ReqT,
         call: ServerCall<ReqT, RespT>,
         headers: Metadata,
@@ -53,16 +50,14 @@ interface SimpleServerInterceptor : ServerInterceptor {
     ) {
     }
 
-    @JvmDefault
-    fun <ReqT : Any, RespT : Any> onHalfClose(
+    protected open fun <ReqT : Any, RespT : Any> onHalfClose(
         call: ServerCall<ReqT, RespT>,
         headers: Metadata,
         context: GrpcContext,
     ) {
     }
 
-    @JvmDefault
-    fun <ReqT : Any, RespT : Any> sendHeaders(
+    protected open fun <ReqT : Any, RespT : Any> sendHeaders(
         sentHeader: Metadata,
         call: ServerCall<ReqT, RespT>,
         headers: Metadata,
@@ -70,8 +65,7 @@ interface SimpleServerInterceptor : ServerInterceptor {
     ) {
     }
 
-    @JvmDefault
-    fun <ReqT : Any, RespT : Any> sendMessage(
+    protected open fun <ReqT : Any, RespT : Any> sendMessage(
         sentMessage: RespT,
         call: ServerCall<ReqT, RespT>,
         headers: Metadata,
@@ -79,8 +73,7 @@ interface SimpleServerInterceptor : ServerInterceptor {
     ) {
     }
 
-    @JvmDefault
-    fun <ReqT : Any, RespT : Any> close(
+    protected open fun <ReqT : Any, RespT : Any> close(
         status: Status,
         trailers: Metadata,
         call: ServerCall<ReqT, RespT>,
@@ -89,23 +82,20 @@ interface SimpleServerInterceptor : ServerInterceptor {
     ) {
     }
 
-    @JvmDefault
-    fun <ReqT : Any, RespT : Any> onCancel(
+    protected open fun <ReqT : Any, RespT : Any> onCancel(
         call: ServerCall<ReqT, RespT>,
         headers: Metadata,
         context: GrpcContext,
     ) {
     }
 
-    @JvmDefault
-    fun <ReqT : Any, RespT : Any> onComplete(
+    protected open fun <ReqT : Any, RespT : Any> onComplete(
         call: ServerCall<ReqT, RespT>,
         headers: Metadata,
         context: GrpcContext,
     ) {
     }
 
-    @JvmDefault
     override fun <ReqT : Any, RespT : Any> interceptCall(
         call: ServerCall<ReqT, RespT>,
         headers: Metadata,
@@ -119,17 +109,17 @@ interface SimpleServerInterceptor : ServerInterceptor {
 
             override fun sendMessage(message: RespT) {
                 super.sendMessage(message)
-                this@SimpleServerInterceptor.sendMessage(message, call, headers, grpcContext)
+                this@AbstractServerInterceptor.sendMessage(message, call, headers, grpcContext)
             }
 
             override fun sendHeaders(sentHeaders: Metadata) {
                 super.sendHeaders(headers)
-                this@SimpleServerInterceptor.sendHeaders(sentHeaders, call, headers, grpcContext)
+                this@AbstractServerInterceptor.sendHeaders(sentHeaders, call, headers, grpcContext)
             }
 
             override fun close(status: Status, trailers: Metadata) {
                 super.close(status, trailers)
-                this@SimpleServerInterceptor.close(status, trailers, call, headers, grpcContext)
+                this@AbstractServerInterceptor.close(status, trailers, call, headers, grpcContext)
             }
         }
 
@@ -141,7 +131,7 @@ interface SimpleServerInterceptor : ServerInterceptor {
                 val previous = rawContext.attach()
                 try {
                     super.onReady()
-                    this@SimpleServerInterceptor.onReady(call, headers, grpcContext)
+                    this@AbstractServerInterceptor.onReady(call, headers, grpcContext)
                 } finally {
                     rawContext.detach(previous)
                 }
@@ -151,7 +141,7 @@ interface SimpleServerInterceptor : ServerInterceptor {
                 val previous = rawContext.attach()
                 try {
                     super.onMessage(message)
-                    this@SimpleServerInterceptor.onMessage(message, call, headers, grpcContext)
+                    this@AbstractServerInterceptor.onMessage(message, call, headers, grpcContext)
                 } finally {
                     rawContext.detach(previous)
                 }
@@ -161,7 +151,7 @@ interface SimpleServerInterceptor : ServerInterceptor {
                 val previous = rawContext.attach()
                 try {
                     super.onHalfClose()
-                    this@SimpleServerInterceptor.onHalfClose(call, headers, grpcContext)
+                    this@AbstractServerInterceptor.onHalfClose(call, headers, grpcContext)
                 } finally {
                     rawContext.detach(previous)
                 }
@@ -171,7 +161,7 @@ interface SimpleServerInterceptor : ServerInterceptor {
                 val previous = rawContext.attach()
                 try {
                     super.onCancel()
-                    this@SimpleServerInterceptor.onCancel(call, headers, grpcContext)
+                    this@AbstractServerInterceptor.onCancel(call, headers, grpcContext)
                 } finally {
                     rawContext.detach(previous)
                 }
@@ -181,7 +171,7 @@ interface SimpleServerInterceptor : ServerInterceptor {
                 val previous = rawContext.attach()
                 try {
                     super.onComplete()
-                    this@SimpleServerInterceptor.onComplete(call, headers, grpcContext)
+                    this@AbstractServerInterceptor.onComplete(call, headers, grpcContext)
                 } finally {
                     rawContext.detach(previous)
                 }
