@@ -88,7 +88,6 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
         //interceptors
         val serverInterceptors = applicationContext.getBeansOfType(ServerInterceptor::class.java)
             .map { key, value ->
-                applicationContext.findAnnotationOnBean(key, GrpcServerInterceptor::class.java)
                 key to GrpcServerInterceptorsBuilder.newInterceptorInfo(
                     value,
                     applicationContext.findAnnotationOnBean(key, GrpcServerInterceptor::class.java)
@@ -107,7 +106,6 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
         //simple interceptors
         val simpleInterceptors = applicationContext.getBeansOfType(SimpleServerInterceptor::class.java)
             .map { key, value ->
-                applicationContext.findAnnotationOnBean(key, GrpcServerInterceptor::class.java)
                 key to GrpcServerInterceptorsBuilder.newInterceptorInfo(
                     value,
                     applicationContext.findAnnotationOnBean(key, GrpcServerInterceptor::class.java)
