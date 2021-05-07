@@ -3,6 +3,9 @@
 package xyz.srclab.grpc.spring.boot.client
 
 import io.grpc.Channel
+import io.grpc.stub.AbstractAsyncStub
+import io.grpc.stub.AbstractBlockingStub
+import io.grpc.stub.AbstractFutureStub
 import io.grpc.stub.AbstractStub
 import xyz.srclab.common.base.asAny
 import xyz.srclab.common.reflect.method
@@ -22,16 +25,19 @@ val GrpcClientInterceptor.valueOrClientPatterns: List<String>
         else -> emptyList()
     }
 
-fun GrpcClient.clientNameOrDefaultName(clientConfigs: Map<String, GrpcClientConfig>): String {
-    val valueOrClientName = this.valueOrClientName
-    if (valueOrClientName.isNotEmpty()) {
-        return valueOrClientName
+@JvmOverloads
+fun <S : AbstractStub<S>> Class<*>.newStub(channel: Channel, clientConfig: GrpcClientConfig? = null): S {
+    val grpcClass = this.declaringClass
+    return when {
+        AbstractAsyncStub::class.java.isAssignableFrom(this) -> grpcClass.newAsyncStub(channel, clientConfig)
+        AbstractBlockingStub::class.java.isAssignableFrom(this) -> grpcClass.newBlockingStub(channel, clientConfig)
+        AbstractFutureStub::class.java.isAssignableFrom(this) -> grpcClass.newFutureStub(channel, clientConfig)
+        else -> throw IllegalStateException("Not stub class: $this")
     }
-    return clientConfigs.keys.firstOrNull()
-        ?: throw IllegalArgumentException("No gRPC client properties found.")
 }
 
-fun <S : AbstractStub<S>> Class<*>.newStub(
+@JvmOverloads
+fun <S : AbstractStub<S>> Class<*>.newAsyncStub(
     channel: Channel, clientConfig: GrpcClientConfig? = null
 ): S {
     val stub: S = this.method("newStub", Channel::class.java).invoke(null, channel).asAny()
@@ -42,6 +48,7 @@ fun <S : AbstractStub<S>> Class<*>.newStub(
     }
 }
 
+@JvmOverloads
 fun <S : AbstractStub<S>> Class<*>.newBlockingStub(
     channel: Channel,
     clientConfig: GrpcClientConfig? = null
@@ -54,6 +61,7 @@ fun <S : AbstractStub<S>> Class<*>.newBlockingStub(
     }
 }
 
+@JvmOverloads
 fun <S : AbstractStub<S>> Class<*>.newFutureStub(
     channel: Channel, clientConfig: GrpcClientConfig? = null
 ): S {
