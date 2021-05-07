@@ -2,7 +2,7 @@ plugins {
   id 'build.protobuf'
 }
 
-description = "Protobuf Sample Objects"
+description = "Test Protobuf Objects"
 
 java {
   registerFeature('optionalSupport') {
