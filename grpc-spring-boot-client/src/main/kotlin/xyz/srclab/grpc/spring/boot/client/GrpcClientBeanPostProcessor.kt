@@ -43,7 +43,6 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
         clientConfigs = grpcClientsProperties.toClientConfigs()
         val interceptorInfos = applicationContext.getBeansOfType(ClientInterceptor::class.java)
             .map { key, value ->
-                applicationContext.findAnnotationOnBean(key, GrpcClientInterceptor::class.java)
                 key to GrpcClientInterceptorsBuilder.newInterceptorInfo(
                     value,
                     applicationContext.findAnnotationOnBean(key, GrpcClientInterceptor::class.java)
@@ -61,7 +60,6 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
             .plus(
                 applicationContext.getBeansOfType(SimpleClientInterceptor::class.java)
                     .map { key, value ->
-                        applicationContext.findAnnotationOnBean(key, GrpcClientInterceptor::class.java)
                         key to GrpcClientInterceptorsBuilder.newInterceptorInfo(
                             value,
                             applicationContext.findAnnotationOnBean(key, GrpcClientInterceptor::class.java)
