@@ -1,5 +1,6 @@
 package xyz.srclab.grpc.spring.boot.client
 
+import io.grpc.ClientInterceptor
 import xyz.srclab.common.collect.map
 
 open class GrpcClientsProperties {
@@ -7,7 +8,7 @@ open class GrpcClientsProperties {
     var clients: Map<String, GrpcClientProperties> = emptyMap()
 
     /**
-     * Whether gRPC bean should be annotated by gRPC annotation ([GrpcClientInterceptor]).
+     * Whether gRPC bean [ClientInterceptor] should be annotated by gRPC annotation ([GrpcClientInterceptor]).
      *
      * Default is false.
      */
@@ -30,8 +31,12 @@ open class GrpcClientProperties {
     val deadlineAfterInNanos: Long? = null
 
     /**
-     * Default: pick_first;
-     * Others: round_robin.
+     * Including:
+     *
+     * * round_robin
+     * * pick_first
+     *
+     * Default is round_robin.
      */
     var loadBalancingPolicy: String? = null
 
@@ -42,6 +47,16 @@ open class GrpcClientProperties {
     var sslPrivateKeyFile: String? = null
     var sslTrustCertCollectionFile: String? = null
     var sslPrivateKeyPassword: String? = null
+
+    /**
+     * Auth enum with case-ignore:
+     *
+     * * none
+     * * optional
+     * * require
+     *
+     * Default is none.
+     */
     var sslClientAuth: String? = null
 }
 
@@ -50,7 +65,7 @@ open class GrpcClientsConfig(
 ) {
 
     /**
-     * Whether gRPC bean should be annotated by gRPC annotation ([GrpcClientInterceptor]).
+     * Whether gRPC bean [ClientInterceptor] should be annotated by gRPC annotation ([GrpcClientInterceptor]).
      *
      * Default is false.
      */
@@ -98,6 +113,14 @@ open class GrpcClientConfig(
     val keepAliveWithoutCalls: Boolean? = _keepAliveWithoutCalls
     val deadlineAfterInNanos: Long? = _deadlineAfterInNanos
 
+    /**
+     * Including:
+     *
+     * * round_robin
+     * * pick_first
+     *
+     * Default is round_robin.
+     */
     val loadBalancingPolicy: String? = _loadBalancingPolicy
 
     val sslCertChainClassPath: String? = _sslCertChainClassPath
@@ -109,7 +132,13 @@ open class GrpcClientConfig(
     val sslPrivateKeyPassword: String? = _sslPrivateKeyPassword
 
     /**
-     * Enum with case-ignore: none, optional, require.
+     * Auth enum with case-ignore:
+     *
+     * * none
+     * * optional
+     * * require
+     *
+     * Default is none.
      */
     val sslClientAuth: String? = _sslClientAuth
 }
