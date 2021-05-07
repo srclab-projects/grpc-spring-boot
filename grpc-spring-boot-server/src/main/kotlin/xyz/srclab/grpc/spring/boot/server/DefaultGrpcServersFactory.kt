@@ -7,8 +7,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.util.AntPathMatcher
-import xyz.srclab.common.collect.*
+import xyz.srclab.common.collect.MutableSetMap
 import xyz.srclab.common.collect.MutableSetMap.Companion.toMutableSetMap
+import xyz.srclab.common.collect.map
+import xyz.srclab.common.collect.toImmutableMap
+import xyz.srclab.grpc.spring.boot.server.interceptors.SimpleServerInterceptor
 import javax.annotation.Resource
 
 open class DefaultGrpcServersFactory : GrpcServersFactory {
@@ -30,7 +33,7 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
                 for (serverDefinition in serverConfigs) {
                     servers.add(
                         serverDefinition.name,
-                        GrpcServiceBuilder.newGrpcServiceDefinitionBuilder(beanName, this, null)
+                        GrpcServiceBuilder.newBuilder(beanName, this)
                     )
                 }
                 return
@@ -40,30 +43,29 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
                     if (antPathMatcher.match(serverPattern, serverDefinition.name)) {
                         servers.add(
                             serverDefinition.name,
-                            GrpcServiceBuilder.newGrpcServiceDefinitionBuilder(beanName, this, null)
+                            GrpcServiceBuilder.newBuilder(beanName, this)
                         )
                     }
                 }
             }
         }
 
-        fun ServerInterceptorInfo.matchServices() {
-            val interceptorAnnotation: GrpcServerInterceptor? = this.annotation
-            if (interceptorAnnotation === null || interceptorAnnotation.valueOrServicePatterns.isEmpty()) {
+        fun GrpcServerInterceptorsBuilder.InterceptorInfo.matchServices() {
+            if (this.servicePatterns.isEmpty()) {
                 for (serverEntry in servers) {
                     val services = serverEntry.value
                     for (service in services) {
-                        service.interceptors.add(this.interceptor)
+                        service.interceptorsBuilder.addInterceptorInfo(this)
                     }
                 }
                 return
             }
-            for (valueOrServicePattern in interceptorAnnotation.valueOrServicePatterns) {
+            for (servicePattern in this.servicePatterns) {
                 for (serverEntry in servers) {
                     val services = serverEntry.value
                     for (service in services) {
-                        if (antPathMatcher.match(valueOrServicePattern, service.beanName)) {
-                            service.interceptors.add(this.interceptor)
+                        if (antPathMatcher.match(servicePattern, service.beanName)) {
+                            service.interceptorsBuilder.addInterceptorInfo(this)
                         }
                     }
                 }
@@ -83,23 +85,16 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
             bean.matchServers(beanName, serviceAnnotation)
         }
 
-        //add interceptors
+        //interceptors
         val serverInterceptors = applicationContext.getBeansOfType(ServerInterceptor::class.java)
             .map { key, value ->
-                key to ServerInterceptorInfo(
+                val annotation = applicationContext.findAnnotationOnBean(key, GrpcServerInterceptor::class.java)
+                key to GrpcServerInterceptorsBuilder.newInterceptorInfo(
                     value,
-                    applicationContext.findAnnotationOnBean(key, GrpcServerInterceptor::class.java)
+                    annotation,
+                    annotation?.valueOrServicePatterns ?: emptyList(),
+                    annotation?.order ?: 0
                 )
-            }
-            .sorted { e1, e2 ->
-                fun Map.Entry<String, ServerInterceptorInfo>.order(): Int {
-                    val info = this.value
-                    return if (info.annotation === null) 0 else info.annotation.order
-                }
-                //Note: gRPC interceptors follow the FILO, means first added interceptor will be called last:
-                //Add order   : interceptor1, interceptor2, interceptor3
-                //Called order: interceptor3, interceptor2, interceptor1
-                e2.order() - e1.order()
             }
             .let {
                 if (serversConfig.needGrpcAnnotation) {
@@ -110,7 +105,20 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
                     it
                 }
             }
-        for (interceptorEntry in serverInterceptors) {
+
+        //simple interceptors
+        val simpleInterceptors = applicationContext.getBeansOfType(SimpleServerInterceptor::class.java)
+            .map { key, value ->
+                val annotation = applicationContext.findAnnotationOnBean(key, GrpcServerInterceptor::class.java)
+                key to GrpcServerInterceptorsBuilder.newInterceptorInfo(
+                    value,
+                    annotation,
+                    annotation?.valueOrServicePatterns ?: emptyList(),
+                    annotation?.order ?: 0
+                )
+            }
+
+        for (interceptorEntry in serverInterceptors.plus(simpleInterceptors)) {
             val beanName = interceptorEntry.key
             val info = interceptorEntry.value
             logger.debug("Load gRPC server interceptor: $beanName (${info.javaClass}).")
@@ -119,20 +127,15 @@ open class DefaultGrpcServersFactory : GrpcServersFactory {
 
         //build gRPC server
         val result: MutableMap<String, Server> = mutableMapOf()
-        for (serverDefinition in serverConfigs) {
-            val serviceBuilders = servers[serverDefinition.name]
+        for (serverConfig in serverConfigs) {
+            val serviceBuilders = servers[serverConfig.name]
             if (serviceBuilders === null) {
                 continue
             }
-            result[serverDefinition.name] = grpcServerFactory.create(serversConfig, serverDefinition, serviceBuilders)
+            result[serverConfig.name] = grpcServerFactory.create(serversConfig, serverConfig, serviceBuilders)
         }
         return result.toImmutableMap()
     }
-
-    private data class ServerInterceptorInfo(
-        val interceptor: ServerInterceptor,
-        val annotation: GrpcServerInterceptor?,
-    )
 
     companion object {
 

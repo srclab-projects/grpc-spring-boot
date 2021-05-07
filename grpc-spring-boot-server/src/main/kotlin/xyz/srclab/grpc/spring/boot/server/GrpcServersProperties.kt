@@ -1,5 +1,7 @@
 package xyz.srclab.grpc.spring.boot.server
 
+import io.grpc.BindableService
+import io.grpc.ServerInterceptor
 import xyz.srclab.common.collect.toImmutableSet
 
 open class GrpcServersProperties {
@@ -7,7 +9,8 @@ open class GrpcServersProperties {
     var servers: Map<String, GrpcServerProperties> = emptyMap()
 
     /**
-     * Whether gRPC bean should be annotated by gRPC annotation ([GrpcService] and [GrpcServerInterceptor]).
+     * Whether gRPC bean ([BindableService] and [ServerInterceptor]) should be annotated by
+     * gRPC annotation ([GrpcService] and [GrpcServerInterceptor]).
      *
      * Default is false.
      */
@@ -43,7 +46,13 @@ open class GrpcServerProperties {
     var sslPrivateKeyPassword: String? = null
 
     /**
-     * Enum with case-ignore: none, optional, require.
+     * Auth enum with case-ignore:
+     *
+     * * none
+     * * optional
+     * * require
+     *
+     * Default is none.
      */
     var sslClientAuth: String? = null
 }
@@ -53,7 +62,8 @@ open class GrpcServersConfig(
 ) {
 
     /**
-     * Whether gRPC bean should be annotated by gRPC annotation ([GrpcService] and [GrpcServerInterceptor]).
+     * Whether gRPC bean ([BindableService] and [ServerInterceptor]) should be annotated by
+     * gRPC annotation ([GrpcService] and [GrpcServerInterceptor]).
      *
      * Default is false.
      */
@@ -118,7 +128,13 @@ open class GrpcServerConfig(
     val sslPrivateKeyPassword: String? = _sslPrivateKeyPassword
 
     /**
-     * Enum with case-ignore: none, optional, require.
+     * Auth enum with case-ignore:
+     *
+     * * none
+     * * optional
+     * * require
+     *
+     * Default is none.
      */
     val sslClientAuth: String? = _sslClientAuth
 }
