@@ -22,9 +22,19 @@ import xyz.srclab.grpc.spring.boot.context.GrpcContext
  * * onHalfClose2 -> onHalfClose1 ->
  * * onComplete2 -> onComplete1
  *
+ * When an exception occurs, order is:
+ *
+ * * onException2 -> onException1 ->
+ * * onComplete2 -> onComplete1
+ *
+ * Because of the confused execution order, [SimpleServerInterceptor] is recommended to used.
+ * All bean of [SimpleServerInterceptor] will be added in one [AbstractServerInterceptor] instance of which order is 0
+ * for target service, and all callbacks in natural order (interceptor1 -> interceptor2).
+ *
  * It is recommended that using [GrpcContext] instead of using [Context] directly.
  *
  * @see GrpcContext
+ * @see SimpleServerInterceptor
  */
 abstract class AbstractServerInterceptor : ServerInterceptor {
 

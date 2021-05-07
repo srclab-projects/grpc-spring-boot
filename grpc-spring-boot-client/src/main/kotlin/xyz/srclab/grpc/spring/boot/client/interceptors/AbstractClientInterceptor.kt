@@ -13,9 +13,14 @@ import xyz.srclab.grpc.spring.boot.context.GrpcContext
  * * onMessage1 -> onMessage2 ->
  * * onClose2 -> onClose1
  *
+ * Because of the confused execution order, [SimpleClientInterceptor] is recommended to used.
+ * All bean of [SimpleClientInterceptor] will be added in one [AbstractClientInterceptor] instance of which order is 0
+ * for target client, and all callbacks in natural order (interceptor1 -> interceptor2).
+ *
  * It is recommended that using [GrpcContext] instead of using [Context] directly.
  *
  * @see GrpcContext
+ * @see SimpleClientInterceptor
  */
 abstract class AbstractClientInterceptor : ClientInterceptor {
 
