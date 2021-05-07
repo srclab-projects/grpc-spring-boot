@@ -10,13 +10,12 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.context.ApplicationContext
-import org.springframework.util.AntPathMatcher
 import xyz.srclab.common.collect.filter
-import xyz.srclab.common.collect.sorted
+import xyz.srclab.common.collect.map
 import xyz.srclab.common.reflect.searchFields
 import xyz.srclab.common.reflect.setValue
+import xyz.srclab.grpc.spring.boot.client.interceptors.SimpleClientInterceptor
 import java.lang.reflect.Field
-import java.util.*
 import javax.annotation.PostConstruct
 import javax.annotation.Resource
 
@@ -33,40 +32,47 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
 
     private lateinit var clientsConfig: GrpcClientsConfig
     private lateinit var clientConfigs: Map<String, GrpcClientConfig>
-    private lateinit var interceptors: List<ClientInterceptorInfo>
 
+    private val interceptorsBuilder: GrpcClientInterceptorsBuilder = GrpcClientInterceptorsBuilder.newBuilder()
     private val channels: MutableMap<String, Channel> = HashMap()
-    private val antPathMatcher = AntPathMatcher()
 
     @PostConstruct
     private fun init() {
         clientsConfig = grpcClientsProperties.toClientsConfig()
         clientConfigs = grpcClientsProperties.toClientConfigs()
-        interceptors = applicationContext.getBeansOfType(ClientInterceptor::class.java)
-            .map {
-                ClientInterceptorInfo(
-                    it.value,
-                    applicationContext.findAnnotationOnBean(it.key, GrpcClientInterceptor::class.java)
+        val interceptorInfos = applicationContext.getBeansOfType(ClientInterceptor::class.java)
+            .map { key, value ->
+                applicationContext.findAnnotationOnBean(key, GrpcClientInterceptor::class.java)
+                key to GrpcClientInterceptorsBuilder.newInterceptorInfo(
+                    value,
+                    applicationContext.findAnnotationOnBean(key, GrpcClientInterceptor::class.java)
                 )
-            }
-            .sorted { e1, e2 ->
-                fun ClientInterceptorInfo.order(): Int {
-                    return if (this.annotation === null) 0 else this.annotation.order
-                }
-                //Note: gRPC interceptors follow the FILO, means first added interceptor will be called last:
-                //Add order   : interceptor1, interceptor2, interceptor3
-                //Called order: interceptor3, interceptor2, interceptor1
-                e2.order() - e1.order()
             }
             .let {
                 if (clientsConfig.needGrpcAnnotation) {
                     it.filter { e ->
-                        e.annotation !== null
+                        e.value.annotation !== null
                     }
                 } else {
                     it
                 }
             }
+            .plus(
+                applicationContext.getBeansOfType(SimpleClientInterceptor::class.java)
+                    .map { key, value ->
+                        applicationContext.findAnnotationOnBean(key, GrpcClientInterceptor::class.java)
+                        key to GrpcClientInterceptorsBuilder.newInterceptorInfo(
+                            value,
+                            applicationContext.findAnnotationOnBean(key, GrpcClientInterceptor::class.java)
+                        )
+                    }
+            )
+        interceptorsBuilder.addInterceptorInfos(interceptorInfos.values)
+        for (interceptorEntry in interceptorInfos) {
+            val beanName = interceptorEntry.key
+            val info = interceptorEntry.value
+            logger.debug("Load gRPC client interceptor: $beanName (${info.javaClass}).")
+        }
     }
 
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
@@ -80,21 +86,7 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
             if (existedChannel !== null) {
                 return existedChannel
             }
-            val matchedInterceptors: MutableList<ClientInterceptor> = LinkedList()
-            for (interceptor in interceptors) {
-                val annotation = interceptor.annotation
-                if (annotation === null || annotation.valueOrClientPatterns.isEmpty()) {
-                    matchedInterceptors.add(interceptor.interceptor)
-                } else {
-                    val clientPatterns = annotation.valueOrClientPatterns
-                    for (clientPattern in clientPatterns) {
-                        if (antPathMatcher.match(clientPattern, clientName)) {
-                            matchedInterceptors.add(interceptor.interceptor)
-                        }
-                    }
-                }
-            }
-            return grpcChannelFactory.create(clientsConfig, clientConfig, matchedInterceptors)
+            return grpcChannelFactory.create(clientsConfig, clientConfig, interceptorsBuilder.buildFor(clientName))
         }
 
         fun <S : AbstractStub<S>> Field.generateStub(channel: Channel): S? {
@@ -140,11 +132,6 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
 
         return bean
     }
-
-    private data class ClientInterceptorInfo(
-        val interceptor: ClientInterceptor,
-        val annotation: GrpcClientInterceptor?,
-    )
 
     companion object {
 

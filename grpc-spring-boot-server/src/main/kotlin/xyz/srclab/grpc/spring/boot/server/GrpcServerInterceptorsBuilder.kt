@@ -41,15 +41,13 @@ interface GrpcServerInterceptorsBuilder {
         @JvmStatic
         fun newInterceptorInfo(
             interceptor: Any,
-            annotation: GrpcServerInterceptor?,
-            servicePatterns: List<String>,
-            order: Int
+            annotation: GrpcServerInterceptor?
         ): InterceptorInfo {
             return object : InterceptorInfo {
                 override val interceptor: Any = interceptor
                 override val annotation: GrpcServerInterceptor? = annotation
-                override val servicePatterns: List<String> = servicePatterns
-                override val order: Int = order
+                override val servicePatterns: List<String> = annotation?.valueOrServicePatterns ?: emptyList()
+                override val order: Int = annotation?.order ?: 0
             }
         }
 
@@ -68,8 +66,10 @@ interface GrpcServerInterceptorsBuilder {
                     val groups = interceptorInfos.groupBy {
                         if (it.interceptor is ServerInterceptor)
                             0
-                        else
+                        else if (it.interceptor is SimpleServerInterceptor)
                             1
+                        else
+                            throw IllegalStateException("Unknown server interceptor: ${it.interceptor}")
                     }
                     val simpleInterceptor = SimpleServerInterceptorImpl(
                         (groups[1] ?: emptyList())
@@ -81,7 +81,7 @@ interface GrpcServerInterceptorsBuilder {
                             }
                     )
                     return (groups[0] ?: emptyList())
-                        .plus(newInterceptorInfo(simpleInterceptor, null, emptyList(), 0))
+                        .plus(newInterceptorInfo(simpleInterceptor, null))
                         .sorted { e1, e2 ->
                             //Note: gRPC interceptors follow the FILO,
                             //means first added interceptor will be called last:
