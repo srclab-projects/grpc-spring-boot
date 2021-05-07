@@ -5,6 +5,11 @@ import io.grpc.ServerCall
 import io.grpc.Status
 import xyz.srclab.grpc.spring.boot.context.GrpcContext
 
+/**
+ * Simple server interceptor of which all callbacks in natural order (interceptor1 -> interceptor2).
+ *
+ * @see AbstractServerInterceptor
+ */
 interface SimpleServerInterceptor {
 
     @JvmDefault
