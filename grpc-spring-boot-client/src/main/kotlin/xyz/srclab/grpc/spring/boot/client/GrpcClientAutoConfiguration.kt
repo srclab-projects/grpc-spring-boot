@@ -22,6 +22,12 @@ open class GrpcClientAutoConfiguration {
     }
 
     @ConditionalOnMissingBean
+    @Bean("xyz.srclab.spring.boot.grpc.client.GrpcStubFactory")
+    open fun grpcStubFactory(): GrpcStubFactory {
+        return DefaultGrpcStubFactory()
+    }
+
+    @ConditionalOnMissingBean
     @Bean("xyz.srclab.spring.boot.grpc.client.GrpcClientBeanPostProcessor")
     open fun grpcClientBeanPostProcessor(): GrpcClientBeanPostProcessor {
         return GrpcClientBeanPostProcessor()

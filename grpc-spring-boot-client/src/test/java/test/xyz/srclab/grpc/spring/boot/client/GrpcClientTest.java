@@ -13,6 +13,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import xyz.srclab.common.base.Loaders;
 import xyz.srclab.grpc.spring.boot.client.GrpcClient;
+import xyz.srclab.grpc.spring.boot.client.GrpcStub;
 import xyz.srclab.spring.boot.proto.*;
 
 import javax.annotation.PostConstruct;
@@ -46,7 +47,7 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
     private HelloServiceXGrpc.HelloServiceXBlockingStub client1Stub;
 
     @GrpcClient("client2")
-    private HelloService2Grpc.HelloService2BlockingStub client2Stub;
+    private GrpcStub<HelloService2Grpc.HelloService2BlockingStub> client2Stub;
 
     @GrpcClient(clientName = "client3")
     private HelloService3Grpc.HelloService3BlockingStub client3Stub;
@@ -130,7 +131,7 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
             "HelloService2"
         );
         Assert.assertEquals(
-            client2Stub.hello(helloRequest).getMessage(),
+            client2Stub.get().hello(helloRequest).getMessage(),
             "HelloService2"
         );
 

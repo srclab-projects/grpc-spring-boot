@@ -2,9 +2,6 @@ package xyz.srclab.grpc.spring.boot.client
 
 import io.grpc.Channel
 import io.grpc.ClientInterceptor
-import io.grpc.stub.AbstractAsyncStub
-import io.grpc.stub.AbstractBlockingStub
-import io.grpc.stub.AbstractFutureStub
 import io.grpc.stub.AbstractStub
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -12,10 +9,11 @@ import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.context.ApplicationContext
 import xyz.srclab.common.collect.filter
 import xyz.srclab.common.collect.map
+import xyz.srclab.common.reflect.rawClass
 import xyz.srclab.common.reflect.searchFields
 import xyz.srclab.common.reflect.setValue
 import xyz.srclab.grpc.spring.boot.client.interceptors.SimpleClientInterceptor
-import java.lang.reflect.Field
+import java.lang.reflect.ParameterizedType
 import javax.annotation.PostConstruct
 import javax.annotation.Resource
 
@@ -29,6 +27,9 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
 
     @Resource
     private lateinit var grpcChannelFactory: GrpcChannelFactory
+
+    @Resource
+    private lateinit var grpcStubFactory: GrpcStubFactory
 
     private lateinit var clientsConfig: GrpcClientsConfig
     private lateinit var clientConfigs: Map<String, GrpcClientConfig>
@@ -77,27 +78,20 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
 
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
 
-        fun newOrExistedChannel(clientName: String): Channel? {
-            val clientConfig = clientConfigs[clientName]
-            if (clientConfig === null) {
-                return null
+        fun findClientConfig(clientName: String): GrpcClientConfig? {
+            if (clientName.isEmpty() && clientConfigs.isNotEmpty()) {
+                return clientConfigs.values.first()
             }
-            val existedChannel = channels[clientName]
+            return clientConfigs[clientName]
+        }
+
+        fun newOrExistedChannel(clientConfig: GrpcClientConfig): Channel? {
+            val existedChannel = channels[clientConfig.name]
             if (existedChannel !== null) {
                 return existedChannel
             }
-            return grpcChannelFactory.create(clientsConfig, clientConfig, interceptorsBuilder.buildFor(clientName))
-        }
-
-        fun <S : AbstractStub<S>> Field.generateStub(channel: Channel): S? {
-            val stubClass = this.type
-            val grpcClass = stubClass.declaringClass
-            return when {
-                AbstractAsyncStub::class.java.isAssignableFrom(stubClass) -> grpcClass.newStub<S>(channel)
-                AbstractBlockingStub::class.java.isAssignableFrom(stubClass) -> grpcClass.newBlockingStub<S>(channel)
-                AbstractFutureStub::class.java.isAssignableFrom(stubClass) -> grpcClass.newFutureStub<S>(channel)
-                else -> null
-            }
+            return grpcChannelFactory.create(
+                clientsConfig, clientConfig, interceptorsBuilder.buildFor(clientConfig.name))
         }
 
         val fields = bean.javaClass.searchFields(true) { true }
@@ -106,28 +100,43 @@ open class GrpcClientBeanPostProcessor : BeanPostProcessor {
             if (grpcClient === null) {
                 continue
             }
-            val clientName = grpcClient.clientNameOrDefaultName(clientConfigs)
-            val channel = newOrExistedChannel(clientName)
+            val clientName = grpcClient.valueOrClientName
+            val clientConfig = findClientConfig(clientName)
+            if (clientConfig === null) {
+                throw IllegalArgumentException(
+                    "gRPC client on ${bean.javaClass.name}.${field.name} not found: $clientName"
+                )
+            }
+            val channel = newOrExistedChannel(clientConfig)
             if (channel === null) {
                 throw IllegalArgumentException(
-                    "gRPC client defined on ${bean.javaClass.name}.${field.name} was not found: $clientName"
+                    "gRPC client on ${bean.javaClass.name}.${field.name} not found: $clientName"
                 )
             }
             channels[clientName] = channel
 
-            if (Channel::class.java.isAssignableFrom(field.type)) {
-                logger.debug("Set gRPC client channel on ${bean.javaClass.name}.${field.name}")
-                field.setValue(bean, channel, true)
-                continue
+            val fieldType = field.genericType
+            when {
+                fieldType is Class<*> && Channel::class.java.isAssignableFrom(fieldType) -> {
+                    logger.debug("Set gRPC client channel on ${bean.javaClass.name}.${field.name}")
+                    field.setValue(bean, channel, true)
+                }
+                fieldType is Class<*> && AbstractStub::class.java.isAssignableFrom(fieldType) -> {
+                    val newStub = fieldType.newStub<AbstractStub<*>>(channel)
+                    logger.debug("Set gRPC client stub on ${this.javaClass.name}.${field.name}")
+                    field.setValue(bean, newStub, true)
+                }
+                fieldType is ParameterizedType && GrpcStub::class.java.isAssignableFrom(fieldType.rawClass) -> {
+                    val actualArgs = fieldType.actualTypeArguments
+                    if (actualArgs.isNullOrEmpty() || actualArgs.size != 1) {
+                        throw IllegalStateException("Not a valid GrpcStub type: $fieldType")
+                    }
+                    val grpcStub = GrpcStubHelper(
+                        grpcStubFactory, clientsConfig, clientConfig, actualArgs[0].rawClass, channel)
+                    logger.debug("Set gRPC client GrpcStub on ${this.javaClass.name}.${field.name}")
+                    field.setValue(bean, grpcStub, true)
+                }
             }
-            val newStub = field.generateStub<AbstractStub<*>>(channel)
-            if (newStub === null) {
-                throw IllegalArgumentException(
-                    "GrpcClient annotation should be on the Channel or Stub type: ${this.javaClass.name}.${field.name}"
-                )
-            }
-            logger.debug("Set gRPC client stub on ${this.javaClass.name}.${field.name}")
-            field.setValue(bean, newStub, true)
         }
 
         return bean
