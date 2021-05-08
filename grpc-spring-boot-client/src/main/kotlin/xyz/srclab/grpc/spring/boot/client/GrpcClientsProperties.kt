@@ -121,7 +121,7 @@ open class GrpcClientConfig(
      *
      * Default is round_robin.
      */
-    val loadBalancingPolicy: String? = _loadBalancingPolicy
+    val loadBalancingPolicy: String = _loadBalancingPolicy ?: ROUND_ROBIN_POLICY
 
     val sslCertChainClassPath: String? = _sslCertChainClassPath
     val sslPrivateKeyClassPath: String? = _sslPrivateKeyClassPath
