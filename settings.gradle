@@ -19,6 +19,12 @@ file("${rootDir}/").eachDir { dir ->
     }
     return
   }
+  if (dir.name == "grpc-spring-boot-samples") {
+    dir.eachDir { subDir ->
+      include ":${dir.name}:${subDir.name}"
+    }
+    return
+  }
   if (dir.name.startsWith("grpc-spring-boot-")) {
     include ":${dir.name}"
   }

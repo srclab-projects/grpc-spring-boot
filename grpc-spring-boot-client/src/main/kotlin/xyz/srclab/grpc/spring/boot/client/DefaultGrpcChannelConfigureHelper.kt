@@ -200,9 +200,6 @@ open class DefaultGrpcChannelConfigureHelper {
         if (keepAliveWithoutCalls !== null) {
             builder.keepAliveWithoutCalls(keepAliveWithoutCalls)
         }
-        val loadBalancingPolicy = clientConfig.loadBalancingPolicy
-        if (loadBalancingPolicy !== null) {
-            builder.defaultLoadBalancingPolicy(loadBalancingPolicy)
-        }
+        builder.defaultLoadBalancingPolicy(clientConfig.loadBalancingPolicy)
     }
 }

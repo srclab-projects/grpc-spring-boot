@@ -11,7 +11,7 @@ java {
 }
 
 dependencies {
-  implementation project(":grpc-spring-boot-core")
+  api project(":grpc-spring-boot-core")
 
   testCompile project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test")
   testCompile project(":grpc-spring-boot-test-protobuf")
