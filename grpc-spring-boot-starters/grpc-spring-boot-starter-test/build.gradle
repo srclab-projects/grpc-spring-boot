@@ -11,5 +11,5 @@ java {
 }
 
 dependencies {
-  api(project(":grpc-spring-boot-test"))
+  api project(":grpc-spring-boot-test")
 }

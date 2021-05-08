@@ -11,9 +11,6 @@ java {
 }
 
 dependencies {
-  implementation project(":grpc-spring-boot-starters:grpc-spring-boot-starter-client")
-  implementation project(":grpc-spring-boot-starters:grpc-spring-boot-starter-server")
-
   testCompile project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test")
 }
 

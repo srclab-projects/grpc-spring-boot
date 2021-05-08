@@ -23,6 +23,7 @@ public class TestSimpleInterceptor1 implements SimpleServerInterceptor {
             context.getString(TestConstants.CONTEXT_KEY_1),
             context.getString(TestConstants.CONTEXT_KEY_2)
         );
+        logger.info(">>>>headers: {}", headers);
     }
 
     @Override
