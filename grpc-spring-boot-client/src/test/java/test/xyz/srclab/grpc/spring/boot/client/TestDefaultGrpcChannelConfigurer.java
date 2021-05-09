@@ -1,5 +1,6 @@
 package test.xyz.srclab.grpc.spring.boot.client;
 
+import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.netty.NettyChannelBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,15 @@ import java.util.List;
 public class TestDefaultGrpcChannelConfigurer implements DefaultGrpcChannelConfigurer {
 
     private final TestMarker testMarker = TestMarker.newTestMarker();
+
+    @Override
+    public void configureInProcessBuilder(
+        @NotNull InProcessChannelBuilder builder,
+        @NotNull GrpcClientsConfig clientsConfig,
+        @NotNull GrpcClientConfig clientConfig
+    ) {
+        addCreateTrace(clientConfig.getName());
+    }
 
     @Override
     public void configureNettyBuilder(

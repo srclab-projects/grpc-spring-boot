@@ -273,7 +273,8 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
                 "default",
                 "client1",
                 "client2",
-                "client3"
+                "client3",
+                "lb"
             )
         );
 
@@ -283,7 +284,8 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
                 "default",
                 "client1",
                 "client2",
-                "client3"
+                "client3",
+                "lb"
             )
         );
     }

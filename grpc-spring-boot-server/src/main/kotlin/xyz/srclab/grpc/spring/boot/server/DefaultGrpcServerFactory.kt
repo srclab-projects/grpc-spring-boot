@@ -47,12 +47,14 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
         serviceBuilders: Set<GrpcServiceBuilder>
     ): Server {
         val builder = InProcessServerBuilder.forName(serverConfig.name)
-        defaultGrpcServerConfigureHelper.configureServices(
-            builder,
-            serversConfig,
-            serverConfig,
-            serviceBuilders
-        )
+        defaultGrpcServerConfigureHelper.configureServices(builder, serversConfig, serverConfig, serviceBuilders)
+        defaultGrpcServerConfigureHelper.configureExecutor(builder, serversConfig, serverConfig)
+
+        //configurers
+        for (grpcServerConfigurer in grpcServerConfigurers) {
+            grpcServerConfigurer.configureInProcessBuilder(builder, serversConfig, serverConfig)
+        }
+
         logger.info("gRPC in-process-server created: ${serverConfig.name}")
         return builder.build()
     }
@@ -60,21 +62,21 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
     private fun createNettyServer(
         serversConfig: GrpcServersConfig,
         serverConfig: GrpcServerConfig,
-        serviceGroupBuilders: Set<GrpcServiceBuilder>
+        serviceBuilders: Set<GrpcServiceBuilder>
     ): Server {
         return if (serverConfig.useShaded)
-            useShadedNettyServerBuilder(serversConfig, serverConfig, serviceGroupBuilders)
+            useShadedNettyServerBuilder(serversConfig, serverConfig, serviceBuilders)
         else
-            useNettyServerBuilder(serversConfig, serverConfig, serviceGroupBuilders)
+            useNettyServerBuilder(serversConfig, serverConfig, serviceBuilders)
     }
 
     private fun useNettyServerBuilder(
         serversConfig: GrpcServersConfig,
         serverConfig: GrpcServerConfig,
-        serviceGroupBuilders: Set<GrpcServiceBuilder>
+        serviceBuilders: Set<GrpcServiceBuilder>
     ): Server {
         val builder = NettyServerBuilder.forAddress(InetSocketAddress(serverConfig.host, serverConfig.port))
-        defaultGrpcServerConfigureHelper.configureServices(builder, serversConfig, serverConfig, serviceGroupBuilders)
+        defaultGrpcServerConfigureHelper.configureServices(builder, serversConfig, serverConfig, serviceBuilders)
         defaultGrpcServerConfigureHelper.configureExecutor(builder, serversConfig, serverConfig)
         defaultGrpcServerConfigureHelper.configureSsl(builder, serversConfig, serverConfig)
         defaultGrpcServerConfigureHelper.configureConnection(builder, serversConfig, serverConfig)
@@ -91,11 +93,11 @@ open class DefaultGrpcServerFactory : GrpcServerFactory {
     private fun useShadedNettyServerBuilder(
         serversConfig: GrpcServersConfig,
         serverConfig: GrpcServerConfig,
-        serviceGroupBuilders: Set<GrpcServiceBuilder>
+        serviceBuilders: Set<GrpcServiceBuilder>
     ): Server {
         val builder =
             ShadedNettyServerBuilder.forAddress(InetSocketAddress(serverConfig.host, serverConfig.port))
-        defaultGrpcServerConfigureHelper.configureServices(builder, serversConfig, serverConfig, serviceGroupBuilders)
+        defaultGrpcServerConfigureHelper.configureServices(builder, serversConfig, serverConfig, serviceBuilders)
         defaultGrpcServerConfigureHelper.configureExecutor(builder, serversConfig, serverConfig)
         defaultGrpcServerConfigureHelper.configureSsl(builder, serversConfig, serverConfig)
         defaultGrpcServerConfigureHelper.configureConnection(builder, serversConfig, serverConfig)
