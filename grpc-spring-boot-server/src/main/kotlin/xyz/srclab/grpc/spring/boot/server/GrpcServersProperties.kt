@@ -3,6 +3,8 @@ package xyz.srclab.grpc.spring.boot.server
 import io.grpc.BindableService
 import io.grpc.ServerInterceptor
 import xyz.srclab.common.collect.toImmutableSet
+import xyz.srclab.grpc.spring.boot.DEFAULT_HOST
+import xyz.srclab.grpc.spring.boot.DEFAULT_PORT
 
 open class GrpcServersProperties {
     var defaults: GrpcServerProperties? = null
@@ -102,8 +104,8 @@ open class GrpcServerConfig(
 ) {
     val inProcess: Boolean = _inProcess ?: false
     val useShaded: Boolean = _useShaded ?: false
-    val host: String = _host ?: "127.0.0.1"
-    val port: Int = _port ?: 6565
+    val host: String = _host ?: DEFAULT_HOST
+    val port: Int = _port ?: DEFAULT_PORT
 
     val threadPoolBeanName: String? = _threadPoolBeanName
     val maxConcurrentCallsPerConnection: Int? = _maxConcurrentCallsPerConnection

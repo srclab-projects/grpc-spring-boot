@@ -2,6 +2,7 @@ package xyz.srclab.grpc.spring.boot.client
 
 import io.grpc.Channel
 import io.grpc.ClientInterceptor
+import io.grpc.NameResolverRegistry
 import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.netty.NettyChannelBuilder
 import org.slf4j.Logger
@@ -19,6 +20,9 @@ open class DefaultGrpcChannelFactory : GrpcChannelFactory {
     @Resource
     private lateinit var defaultGrpcChannelConfigureHelper: DefaultGrpcChannelConfigureHelper
 
+    @Resource
+    private lateinit var defaultGrpcTargetResolver: GrpcTargetResolver
+
     private lateinit var defaultGrpcChannelConfigurers: List<DefaultGrpcChannelConfigurer>
 
     @PostConstruct
@@ -28,6 +32,9 @@ open class DefaultGrpcChannelFactory : GrpcChannelFactory {
         } catch (e: Exception) {
             emptyList()
         }
+
+        //add load balance support: lb:authority/host1:port1, host2:port2
+        NameResolverRegistry.getDefaultRegistry().register(LbNameResolverProvider(defaultGrpcTargetResolver))
     }
 
     override fun create(

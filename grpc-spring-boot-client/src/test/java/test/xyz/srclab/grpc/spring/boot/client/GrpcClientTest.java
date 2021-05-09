@@ -2,6 +2,7 @@ package test.xyz.srclab.grpc.spring.boot.client;
 
 import io.grpc.Channel;
 import io.grpc.Server;
+import io.grpc.ServerInterceptors;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth;
@@ -52,6 +53,9 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
     @GrpcClient(clientName = "client3")
     private HelloService3Grpc.HelloService3BlockingStub client3Stub;
 
+    @GrpcClient(clientName = "lb")
+    private LbServiceGrpc.LbServiceBlockingStub lbStub;
+
     @Resource
     private DefaultClientInterceptor defaultClientInterceptor;
 
@@ -72,6 +76,12 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
 
     @Resource
     private TraceService traceService;
+
+    @Resource
+    private TestLbService testLbService;
+
+    @Resource
+    private TestLbInterceptor testLbInterceptor;
 
     @PostConstruct
     private void init() throws Exception {
@@ -95,6 +105,40 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
         server1.start();
         server2.start();
         server3.start();
+
+
+        Server lb1 = NettyServerBuilder
+            .forPort(6666)
+            .addService(
+                ServerInterceptors.intercept(testLbService, testLbInterceptor)
+            )
+            .sslContext(
+                GrpcSslContexts.forServer(
+                    Loaders.loadResource("myServer.crt").openStream(),
+                    Loaders.loadResource("myServer.key.pkcs8").openStream()
+                )
+                    .trustManager(Loaders.loadResource("myClient.crt").openStream())
+                    .clientAuth(ClientAuth.REQUIRE)
+                    .build()
+            )
+            .build();
+        Server lb2 = NettyServerBuilder
+            .forPort(6667)
+            .addService(
+                ServerInterceptors.intercept(testLbService, testLbInterceptor)
+            )
+            .sslContext(
+                GrpcSslContexts.forServer(
+                    Loaders.loadResource("myServer.crt").openStream(),
+                    Loaders.loadResource("myServer.key.pkcs8").openStream()
+                )
+                    .trustManager(Loaders.loadResource("myClient.crt").openStream())
+                    .clientAuth(ClientAuth.REQUIRE)
+                    .build()
+            )
+            .build();
+        lb1.start();
+        lb2.start();
     }
 
     @Test
@@ -242,5 +286,14 @@ public class GrpcClientTest extends AbstractTestNGSpringContextTests {
                 "client3"
             )
         );
+    }
+
+    @Test
+    public void testLb() {
+        for (int i = 0; i < 100; i++) {
+            lbStub.requestLb(RequestMessage.getDefaultInstance());
+        }
+        logger.info("trace: {}", testLbInterceptor.getClientTrace());
+        Assert.assertEquals(testLbInterceptor.getClientTrace().size(), 2);
     }
 }

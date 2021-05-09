@@ -4,15 +4,21 @@ grpc:
       threadPoolBeanName: defaultExecutor
     clients:
       default:
-        targets: 127.0.0.1:6565
+        target: 127.0.0.1:6565
         sslCertChainClassPath: myClient.crt
         sslPrivateKeyClassPath: myClient.key.pkcs8
         sslTrustCertCollectionClassPath: myServer.crt
         sslClientAuth: require
       client1:
-        targets: 127.0.0.1:6566
+        target: 127.0.0.1:6566
       client2:
-        targets: 127.0.0.1:6567
+        target: 127.0.0.1:6567
         threadPoolBeanName: client2Executor
       client3:
-        targets: 127.0.0.1:6568
+        target: 127.0.0.1:6568
+      lb:
+        target: lb:127.0.0.1/127.0.0.1:6666,127.0.0.1:6667
+        sslCertChainClassPath: myClient.crt
+        sslPrivateKeyClassPath: myClient.key.pkcs8
+        sslTrustCertCollectionClassPath: myServer.crt
+        sslClientAuth: require

@@ -2,6 +2,7 @@ package xyz.srclab.grpc.spring.boot.client
 
 import io.grpc.ClientInterceptor
 import xyz.srclab.common.collect.map
+import xyz.srclab.grpc.spring.boot.DEFAULT_TARGET
 
 open class GrpcClientsProperties {
     var defaults: GrpcClientProperties? = null
@@ -18,7 +19,7 @@ open class GrpcClientsProperties {
 open class GrpcClientProperties {
     var inProcess: Boolean? = null
     var useShaded: Boolean? = null
-    var targets: String? = null
+    var target: String? = null
     var threadPoolBeanName: String? = null
 
     var initialFlowControlWindow: Int? = null
@@ -101,7 +102,7 @@ open class GrpcClientConfig(
 ) {
     val inProcess: Boolean = _inProcess ?: false
     val useShaded: Boolean = _useShaded ?: false
-    val target: String = _target ?: "127.0.0.1"
+    val target: String = _target ?: DEFAULT_TARGET
     val threadPoolBeanName: String? = _threadPoolBeanName
 
     val initialFlowControlWindow: Int? = _initialFlowControlWindow
@@ -161,7 +162,7 @@ private fun GrpcClientsProperties.toClientConfig(name: String): GrpcClientConfig
             name,
             properties.inProcess,
             properties.useShaded,
-            properties.targets,
+            properties.target,
             properties.threadPoolBeanName,
             properties.initialFlowControlWindow,
             properties.flowControlWindow,
@@ -186,7 +187,7 @@ private fun GrpcClientsProperties.toClientConfig(name: String): GrpcClientConfig
             name,
             properties.inProcess ?: defaults.inProcess,
             properties.useShaded ?: defaults.useShaded,
-            properties.targets ?: defaults.targets,
+            properties.target ?: defaults.target,
             properties.threadPoolBeanName ?: defaults.threadPoolBeanName,
             properties.initialFlowControlWindow ?: defaults.initialFlowControlWindow,
             properties.flowControlWindow ?: defaults.flowControlWindow,
