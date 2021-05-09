@@ -18,3 +18,15 @@ grpc:
         threadPoolBeanName: server2Executor
       server3:
         port: 6568
+      lb1:
+        port: 6666
+        sslCertChainClassPath: myServer.crt
+        sslPrivateKeyClassPath: myServer.key.pkcs8
+        sslTrustCertCollectionClassPath: myClient.crt
+        sslClientAuth: require
+      lb2:
+        port: 6667
+        sslCertChainClassPath: myServer.crt
+        sslPrivateKeyClassPath: myServer.key.pkcs8
+        sslTrustCertCollectionClassPath: myClient.crt
+        sslClientAuth: require
