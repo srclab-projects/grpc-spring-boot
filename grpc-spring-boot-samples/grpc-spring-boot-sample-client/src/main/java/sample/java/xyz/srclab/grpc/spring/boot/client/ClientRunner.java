@@ -39,6 +39,9 @@ public class ClientRunner implements ApplicationRunner {
     @GrpcClient(clientName = "client3")
     private HelloService3Grpc.HelloService3BlockingStub client3Stub;
 
+    @GrpcClient("lb")
+    private LbServiceGrpc.LbServiceBlockingStub lbStub;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         HelloRequest helloRequest = HelloRequest.getDefaultInstance();
@@ -93,6 +96,10 @@ public class ClientRunner implements ApplicationRunner {
             client3Stub.hello(helloRequest).getMessage(),
             "HelloService3"
         );
+
+        for (int i = 0; i < 100; i++) {
+            lbStub.requestLb(RequestMessage.getDefaultInstance());
+        }
     }
 
     private void printMessage(String title, String result, String expected) {

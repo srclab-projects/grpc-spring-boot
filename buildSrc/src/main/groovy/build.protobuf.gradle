@@ -18,9 +18,11 @@ sourceSets {
       // because when proto files are published along with class files, we can
       // only tell the type of a file from its extension.
       //include '**/*.protodevel'
+      srcDir 'src/main/proto'
     }
     java {
       //...
+      srcDir 'src/main/proto'
     }
   }
   test {

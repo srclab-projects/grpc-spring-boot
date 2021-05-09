@@ -1,5 +1,6 @@
 package test.xyz.srclab.grpc.spring.boot.server;
 
+import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.netty.NettyServerBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,15 @@ import java.util.List;
 public class TestDefaultGrpcServerConfigurer implements DefaultGrpcServerConfigurer {
 
     private final TestMarker testMarker = TestMarker.newTestMarker();
+
+    @Override
+    public void configureInProcessBuilder(
+        @NotNull InProcessServerBuilder builder,
+        @NotNull GrpcServersConfig serversConfig,
+        @NotNull GrpcServerConfig serverConfig
+    ) {
+        addCreateTrace(serverConfig.getName());
+    }
 
     @Override
     public void configureNettyBuilder(

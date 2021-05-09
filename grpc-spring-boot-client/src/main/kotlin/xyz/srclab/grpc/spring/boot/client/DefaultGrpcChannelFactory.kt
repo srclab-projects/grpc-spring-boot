@@ -2,6 +2,7 @@ package xyz.srclab.grpc.spring.boot.client
 
 import io.grpc.Channel
 import io.grpc.ClientInterceptor
+import io.grpc.NameResolverRegistry
 import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.netty.NettyChannelBuilder
 import org.slf4j.Logger
@@ -19,6 +20,9 @@ open class DefaultGrpcChannelFactory : GrpcChannelFactory {
     @Resource
     private lateinit var defaultGrpcChannelConfigureHelper: DefaultGrpcChannelConfigureHelper
 
+    @Resource
+    private lateinit var defaultGrpcTargetResolver: GrpcTargetResolver
+
     private lateinit var defaultGrpcChannelConfigurers: List<DefaultGrpcChannelConfigurer>
 
     @PostConstruct
@@ -28,6 +32,9 @@ open class DefaultGrpcChannelFactory : GrpcChannelFactory {
         } catch (e: Exception) {
             emptyList()
         }
+
+        //add load balance support: lb:authority/host1:port1, host2:port2
+        NameResolverRegistry.getDefaultRegistry().register(LbNameResolverProvider(defaultGrpcTargetResolver))
     }
 
     override fun create(
@@ -48,6 +55,13 @@ open class DefaultGrpcChannelFactory : GrpcChannelFactory {
     ): Channel {
         val builder = InProcessChannelBuilder.forName(clientConfig.name)
         defaultGrpcChannelConfigureHelper.configureInterceptors(builder, interceptors)
+        defaultGrpcChannelConfigureHelper.configureExecutor(builder, clientConfig)
+
+        //custom configure
+        for (defaultGrpcChannelConfigurer in defaultGrpcChannelConfigurers) {
+            defaultGrpcChannelConfigurer.configureInProcessBuilder(builder, clientsConfig, clientConfig)
+        }
+
         logger.info("gRPC in-process-channel created: ${clientConfig.name}")
         return builder.build()
     }
@@ -75,8 +89,8 @@ open class DefaultGrpcChannelFactory : GrpcChannelFactory {
         defaultGrpcChannelConfigureHelper.configureConnection(builder, clientConfig)
 
         //custom configure
-        for (grpcShadedNettyChannelConfigurer in defaultGrpcChannelConfigurers) {
-            grpcShadedNettyChannelConfigurer.configureNettyBuilder(builder, clientsConfig, clientConfig)
+        for (defaultGrpcChannelConfigurer in defaultGrpcChannelConfigurers) {
+            defaultGrpcChannelConfigurer.configureNettyBuilder(builder, clientsConfig, clientConfig)
         }
 
         logger.info("gRPC netty-channel created: ${clientConfig.name}")
@@ -95,8 +109,8 @@ open class DefaultGrpcChannelFactory : GrpcChannelFactory {
         defaultGrpcChannelConfigureHelper.configureConnection(builder, clientConfig)
 
         //custom configure
-        for (grpcShadedNettyChannelConfigurer in defaultGrpcChannelConfigurers) {
-            grpcShadedNettyChannelConfigurer.configureShadedNettyBuilder(builder, clientsConfig, clientConfig)
+        for (defaultGrpcChannelConfigurer in defaultGrpcChannelConfigurers) {
+            defaultGrpcChannelConfigurer.configureShadedNettyBuilder(builder, clientsConfig, clientConfig)
         }
 
         logger.info("gRPC shaded-netty-channel created: ${clientConfig.name}")

@@ -1,5 +1,6 @@
 package xyz.srclab.grpc.spring.boot.client
 
+import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.netty.NettyChannelBuilder
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder as ShadedNettyChannelBuilder
 
@@ -7,6 +8,12 @@ import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder as ShadedNettyChan
  * Factory to create gRPC server ssl context.
  */
 interface DefaultGrpcChannelConfigurer {
+
+    fun configureInProcessBuilder(
+        builder: InProcessChannelBuilder,
+        clientsConfig: GrpcClientsConfig,
+        clientConfig: GrpcClientConfig
+    )
 
     fun configureNettyBuilder(
         builder: NettyChannelBuilder,
