@@ -73,25 +73,25 @@ spring-boot starter, with spring-boot style.
 
 Gradle
 
-    implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-server:0.0.0")
-    implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-client:0.0.0")
-    implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-web:0.0.0")
+    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-server:0.0.0")
+    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-client:0.0.0")
+    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-web:0.0.0")
 
 Maven
 
     <dependencies>
       <dependency>
-        <groupId>xyz.srclab.spring.boot.grpc</groupId>
+        <groupId>xyz.srclab.grpc.spring.boot</groupId>
         <artifactId>grpc-spring-boot-starter-server</artifactId>
         <version>0.0.0</version>
       </dependency>
       <dependency>
-        <groupId>xyz.srclab.spring.boot.grpc</groupId>
+        <groupId>xyz.srclab.grpc.spring.boot</groupId>
         <artifactId>grpc-spring-boot-starter-client</artifactId>
         <version>0.0.0</version>
       </dependency>
       <dependency>
-        <groupId>xyz.srclab.spring.boot.grpc</groupId>
+        <groupId>xyz.srclab.grpc.spring.boot</groupId>
         <artifactId>grpc-spring-boot-starter-web</artifactId>
         <version>0.0.0</version>
       </dependency>

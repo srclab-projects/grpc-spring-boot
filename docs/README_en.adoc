@@ -28,9 +28,9 @@ This is a concise, clear, easy to extend gRPC and high-customizable spring-boot 
 .Gradle
 [source,groovy,subs="attributes+"]
 ----
-implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-server:{grpc-spring-boot-version}")
-implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-client:{grpc-spring-boot-version}")
-implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-web:{grpc-spring-boot-version}")
+implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-server:{grpc-spring-boot-version}")
+implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-client:{grpc-spring-boot-version}")
+implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-web:{grpc-spring-boot-version}")
 ----
 
 .Maven
@@ -38,17 +38,17 @@ implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-web:{grpc-s
 ----
 <dependencies>
   <dependency>
-    <groupId>xyz.srclab.spring.boot.grpc</groupId>
+    <groupId>xyz.srclab.grpc.spring.boot</groupId>
     <artifactId>grpc-spring-boot-starter-server</artifactId>
     <version>{grpc-spring-boot-version}</version>
   </dependency>
   <dependency>
-    <groupId>xyz.srclab.spring.boot.grpc</groupId>
+    <groupId>xyz.srclab.grpc.spring.boot</groupId>
     <artifactId>grpc-spring-boot-starter-client</artifactId>
     <version>{grpc-spring-boot-version}</version>
   </dependency>
   <dependency>
-    <groupId>xyz.srclab.spring.boot.grpc</groupId>
+    <groupId>xyz.srclab.grpc.spring.boot</groupId>
     <artifactId>grpc-spring-boot-starter-web</artifactId>
     <version>{grpc-spring-boot-version}</version>
   </dependency>
