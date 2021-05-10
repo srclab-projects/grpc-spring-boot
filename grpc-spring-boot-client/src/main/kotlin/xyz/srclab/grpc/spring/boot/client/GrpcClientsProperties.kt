@@ -1,6 +1,7 @@
 package xyz.srclab.grpc.spring.boot.client
 
 import io.grpc.ClientInterceptor
+import org.springframework.stereotype.Component
 import xyz.srclab.common.collect.map
 import xyz.srclab.grpc.spring.boot.DEFAULT_TARGET
 
@@ -10,6 +11,8 @@ open class GrpcClientsProperties {
 
     /**
      * Whether gRPC bean [ClientInterceptor] should be annotated by gRPC annotation ([GrpcClientInterceptor]).
+     *
+     * This means spring-boot annotation such as [Component] is invalid for gRPC bean.
      *
      * Default is false.
      */
@@ -71,6 +74,8 @@ open class GrpcClientsConfig(
 
     /**
      * Whether gRPC bean [ClientInterceptor] should be annotated by gRPC annotation ([GrpcClientInterceptor]).
+     *
+     * This means spring-boot annotation such as [Component] is invalid for gRPC bean.
      *
      * Default is false.
      */
