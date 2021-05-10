@@ -43,6 +43,7 @@ Table of Contents
             DefaultGrpcTargetResolver](#_grpctargetresolver_and_defaultgrpctargetresolver)
         -   [Client Configuration Properties
             Table](#_client_configuration_properties_table)
+-   [Web](#_web)
 -   [Contribution and Contact](#_contribution_and_contact)
 -   [License](#_license)
 
@@ -896,6 +897,13 @@ Table 3. GrpcClientsProperties
 </table>
 
 Table 4. ClientProperties
+
+## Web
+
+`grpc-spring-boot-starter-web` is used for making `Controller` support
+protobuf `Message` type.
+
+By default, it uses `Jackson2ObjectMapperBuilderCustomizer`.
 
 ## Contribution and Contact
 

@@ -487,6 +487,12 @@ Auth enum with case-ignore: `none`, `optional` or `require`.
 Default is `none`.
 |===
 
+== Web
+
+`grpc-spring-boot-starter-web` 用来让 `Controller` 支持protobuf的 `Message` 类型.
+
+默认情况下, 它使用 `Jackson2ObjectMapperBuilderCustomizer` 来实现.
+
 == 共享和联系方式
 
 * {emaill}
