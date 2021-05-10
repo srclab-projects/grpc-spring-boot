@@ -13,14 +13,13 @@ Sun Qian <fredsuvn@163.com>
 
 == Introduction
 
-This is a concise, clear and easy to extend gRPC spring-boot starter, with spring-boot style.
+This is a concise, clear, easy to extend gRPC and high-customizable spring-boot starter, with spring-boot style.
 
 == Features
 
-* Use `@GrpcService`, `@GrpcServerInterceptor` and spring bean annotation such as `@Component` to register gRPC service and server interceptors;
-* Use `@GrpcClient`, `@GrpcClientInterceptor` and spring bean annotation such as `@Component` to register gRPC stub, channel and client interceptors;
+* Simply use `@GrpcService`, `@GrpcServerInterceptor` and spring bean annotation such as `@Component` to register gRPC service and server interceptors;
+* Simply use `@GrpcClient`, `@GrpcClientInterceptor` and spring bean annotation such as `@Component` to register gRPC stub, channel and client interceptors;
 * Support multi-servers;
-* Support full custom;
 * Provide simple way to client load-balance;
 * Fine-grained control for servers/clients and service and interceptors.
 
@@ -59,11 +58,9 @@ implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-web:{grpc-s
 .Source Code
 {url}
 
-== Sample
+== Samples
 
-* grpc-spring-boot-samples
-* grpc-spring-boot-sample-server
-* grpc-spring-boot-sample-client
+link:../grpc-spring-boot-samples/[grpc-spring-boot-samples]
 
 == Usage
 
@@ -71,7 +68,7 @@ implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-web:{grpc-s
 
 ==== Create and start a server
 
-To create a gRPC server, first we add some properties in application.yml:
+To create a gRPC server, first we add server properties in application.yml (or .yaml, .properties):
 
 [source,yaml]
 ----
@@ -103,11 +100,12 @@ public class DefaultHelloService extends DefaultHelloServiceGrpc.DefaultHelloSer
 }
 ----
 
-Now, `server1` has a gRPC service `DefaultHelloService`, and if we run the application, `server1` will be auto-start.
+Now `server1` has a gRPC service `DefaultHelloService`.
+If we run the application, `server1` will be auto-start.
 
 ==== Multi-Servers
 
-If we need two servers, one on `6565`, another on `6566`, and they share the `localhost`:
+If we need two servers that one on `6565` and another on `6566`, and they share the host `localhost`:
 
 [source,yaml]
 ----
@@ -122,26 +120,32 @@ grpc:
         port: 6566
 ----
 
-`defaults` properties has same sub-properties with each `server` properties. `Server` properties will auto-inherit `defaults` properties which is not overridden.
+`defaults` property has same properties with each `server` property. `server` properties will auto-inherit `defaults` properties which is not overridden.
 
-==== GrpcService
+==== @GrpcService
 
 By default, if a gRPC service class is annotated by `@Service` or other spring-boot component annotation, it will work for all servers.
-Thus, `DefaultHelloService` will service for both `server1` and `server2`.
-If we want `DefaultHelloService` only work for `server1`:
+Thus, `DefaultHelloService` will work for both `server1` and `server2`.
+If we want `DefaultHelloService` only works for `server1`:
 
 [source,java]
 ----
 @GrpcService("server1")
+public class DefaultHelloService{}
+
 @GrpcService(serverPatterns = "server1")
+public class DefaultHelloService{}
+
 @GrpcService(serverPatterns = "*1")
+public class DefaultHelloService{}
 ----
 
-`@GrpcService` support ant-pattern, now `DefaultHelloService` only work for `server1`.
+`@GrpcService` can specify the servers which gRPC service works for, by bean name declared on `value` or `serverPatterns`, and it supports ant-pattern.
+Now `DefaultHelloService` only works for `server1`.
 
-==== GrpcServerInterceptor
+==== @GrpcServerInterceptor
 
-Same with adding gRPC server interceptor:
+Adding server interceptor is same with adding gRPC server:
 
 [source,java]
 ----
@@ -159,24 +163,34 @@ public class DefaultServerInterceptor extends BaseServerInterceptor {
 }
 ----
 
-`DefaultServerInterceptor` will work for all gRPC services (DefaultHelloService), to limit it, use `@GrpcServerInterceptor`:
+`DefaultServerInterceptor` will work for all gRPC services (`DefaultHelloService`), to limit it, use `@GrpcServerInterceptor`:
 
 [source,java]
 ----
 @GrpcServerInterceptor(value = "*hello*", order = -2)
+public class DefaultServerInterceptor{}
+
+@GrpcServerInterceptor(servicePatterns = "*hello*", order = -3)
+public class DefaultServerInterceptor{}
 ----
 
-`@GrpcServerInterceptor` support ant-pattern, and now it only works for gRPC service whose bean name matches `\*hello*`.
+Just like `@GrpcService`, `@GrpcServerInterceptor` can specify service bean name pattern and support ant-pattern.
+The `order` property specifies callback order, from low to high.
+Now `DefaultServerInterceptor` only works for gRPC service whose bean name matches `\*hello*`.
 
 ==== AbstractServerInterceptor and SimpleServerInterceptor
 
-`ServerInterceptor` is confusing (think about its nested calling, callback execution order), so I suggest using `AbstractServerInterceptor` and `SimpleServerInterceptor`.
+`ServerInterceptor` is confusing (think about its nested calling, callback execution order).
+For convenience this starter provides `AbstractServerInterceptor` and `SimpleServerInterceptor`.
 
-`AbstractServerInterceptor` is a skeletal implementation of `ServerInterceptor`, provides simple callbacks for a server interceptor lifecycle, and its document has said the execution order.
+`AbstractServerInterceptor` is a skeletal implementation of `ServerInterceptor`, provides serials of callback methods to override, in simple order: intercept1 -> intercept2 -> onMessage2 -> onMessage1 (detail see its javadoc).
 
-`SimpleServerInterceptor` is an interface provides all same callback methods with `AbstractServerInterceptor`, difference is, each `AbstractServerInterceptor` is a `ServerInterceptor` instance but all `SimpleServerInterceptor` in a gRPC service will be merged to one `ServerInterceptor`.
+`SimpleServerInterceptor` is an interface provides serials of callback methods to override same with `AbstractServerInterceptor`.
 
-NOTE: Callback execution order of `AbstractServerInterceptor` will follow the default gRPC `ServerInterceptor` (intercept1 -> intercept2 -> onMessage2 -> onMessage1), but `SimpleServerInterceptor` will be in natural order (intercept1 -> intercept2 -> onMessage1 -> onMessage2).
+Difference:
+
+* Each `AbstractServerInterceptor` is a `ServerInterceptor` instance but all `SimpleServerInterceptor` in a gRPC service will be merged to one `ServerInterceptor`;
+* Callback order is: intercept1 -> intercept2 -> onMessage1 -> onMessage2 (detail see its javadoc).
 
 ==== MetadataServerInterceptor
 
@@ -184,27 +198,86 @@ NOTE: Callback execution order of `AbstractServerInterceptor` will follow the de
 
 ==== DefaultGrpcServerConfigurer and DefaultGrpcServerConfigureHelper
 
-By default, this framework uses `InProcessBuilder`, `NettyServerBuilder` and `ShadedNettyServerBuilder`, if you want to custom them, use bean `DefaultGrpcServerConfigurer` and `DefaultGrpcServerConfigureHelper`.
+By default, this starter uses `InProcessBuilder`, `NettyServerBuilder` and `ShadedNettyServerBuilder` to create new gRPC server.
+If you want to custom them, create a new bean of `DefaultGrpcServerConfigurer` and use bean `DefaultGrpcServerConfigureHelper` to help.
 
 ==== GrpcServerFactory and DefaultGrpcServerFactory
 
-This framework uses `GrpcServerFactory` to create a new gRPC server.
-Default implementation is `DefaultGrpcServerFactory`.
-If you want to custom this process, create a new bean of `GrpcServerFactory`.
-Note `DefaultGrpcServerConfigurer` will invalid if you have a custom `GrpcServerFactory` bean, but `DefaultGrpcServerConfigureHelper` can be used still.
+This starter uses `GrpcServerFactory` to create a new gRPC server, its default implementation is `DefaultGrpcServerFactory`.
+If you want to custom this process, create a new bean of `GrpcServerFactory` to instead.
+
+NOTE: `DefaultGrpcServerConfigurer` will invalid if you have a custom `GrpcServerFactory` bean, but `DefaultGrpcServerConfigureHelper` can be used still.
 
 ==== GrpcServersFactory and DefaultGrpcServersFactory
 
-This framework uses `GrpcServersFactory` to create all gRPC server.
-Default implementation is `DefaultGrpcServersFactory`.
-If you want to custom this process, create a new bean of `GrpcServersFactory`.
-Note `DefaultGrpcServerFactory` and `DefaultGrpcServerConfigurer` will invalid if you have a custom `GrpcServersFactory` bean, but `DefaultGrpcServerConfigureHelper` can be used still.
+This starter uses `GrpcServersFactory` to create all gRPC server, its default implementation is `DefaultGrpcServersFactory`.
+If you want to custom this process, create a new bean of `GrpcServersFactory` to instead.
+
+NOTE: `DefaultGrpcServerFactory` and `DefaultGrpcServerConfigurer` will invalid if you have a custom `GrpcServersFactory` bean, but `DefaultGrpcServerConfigureHelper` can be used still.
+
+==== Server Configuration Properties Table
+
+[[GrpcServersProperties]]
+.GrpcServersProperties
+[options="header"]
+|===
+|Key|Type|Default|Comment
+|defaults|<<ServerProperties>>||
+|servers|Map<String, <<ServerProperties>>>||
+|needGrpcAnnotation|Boolean|false|
+Whether gRPC bean (`BindableService` and `ServerInterceptor`) should be annotated by gRPC annotation (`GrpcService` and `GrpcServerInterceptor`).
+
+This means spring-boot annotation such as `@Component` is invalid for gRPC bean.
+
+Default is false.
+|===
+
+[[ServerProperties]]
+.ServerProperties
+[options="header"]
+|===
+|Key|Type|Default|Comment
+|inProcess|Boolean|false|
+|useShaded|Boolean|false|
+|host|String|localhost|
+|port|Int|6565|
+|threadPoolBeanName|String||Thread pool bean name for gRPC executor.
+|maxConcurrentCallsPerConnection|Int||
+|initialFlowControlWindow|Int||
+|flowControlWindow|Int||
+|maxMessageSize|Int||
+|maxHeaderListSize|Int||
+|keepAliveTimeInNanos|Long||
+|keepAliveTimeoutInNanos|Long||
+|maxConnectionIdleInNanos|Long||
+|maxConnectionAgeInNanos|Long||
+|maxConnectionAgeGraceInNanos|Long||
+|permitKeepAliveWithoutCalls|Boolean||
+|permitKeepAliveTimeInNanos|Long||
+|sslCertChainClassPath|String||
+Same classpath and file properties are alternative and classpath first
+|sslPrivateKeyClassPath|String||
+Same classpath and file properties are alternative and classpath first
+|sslTrustCertCollectionClassPath|String||
+Same classpath and file properties are alternative and classpath first
+|sslCertChainFile|String||
+Same classpath and file properties are alternative and classpath first
+|sslPrivateKeyFile|String||
+Same classpath and file properties are alternative and classpath first
+|sslTrustCertCollectionFile|String||
+Same classpath and file properties are alternative and classpath first
+|sslPrivateKeyPassword|String||
+|sslClientAuth|String||
+Auth enum with case-ignore: `none`, `optional` or `require`.
+
+Default is `none`.
+|===
 
 === Client
 
-==== Create and start a server
+==== Create a Client
 
-To create a gRPC client, first we add some properties in application.yml:
+To create a gRPC client, first we add client properties in application.yml (or .yaml, .properties):
 
 [source,yaml]
 ----
@@ -220,14 +293,17 @@ Then we add stub and channel on `client1`:
 
 [source,java]
 ----
-@GrpcClient
-private DefaultHelloServiceGrpc.DefaultHelloServiceBlockingStub stub1;
+public class TestBean {
 
-@GrpcClient
-private Channel channel1;
+    @GrpcClient
+    private DefaultHelloServiceGrpc.DefaultHelloServiceBlockingStub stub1;
+
+    @GrpcClient
+    private Channel channel1;
+}
 ----
 
-Now, `client1` has a gRPC stub `stub1` and a gRPC channel `channel1`, and if we run the application, `client` will be auto-wired.
+Now, `stub1` and `channel1` will be auto-wired with ``client1``'s properties when application starts.
 
 ==== Multi-Clients:
 
@@ -248,23 +324,26 @@ Then:
 
 [source,java]
 ----
-@GrpcClient
-private DefaultHelloServiceGrpc.DefaultHelloServiceBlockingStub defaultStub;
+public class TestBean {
 
-@GrpcClient("client1")
-private HelloServiceXGrpc.HelloServiceXBlockingStub client1Stub;
+    @GrpcClient
+    private DefaultHelloServiceGrpc.DefaultHelloServiceBlockingStub defaultStub;
 
-@GrpcClient("client2")
-private HelloService2Grpc.HelloService2BlockingStub client2Stub;
+    @GrpcClient("client1")
+    private HelloServiceXGrpc.HelloServiceXBlockingStub client1Stub;
+
+    @GrpcClient("client2")
+    private HelloService2Grpc.HelloService2BlockingStub client2Stub;
+}
 ----
 
-If no name specified on `@GrpcClient`, it will auto specify the first client name.
+If no client name specified on `@GrpcClient`, it will auto-wired with first client name (here is `client1`).
 
-Note client configuration also supports `defaults` properties like <<Multi-Servers>>.
+NOTE: Client configuration also inherit `defaults` properties like <<Multi-Servers>>.
 
 ==== Load Balance
 
-If you want to configure multi targets to make load-balance:
+To set a load-balance target:
 
 [source,yaml]
 ----
@@ -277,9 +356,11 @@ grpc:
 
 Now the client `lb` is load-balance.
 
+NOTE: load balance syntax is: `lb:authority/host1:port1,host2:port2...`
+
 ==== ClientInterceptor
 
-Same with adding gRPC server interceptor:
+To declare a `ClientInterceptor`, just give a bean of `ClientInterceptor` type:
 
 [source,java]
 ----
@@ -297,46 +378,112 @@ public class DefaultClientInterceptor extends BaseClientInterceptor {
 }
 ----
 
-`DefaultClientInterceptor` will work for all gRPC clients (DefaultHelloService), to limit it, use `@GrpcServerInterceptor`:
+Now we have a `DefaultClientInterceptor` as `ClientInterceptor` for all client.
+
+==== @ClientInterceptor
+
+To specify interceptor work in fine-grained, use `@GrpcServerInterceptor`:
 
 [source,java]
 ----
 @GrpcClientInterceptor(value = "*2", order = 0)
+public class DefaultClientInterceptor{}
+
+@GrpcClientInterceptor(clientPatterns = "*2", order = -3)
+public class DefaultClientInterceptor{}
 ----
 
-`@GrpcServerInterceptor` support ant-pattern, and now it only works for gRPC service whose bean name matches `\*hello*`.
+value or clientPatterns specifies which client `DefaultClientInterceptor` work for, support ant-pattern.
+For now, it only works for client whose bean name matches `\*2`.
 
-==== AbstractServerInterceptor and SimpleServerInterceptor
+==== AbstractClientInterceptor and SimpleClientInterceptor
 
-`ServerInterceptor` is confusing (think about its nested calling, callback execution order), so I suggest using `AbstractServerInterceptor` and `SimpleServerInterceptor`.
+`ClientInterceptor` is confusing (think about its nested calling, callback execution order).
+For convenience this starter provides `AbstractClientInterceptor` and `SimpleClientInterceptor`.
 
-`AbstractServerInterceptor` is a skeletal implementation of `ServerInterceptor`, provides simple callbacks for a server interceptor lifecycle, and its document has said the execution order.
+`AbstractClientInterceptor` is a skeletal implementation of `ClientInterceptor`, provides serials of callback methods to override, in simple order: intercept1 -> intercept2 -> onClose2 -> onClose1 (detail see its javadoc).
 
-`SimpleServerInterceptor` is an interface provides all same callback methods with `AbstractServerInterceptor`, difference is, each `AbstractServerInterceptor` is a `ServerInterceptor` instance but all `SimpleServerInterceptor` in a gRPC service will be merged to one `ServerInterceptor`.
+`SimpleClientInterceptor` is an interface provides serials of callback methods to override same with `AbstractClientInterceptor`.
 
-NOTE: Callback execution order of `AbstractServerInterceptor` will follow the default gRPC `ServerInterceptor` (intercept1 -> intercept2 -> onMessage2 -> onMessage1), but `SimpleServerInterceptor` will be in natural order (intercept1 -> intercept2 -> onMessage1 -> onMessage2).
+Difference:
 
-==== MetadataServerInterceptor
+* Each `AbstractClientInterceptor` is a `ClientInterceptor` instance but all `SimpleClientInterceptor` in a gRPC channel will be merged to one `ClientInterceptor`;
+* Callback order is: intercept1 -> intercept2 -> onClose1 -> onClose2 (detail see its javadoc).
 
-`MetadataServerInterceptor` is a simple ServerInterceptor to do with metadata (headers).
+==== DefaultGrpcChannelConfigurer and DefaultGrpcChannelConfigureHelper
 
-==== DefaultGrpcServerConfigurer and DefaultGrpcServerConfigureHelper
+By default, this starter uses `InProcessBuilder`, `NettyServerBuilder` and `ShadedNettyServerBuilder`, if you want to custom them, create a new bean of `DefaultGrpcChannelConfigurer` and use bean `DefaultGrpcChannelConfigureHelper` to help.
 
-By default, this framework uses `InProcessBuilder`, `NettyServerBuilder` and `ShadedNettyServerBuilder`, if you want to custom them, use bean `DefaultGrpcServerConfigurer` and `DefaultGrpcServerConfigureHelper`.
+==== GrpcChannelFactory, DefaultGrpcChannelFactory, GrpcStubFactory and DefaultGrpcStubFactory
 
-==== GrpcServerFactory and DefaultGrpcServerFactory
+This starter uses `GrpcChannelFactory` to create a new gRPC stub, use `GrpcStubFactory` to create a new gRPC channel.
+Default implementation is `DefaultGrpcChannelFactory` and `DefaultGrpcStubFactory`.
+If you want to custom this process, create a new bean of `GrpcChannelFactory` or `GrpcStubFactory`.
 
-This framework uses `GrpcServerFactory` to create a new gRPC server.
-Default implementation is `DefaultGrpcServerFactory`.
-If you want to custom this process, create a new bean of `GrpcServerFactory`.
-Note `DefaultGrpcServerConfigurer` will invalid if you have a custom `GrpcServerFactory` bean, but `DefaultGrpcServerConfigureHelper` can be used still.
+NOTE: `DefaultGrpcChannelConfigurer` will invalid if you have a custom `GrpcChannelFactory` bean, but `DefaultGrpcChannelConfigureHelper` can be used still.
 
-==== GrpcServersFactory and DefaultGrpcServersFactory
+==== GrpcTargetResolver and DefaultGrpcTargetResolver
 
-This framework uses `GrpcServersFactory` to create all gRPC server.
-Default implementation is `DefaultGrpcServersFactory`.
-If you want to custom this process, create a new bean of `GrpcServersFactory`.
-Note `DefaultGrpcServerFactory` and `DefaultGrpcServerConfigurer` will invalid if you have a custom `GrpcServersFactory` bean, but `DefaultGrpcServerConfigureHelper` can be used still.
+This starter will register `LbNameResolverProvider` to resolve load balance target (lb:authority/host1:port1,host2:port2...).
+By default, `LbNameResolverProvider` use `DefaultGrpcTargetResolver` to resolve, to custom this process, create bean of `GrpcTargetResolver` to instead.
+
+==== Client Configuration Properties Table
+
+[[GrpcClientsProperties]]
+.GrpcClientsProperties
+[options="header"]
+|===
+|Key|Type|Default|Comment
+|defaults|<<ClientProperties>>||
+|servers|Map<String, <<ClientProperties>>>||
+|needGrpcAnnotation|Boolean|false|
+Whether gRPC bean `ClientInterceptor` should be annotated by gRPC annotation (`GrpcClientInterceptor`).
+
+This means spring-boot annotation such as `@Component` is invalid for gRPC bean.
+
+Default is false.
+|===
+
+[[ClientProperties]]
+.ClientProperties
+[options="header"]
+|===
+|Key|Type|Default|Comment
+|inProcess|Boolean|false|
+|useShaded|Boolean|false|
+|target|String|localhost:6565|
+Address or load balance (`lb:authority/host1:port1,host2:port2...`)
+|threadPoolBeanName|String||Thread pool bean name for gRPC executor.
+|initialFlowControlWindow|Int||
+|flowControlWindow|Int||
+|maxMessageSize|Int||
+|maxHeaderListSize|Int||
+|keepAliveTimeInNanos|Long||
+|keepAliveTimeoutInNanos|Long||
+|keepAliveWithoutCalls|Boolean||
+|deadlineAfterInNanos|Long||
+|loadBalancingPolicy|String|round_robin|
+Load balance policy: `round_robin`, `pick_first`.
+
+Default is `round_robin`.
+|sslCertChainClassPath|String||
+Same classpath and file properties are alternative and classpath first
+|sslPrivateKeyClassPath|String||
+Same classpath and file properties are alternative and classpath first
+|sslTrustCertCollectionClassPath|String||
+Same classpath and file properties are alternative and classpath first
+|sslCertChainFile|String||
+Same classpath and file properties are alternative and classpath first
+|sslPrivateKeyFile|String||
+Same classpath and file properties are alternative and classpath first
+|sslTrustCertCollectionFile|String||
+Same classpath and file properties are alternative and classpath first
+|sslPrivateKeyPassword|String||
+|sslClientAuth|String||
+Auth enum with case-ignore: `none`, `optional` or `require`.
+
+Default is `none`.
+|===
 
 == Contribution and Contact
 
