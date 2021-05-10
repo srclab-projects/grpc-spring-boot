@@ -43,7 +43,7 @@ ext["infos"] = [
   //Publish info
   publish      : [
     //Whether publish
-    enablePublish: false,
+    enablePublish: true,
 
     //Whether publish as snapshot
     isSnapshot   : false,
@@ -52,7 +52,7 @@ ext["infos"] = [
     snapshotId   : "sonatype",
 
     //Whether publish as Release
-    isRelease    : false,
+    isRelease    : true,
 
     //Release id
     releaseId    : "sonatype",
