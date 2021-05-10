@@ -2,6 +2,7 @@ package xyz.srclab.grpc.spring.boot.server
 
 import io.grpc.BindableService
 import io.grpc.ServerInterceptor
+import org.springframework.stereotype.Component
 import xyz.srclab.common.collect.toImmutableSet
 import xyz.srclab.grpc.spring.boot.DEFAULT_HOST
 import xyz.srclab.grpc.spring.boot.DEFAULT_PORT
@@ -13,6 +14,8 @@ open class GrpcServersProperties {
     /**
      * Whether gRPC bean ([BindableService] and [ServerInterceptor]) should be annotated by
      * gRPC annotation ([GrpcService] and [GrpcServerInterceptor]).
+     *
+     * This means spring-boot annotation such as [Component] is invalid for gRPC bean.
      *
      * Default is false.
      */
@@ -66,6 +69,8 @@ open class GrpcServersConfig(
     /**
      * Whether gRPC bean ([BindableService] and [ServerInterceptor]) should be annotated by
      * gRPC annotation ([GrpcService] and [GrpcServerInterceptor]).
+     *
+     * This means spring-boot annotation such as [Component] is invalid for gRPC bean.
      *
      * Default is false.
      */
