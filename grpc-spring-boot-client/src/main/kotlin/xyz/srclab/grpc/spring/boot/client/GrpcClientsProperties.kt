@@ -1,6 +1,7 @@
 package xyz.srclab.grpc.spring.boot.client
 
 import io.grpc.ClientInterceptor
+import org.springframework.stereotype.Component
 import xyz.srclab.common.collect.map
 import xyz.srclab.grpc.spring.boot.DEFAULT_TARGET
 
@@ -11,6 +12,8 @@ open class GrpcClientsProperties {
     /**
      * Whether gRPC bean [ClientInterceptor] should be annotated by gRPC annotation ([GrpcClientInterceptor]).
      *
+     * This means spring-boot annotation such as [Component] is invalid for gRPC bean.
+     *
      * Default is false.
      */
     var needGrpcAnnotation: Boolean? = false
@@ -19,6 +22,10 @@ open class GrpcClientsProperties {
 open class GrpcClientProperties {
     var inProcess: Boolean? = null
     var useShaded: Boolean? = null
+
+    /**
+     * Address or load balance (`lb:authority/host1:port1,host2:port2...`)
+     */
     var target: String? = null
     var threadPoolBeanName: String? = null
 
@@ -68,6 +75,8 @@ open class GrpcClientsConfig(
     /**
      * Whether gRPC bean [ClientInterceptor] should be annotated by gRPC annotation ([GrpcClientInterceptor]).
      *
+     * This means spring-boot annotation such as [Component] is invalid for gRPC bean.
+     *
      * Default is false.
      */
     val needGrpcAnnotation: Boolean = _needGrpcAnnotation ?: false
@@ -102,6 +111,10 @@ open class GrpcClientConfig(
 ) {
     val inProcess: Boolean = _inProcess ?: false
     val useShaded: Boolean = _useShaded ?: false
+
+    /**
+     * Address or load balance (`lb:authority/host1:port1,host2:port2...`)
+     */
     val target: String = _target ?: DEFAULT_TARGET
     val threadPoolBeanName: String? = _threadPoolBeanName
 

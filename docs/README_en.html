@@ -450,8 +450,41 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_introduction">Introduction</a></li>
+<li><a href="#_features">Features</a></li>
 <li><a href="#_getting">Getting</a></li>
-<li><a href="#_usage">Usage</a></li>
+<li><a href="#_samples">Samples</a></li>
+<li><a href="#_usage">Usage</a>
+<ul class="sectlevel2">
+<li><a href="#_server">Server</a>
+<ul class="sectlevel3">
+<li><a href="#_create_and_start_a_server">Create and start a server</a></li>
+<li><a href="#_multi_servers">Multi-Servers</a></li>
+<li><a href="#_grpcservice">@GrpcService</a></li>
+<li><a href="#_grpcserverinterceptor">@GrpcServerInterceptor</a></li>
+<li><a href="#_abstractserverinterceptor_and_simpleserverinterceptor">AbstractServerInterceptor and SimpleServerInterceptor</a></li>
+<li><a href="#_metadataserverinterceptor">MetadataServerInterceptor</a></li>
+<li><a href="#_defaultgrpcserverconfigurer_and_defaultgrpcserverconfigurehelper">DefaultGrpcServerConfigurer and DefaultGrpcServerConfigureHelper</a></li>
+<li><a href="#_grpcserverfactory_and_defaultgrpcserverfactory">GrpcServerFactory and DefaultGrpcServerFactory</a></li>
+<li><a href="#_grpcserversfactory_and_defaultgrpcserversfactory">GrpcServersFactory and DefaultGrpcServersFactory</a></li>
+<li><a href="#_server_configuration_properties_table">Server Configuration Properties Table</a></li>
+</ul>
+</li>
+<li><a href="#_client">Client</a>
+<ul class="sectlevel3">
+<li><a href="#_create_a_client">Create a Client</a></li>
+<li><a href="#_multi_clients">Multi-Clients:</a></li>
+<li><a href="#_load_balance">Load Balance</a></li>
+<li><a href="#_clientinterceptor">ClientInterceptor</a></li>
+<li><a href="#_clientinterceptor_2">@ClientInterceptor</a></li>
+<li><a href="#_abstractclientinterceptor_and_simpleclientinterceptor">AbstractClientInterceptor and SimpleClientInterceptor</a></li>
+<li><a href="#_defaultgrpcchannelconfigurer_and_defaultgrpcchannelconfigurehelper">DefaultGrpcChannelConfigurer and DefaultGrpcChannelConfigureHelper</a></li>
+<li><a href="#_grpcchannelfactory_defaultgrpcchannelfactory_grpcstubfactory_and_defaultgrpcstubfactory">GrpcChannelFactory, DefaultGrpcChannelFactory, GrpcStubFactory and DefaultGrpcStubFactory</a></li>
+<li><a href="#_grpctargetresolver_and_defaultgrpctargetresolver">GrpcTargetResolver and DefaultGrpcTargetResolver</a></li>
+<li><a href="#_client_configuration_properties_table">Client Configuration Properties Table</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#_contribution_and_contact">Contribution and Contact</a></li>
 <li><a href="#_license">License</a></li>
 </ul>
@@ -461,7 +494,33 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect1">
 <h2 id="_introduction">Introduction</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>This is a concise, clear, easy to extend gRPC and high-customizable spring-boot starter, with spring-boot style.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_features">Features</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Simply use <code>@GrpcService</code>, <code>@GrpcServerInterceptor</code> and spring bean annotation such as <code>@Component</code> to register gRPC service and server interceptors;</p>
+</li>
+<li>
+<p>Simply use <code>@GrpcClient</code>, <code>@GrpcClientInterceptor</code> and spring bean annotation such as <code>@Component</code> to register gRPC stub, channel and client interceptors;</p>
+</li>
+<li>
+<p>Support multi-servers;</p>
+</li>
+<li>
+<p>Provide simple way to client load-balance;</p>
+</li>
+<li>
+<p>Fine-grained control for servers/clients and service and interceptors.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -478,21 +537,23 @@ implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-web:0.0.0")
 <div class="listingblock">
 <div class="title">Maven</div>
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependencies&gt;
+  &lt;dependency&gt;
     &lt;groupId&gt;xyz.srclab.spring.boot.grpc&lt;/groupId&gt;
     &lt;artifactId&gt;grpc-spring-boot-starter-server&lt;/artifactId&gt;
     &lt;version&gt;0.0.0&lt;/version&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
+  &lt;/dependency&gt;
+  &lt;dependency&gt;
     &lt;groupId&gt;xyz.srclab.spring.boot.grpc&lt;/groupId&gt;
     &lt;artifactId&gt;grpc-spring-boot-starter-client&lt;/artifactId&gt;
     &lt;version&gt;0.0.0&lt;/version&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
+  &lt;/dependency&gt;
+  &lt;dependency&gt;
     &lt;groupId&gt;xyz.srclab.spring.boot.grpc&lt;/groupId&gt;
     &lt;artifactId&gt;grpc-spring-boot-starter-web&lt;/artifactId&gt;
     &lt;version&gt;0.0.0&lt;/version&gt;
-&lt;/dependency&gt;</code></pre>
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -502,9 +563,843 @@ implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-web:0.0.0")
 </div>
 </div>
 <div class="sect1">
+<h2 id="_samples">Samples</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="../grpc-spring-boot-samples/">grpc-spring-boot-samples</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_usage">Usage</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_server">Server</h3>
+<div class="sect3">
+<h4 id="_create_and_start_a_server">Create and start a server</h4>
+<div class="paragraph">
+<p>To create a gRPC server, first we add server properties in application.yml (or .yaml, .properties):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grpc:
+  server:
+    servers:
+      server1:
+        host: 127.0.0.1
+        port: 6565</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we have a gRPC server called <code>server1</code> with address: <code>127.0.0.1:6565</code>.
+Then we add service on <code>server1</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Service
+public class DefaultHelloService extends DefaultHelloServiceGrpc.DefaultHelloServiceImplBase {
 
+    @Override
+    public void hello(HelloRequest request, StreamObserver&lt;HelloResponse&gt; responseObserver) {
+        responseObserver.onNext(HelloResponse.newBuilder()
+            .setMessage("DefaultHelloService")
+            .setThreadName(Thread.currentThread().getName())
+            .build()
+        );
+        responseObserver.onCompleted();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now <code>server1</code> has a gRPC service <code>DefaultHelloService</code>.
+If we run the application, <code>server1</code> will be auto-start.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_multi_servers">Multi-Servers</h4>
+<div class="paragraph">
+<p>If we need two servers that one on <code>6565</code> and another on <code>6566</code>, and they share the host <code>localhost</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grpc:
+  server:
+    defaults:
+      host: 127.0.0.1
+    servers:
+      server1:
+        port: 6565
+      server2:
+        port: 6566</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>defaults</code> property has same properties with each <code>server</code> property. <code>server</code> properties will auto-inherit <code>defaults</code> properties which is not overridden.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grpcservice">@GrpcService</h4>
+<div class="paragraph">
+<p>By default, if a gRPC service class is annotated by <code>@Service</code> or other spring-boot component annotation, it will work for all servers.
+Thus, <code>DefaultHelloService</code> will work for both <code>server1</code> and <code>server2</code>.
+If we want <code>DefaultHelloService</code> only works for <code>server1</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@GrpcService("server1")
+public class DefaultHelloService{}
+
+@GrpcService(serverPatterns = "server1")
+public class DefaultHelloService{}
+
+@GrpcService(serverPatterns = "*1")
+public class DefaultHelloService{}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>@GrpcService</code> can specify the servers which gRPC service works for, by bean name declared on <code>value</code> or <code>serverPatterns</code>, and it supports ant-pattern.
+Now <code>DefaultHelloService</code> only works for <code>server1</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grpcserverinterceptor">@GrpcServerInterceptor</h4>
+<div class="paragraph">
+<p>Adding server interceptor is same with adding gRPC server:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Component
+public class DefaultServerInterceptor extends BaseServerInterceptor {
+
+    @Override
+    public &lt;ReqT, RespT&gt; ServerCall.Listener&lt;ReqT&gt; interceptCall(
+        ServerCall&lt;ReqT, RespT&gt; call, Metadata headers, ServerCallHandler&lt;ReqT, RespT&gt; next) {
+        if (Objects.equals(call.getMethodDescriptor().getServiceName(), "HelloService2")) {
+            helloService2.addInterceptorTrace("DefaultServerInterceptor");
+        }
+        return super.interceptCall(call, headers, next);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>DefaultServerInterceptor</code> will work for all gRPC services (<code>DefaultHelloService</code>), to limit it, use <code>@GrpcServerInterceptor</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@GrpcServerInterceptor(value = "*hello*", order = -2)
+public class DefaultServerInterceptor{}
+
+@GrpcServerInterceptor(servicePatterns = "*hello*", order = -3)
+public class DefaultServerInterceptor{}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Just like <code>@GrpcService</code>, <code>@GrpcServerInterceptor</code> can specify service bean name pattern and support ant-pattern.
+The <code>order</code> property specifies callback order, from low to high.
+Now <code>DefaultServerInterceptor</code> only works for gRPC service whose bean name matches <code>*hello*</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_abstractserverinterceptor_and_simpleserverinterceptor">AbstractServerInterceptor and SimpleServerInterceptor</h4>
+<div class="paragraph">
+<p><code>ServerInterceptor</code> is confusing (think about its nested calling, callback execution order).
+For convenience this starter provides <code>AbstractServerInterceptor</code> and <code>SimpleServerInterceptor</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>AbstractServerInterceptor</code> is a skeletal implementation of <code>ServerInterceptor</code>, provides serials of callback methods to override, in simple order: intercept1 &#8594; intercept2 &#8594; onMessage2 &#8594; onMessage1 (detail see its javadoc).</p>
+</div>
+<div class="paragraph">
+<p><code>SimpleServerInterceptor</code> is an interface provides serials of callback methods to override same with <code>AbstractServerInterceptor</code>.</p>
+</div>
+<div class="paragraph">
+<p>Difference:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Each <code>AbstractServerInterceptor</code> is a <code>ServerInterceptor</code> instance but all <code>SimpleServerInterceptor</code> in a gRPC service will be merged to one <code>ServerInterceptor</code>;</p>
+</li>
+<li>
+<p>Callback order is: intercept1 &#8594; intercept2 &#8594; onMessage1 &#8594; onMessage2 (detail see its javadoc).</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_metadataserverinterceptor">MetadataServerInterceptor</h4>
+<div class="paragraph">
+<p><code>MetadataServerInterceptor</code> is a simple ServerInterceptor to do with metadata (headers).</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_defaultgrpcserverconfigurer_and_defaultgrpcserverconfigurehelper">DefaultGrpcServerConfigurer and DefaultGrpcServerConfigureHelper</h4>
+<div class="paragraph">
+<p>By default, this starter uses <code>InProcessBuilder</code>, <code>NettyServerBuilder</code> and <code>ShadedNettyServerBuilder</code> to create new gRPC server.
+If you want to custom them, create a new bean of <code>DefaultGrpcServerConfigurer</code> and use bean <code>DefaultGrpcServerConfigureHelper</code> to help.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grpcserverfactory_and_defaultgrpcserverfactory">GrpcServerFactory and DefaultGrpcServerFactory</h4>
+<div class="paragraph">
+<p>This starter uses <code>GrpcServerFactory</code> to create a new gRPC server, its default implementation is <code>DefaultGrpcServerFactory</code>.
+If you want to custom this process, create a new bean of <code>GrpcServerFactory</code> to instead.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<code>DefaultGrpcServerConfigurer</code> will invalid if you have a custom <code>GrpcServerFactory</code> bean, but <code>DefaultGrpcServerConfigureHelper</code> can be used still.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grpcserversfactory_and_defaultgrpcserversfactory">GrpcServersFactory and DefaultGrpcServersFactory</h4>
+<div class="paragraph">
+<p>This starter uses <code>GrpcServersFactory</code> to create all gRPC server, its default implementation is <code>DefaultGrpcServersFactory</code>.
+If you want to custom this process, create a new bean of <code>GrpcServersFactory</code> to instead.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<code>DefaultGrpcServerFactory</code> and <code>DefaultGrpcServerConfigurer</code> will invalid if you have a custom <code>GrpcServersFactory</code> bean, but <code>DefaultGrpcServerConfigureHelper</code> can be used still.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_server_configuration_properties_table">Server Configuration Properties Table</h4>
+<table id="GrpcServersProperties" class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. GrpcServersProperties</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">defaults</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#ServerProperties">ServerProperties</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">servers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Map&lt;String, <a href="#ServerProperties">ServerProperties</a>&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">needGrpcAnnotation</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether gRPC bean (<code>BindableService</code> and <code>ServerInterceptor</code>) should be annotated by gRPC annotation (<code>GrpcService</code> and <code>GrpcServerInterceptor</code>).</p>
+<p class="tableblock">This means spring-boot annotation such as <code>@Component</code> is invalid for gRPC bean.</p>
+<p class="tableblock">Default is false.</p></td>
+</tr>
+</tbody>
+</table>
+<table id="ServerProperties" class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. ServerProperties</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">inProcess</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">useShaded</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">host</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">localhost</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">port</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6565</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">threadPoolBeanName</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Thread pool bean name for gRPC executor.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxConcurrentCallsPerConnection</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">initialFlowControlWindow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">flowControlWindow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxMessageSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxHeaderListSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keepAliveTimeInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keepAliveTimeoutInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxConnectionIdleInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxConnectionAgeInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxConnectionAgeGraceInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">permitKeepAliveWithoutCalls</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">permitKeepAliveTimeInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslCertChainClassPath</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslPrivateKeyClassPath</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslTrustCertCollectionClassPath</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslCertChainFile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslPrivateKeyFile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslTrustCertCollectionFile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslPrivateKeyPassword</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslClientAuth</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Auth enum with case-ignore: <code>none</code>, <code>optional</code> or <code>require</code>.</p>
+<p class="tableblock">Default is <code>none</code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_client">Client</h3>
+<div class="sect3">
+<h4 id="_create_a_client">Create a Client</h4>
+<div class="paragraph">
+<p>To create a gRPC client, first we add client properties in application.yml (or .yaml, .properties):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grpc:
+  client:
+    clients:
+      client1:
+        target: 127.0.0.1:6565</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we have a gRPC client called <code>client1</code> with target: <code>127.0.0.1:6565</code>.
+Then we add stub and channel on <code>client1</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public class TestBean {
+
+    @GrpcClient
+    private DefaultHelloServiceGrpc.DefaultHelloServiceBlockingStub stub1;
+
+    @GrpcClient
+    private Channel channel1;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, <code>stub1</code> and <code>channel1</code> will be auto-wired with <code>client1</code>'s properties when application starts.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_multi_clients">Multi-Clients:</h4>
+<div class="paragraph">
+<p>If we need two clients, for target <code>127.0.0.1:6565</code> and <code>127.0.0.1:6566</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grpc:
+  client:
+    clients:
+      client1:
+        target: 127.0.0.1:6565
+      client2:
+        target: 127.0.0.1:6566</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public class TestBean {
+
+    @GrpcClient
+    private DefaultHelloServiceGrpc.DefaultHelloServiceBlockingStub defaultStub;
+
+    @GrpcClient("client1")
+    private HelloServiceXGrpc.HelloServiceXBlockingStub client1Stub;
+
+    @GrpcClient("client2")
+    private HelloService2Grpc.HelloService2BlockingStub client2Stub;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If no client name specified on <code>@GrpcClient</code>, it will auto-wired with first client name (here is <code>client1</code>).</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Client configuration also inherit <code>defaults</code> properties like <a href="#_multi_servers">Multi-Servers</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_load_balance">Load Balance</h4>
+<div class="paragraph">
+<p>To set a load-balance target:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grpc:
+  client:
+    clients:
+      lb:
+        target: lb:127.0.0.1/127.0.0.1:6666,127.0.0.1:6667</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now the client <code>lb</code> is load-balance.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+load balance syntax is: <code>lb:authority/host1:port1,host2:port2&#8230;&#8203;</code>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_clientinterceptor">ClientInterceptor</h4>
+<div class="paragraph">
+<p>To declare a <code>ClientInterceptor</code>, just give a bean of <code>ClientInterceptor</code> type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Component
+public class DefaultClientInterceptor extends BaseClientInterceptor {
+
+    @Override
+    public &lt;ReqT, RespT&gt; ClientCall&lt;ReqT, RespT&gt; interceptCall(
+        MethodDescriptor&lt;ReqT, RespT&gt; method, CallOptions callOptions, Channel next) {
+        if (Objects.equals(method.getServiceName(), "HelloService2")) {
+            traceService.addInterceptorTrace("DefaultClientInterceptor");
+        }
+        return super.interceptCall(method, callOptions, next);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we have a <code>DefaultClientInterceptor</code> as <code>ClientInterceptor</code> for all client.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_clientinterceptor_2">@ClientInterceptor</h4>
+<div class="paragraph">
+<p>To specify interceptor work in fine-grained, use <code>@GrpcServerInterceptor</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@GrpcClientInterceptor(value = "*2", order = 0)
+public class DefaultClientInterceptor{}
+
+@GrpcClientInterceptor(clientPatterns = "*2", order = -3)
+public class DefaultClientInterceptor{}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>value or clientPatterns specifies which client <code>DefaultClientInterceptor</code> work for, support ant-pattern.
+For now, it only works for client whose bean name matches <code>\*2</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_abstractclientinterceptor_and_simpleclientinterceptor">AbstractClientInterceptor and SimpleClientInterceptor</h4>
+<div class="paragraph">
+<p><code>ClientInterceptor</code> is confusing (think about its nested calling, callback execution order).
+For convenience this starter provides <code>AbstractClientInterceptor</code> and <code>SimpleClientInterceptor</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>AbstractClientInterceptor</code> is a skeletal implementation of <code>ClientInterceptor</code>, provides serials of callback methods to override, in simple order: intercept1 &#8594; intercept2 &#8594; onClose2 &#8594; onClose1 (detail see its javadoc).</p>
+</div>
+<div class="paragraph">
+<p><code>SimpleClientInterceptor</code> is an interface provides serials of callback methods to override same with <code>AbstractClientInterceptor</code>.</p>
+</div>
+<div class="paragraph">
+<p>Difference:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Each <code>AbstractClientInterceptor</code> is a <code>ClientInterceptor</code> instance but all <code>SimpleClientInterceptor</code> in a gRPC channel will be merged to one <code>ClientInterceptor</code>;</p>
+</li>
+<li>
+<p>Callback order is: intercept1 &#8594; intercept2 &#8594; onClose1 &#8594; onClose2 (detail see its javadoc).</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_defaultgrpcchannelconfigurer_and_defaultgrpcchannelconfigurehelper">DefaultGrpcChannelConfigurer and DefaultGrpcChannelConfigureHelper</h4>
+<div class="paragraph">
+<p>By default, this starter uses <code>InProcessBuilder</code>, <code>NettyServerBuilder</code> and <code>ShadedNettyServerBuilder</code>, if you want to custom them, create a new bean of <code>DefaultGrpcChannelConfigurer</code> and use bean <code>DefaultGrpcChannelConfigureHelper</code> to help.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grpcchannelfactory_defaultgrpcchannelfactory_grpcstubfactory_and_defaultgrpcstubfactory">GrpcChannelFactory, DefaultGrpcChannelFactory, GrpcStubFactory and DefaultGrpcStubFactory</h4>
+<div class="paragraph">
+<p>This starter uses <code>GrpcChannelFactory</code> to create a new gRPC stub, use <code>GrpcStubFactory</code> to create a new gRPC channel.
+Default implementation is <code>DefaultGrpcChannelFactory</code> and <code>DefaultGrpcStubFactory</code>.
+If you want to custom this process, create a new bean of <code>GrpcChannelFactory</code> or <code>GrpcStubFactory</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<code>DefaultGrpcChannelConfigurer</code> will invalid if you have a custom <code>GrpcChannelFactory</code> bean, but <code>DefaultGrpcChannelConfigureHelper</code> can be used still.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grpctargetresolver_and_defaultgrpctargetresolver">GrpcTargetResolver and DefaultGrpcTargetResolver</h4>
+<div class="paragraph">
+<p>This starter will register <code>LbNameResolverProvider</code> to resolve load balance target (lb:authority/host1:port1,host2:port2&#8230;&#8203;).
+By default, <code>LbNameResolverProvider</code> use <code>DefaultGrpcTargetResolver</code> to resolve, to custom this process, create bean of <code>GrpcTargetResolver</code> to instead.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_client_configuration_properties_table">Client Configuration Properties Table</h4>
+<table id="GrpcClientsProperties" class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. GrpcClientsProperties</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">defaults</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#ClientProperties">ClientProperties</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">servers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Map&lt;String, <a href="#ClientProperties">ClientProperties</a>&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">needGrpcAnnotation</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether gRPC bean <code>ClientInterceptor</code> should be annotated by gRPC annotation (<code>GrpcClientInterceptor</code>).</p>
+<p class="tableblock">This means spring-boot annotation such as <code>@Component</code> is invalid for gRPC bean.</p>
+<p class="tableblock">Default is false.</p></td>
+</tr>
+</tbody>
+</table>
+<table id="ClientProperties" class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 4. ClientProperties</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">inProcess</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">useShaded</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">target</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">localhost:6565</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Address or load balance (<code>lb:authority/host1:port1,host2:port2&#8230;&#8203;</code>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">threadPoolBeanName</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Thread pool bean name for gRPC executor.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">initialFlowControlWindow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">flowControlWindow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxMessageSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxHeaderListSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keepAliveTimeInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keepAliveTimeoutInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keepAliveWithoutCalls</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deadlineAfterInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">loadBalancingPolicy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">round_robin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Load balance policy: <code>round_robin</code>, <code>pick_first</code>.</p>
+<p class="tableblock">Default is <code>round_robin</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslCertChainClassPath</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslPrivateKeyClassPath</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslTrustCertCollectionClassPath</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslCertChainFile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslPrivateKeyFile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslTrustCertCollectionFile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslPrivateKeyPassword</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslClientAuth</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Auth enum with case-ignore: <code>none</code>, <code>optional</code> or <code>require</code>.</p>
+<p class="tableblock">Default is <code>none</code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">

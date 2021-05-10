@@ -1,5 +1,6 @@
 package sample.java.xyz.srclab.grpc.spring.boot.server;
 
+import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.netty.NettyServerBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -13,6 +14,15 @@ import xyz.srclab.grpc.spring.boot.server.GrpcServersConfig;
 public class TestDefaultGrpcServerConfigurer implements DefaultGrpcServerConfigurer {
 
     private static final Logger logger = LoggerFactory.getLogger(TestDefaultGrpcServerConfigurer.class);
+
+    @Override
+    public void configureInProcessBuilder(
+        @NotNull InProcessServerBuilder builder,
+        @NotNull GrpcServersConfig serversConfig,
+        @NotNull GrpcServerConfig serverConfig
+    ) {
+        logger.info(">>>>configureInProcessBuilder");
+    }
 
     @Override
     public void configureNettyBuilder(

@@ -450,8 +450,41 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">目录</div>
 <ul class="sectlevel1">
 <li><a href="#_简介">简介</a></li>
+<li><a href="#_特性">特性</a></li>
 <li><a href="#_获取">获取</a></li>
-<li><a href="#_使用">使用</a></li>
+<li><a href="#_样例">样例</a></li>
+<li><a href="#_使用">使用</a>
+<ul class="sectlevel2">
+<li><a href="#_server">Server</a>
+<ul class="sectlevel3">
+<li><a href="#_创建一个服务">创建一个服务</a></li>
+<li><a href="#_多server服务">多Server服务</a></li>
+<li><a href="#_grpcservice">@GrpcService</a></li>
+<li><a href="#_grpcserverinterceptor">@GrpcServerInterceptor</a></li>
+<li><a href="#_abstractserverinterceptor_and_simpleserverinterceptor">AbstractServerInterceptor and SimpleServerInterceptor</a></li>
+<li><a href="#_metadataserverinterceptor">MetadataServerInterceptor</a></li>
+<li><a href="#_defaultgrpcserverconfigurer_and_defaultgrpcserverconfigurehelper">DefaultGrpcServerConfigurer and DefaultGrpcServerConfigureHelper</a></li>
+<li><a href="#_grpcserverfactory_and_defaultgrpcserverfactory">GrpcServerFactory and DefaultGrpcServerFactory</a></li>
+<li><a href="#_grpcserversfactory_and_defaultgrpcserversfactory">GrpcServersFactory and DefaultGrpcServersFactory</a></li>
+<li><a href="#_server配置属性表">Server配置属性表</a></li>
+</ul>
+</li>
+<li><a href="#_client">Client</a>
+<ul class="sectlevel3">
+<li><a href="#_创建一个客户端">创建一个客户端</a></li>
+<li><a href="#_多客户端">多客户端:</a></li>
+<li><a href="#_负载均衡">负载均衡</a></li>
+<li><a href="#_clientinterceptor">ClientInterceptor</a></li>
+<li><a href="#_clientinterceptor_2">@ClientInterceptor</a></li>
+<li><a href="#_abstractclientinterceptor_and_simpleclientinterceptor">AbstractClientInterceptor and SimpleClientInterceptor</a></li>
+<li><a href="#_defaultgrpcchannelconfigurer_and_defaultgrpcchannelconfigurehelper">DefaultGrpcChannelConfigurer and DefaultGrpcChannelConfigureHelper</a></li>
+<li><a href="#_grpcchannelfactory_defaultgrpcchannelfactory_grpcstubfactory_and_defaultgrpcstubfactory">GrpcChannelFactory, DefaultGrpcChannelFactory, GrpcStubFactory and DefaultGrpcStubFactory</a></li>
+<li><a href="#_grpctargetresolver_and_defaultgrpctargetresolver">GrpcTargetResolver and DefaultGrpcTargetResolver</a></li>
+<li><a href="#_client配置属性表">Client配置属性表</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#_共享和联系方式">共享和联系方式</a></li>
 <li><a href="#_license">License</a></li>
 </ul>
@@ -461,7 +494,33 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect1">
 <h2 id="_简介">简介</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>一个简洁, 清晰, 易扩展和高度可定制的spring-boot风格的spring-boot starter.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_特性">特性</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>简单使用 <code>@GrpcService</code>, <code>@GrpcServerInterceptor</code> 和spring注解如 <code>@Component</code> 来注册gRPC service和server interceptors;</p>
+</li>
+<li>
+<p>简单使用 <code>@GrpcClient</code>, <code>@GrpcClientInterceptor</code> 和spring注解如 <code>@Component</code> 来注册gRPC stub, channel以及client interceptors;</p>
+</li>
+<li>
+<p>支持多server服务;</p>
+</li>
+<li>
+<p>提供简单的方式进行客户端负载均衡;</p>
+</li>
+<li>
+<p>细粒度的servers/clients以及它们的interceptors的控制.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -478,33 +537,870 @@ implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-web:0.0.0")
 <div class="listingblock">
 <div class="title">Maven</div>
 <div class="content">
-<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependencies&gt;
+  &lt;dependency&gt;
     &lt;groupId&gt;xyz.srclab.spring.boot.grpc&lt;/groupId&gt;
     &lt;artifactId&gt;grpc-spring-boot-starter-server&lt;/artifactId&gt;
     &lt;version&gt;0.0.0&lt;/version&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
+  &lt;/dependency&gt;
+  &lt;dependency&gt;
     &lt;groupId&gt;xyz.srclab.spring.boot.grpc&lt;/groupId&gt;
     &lt;artifactId&gt;grpc-spring-boot-starter-client&lt;/artifactId&gt;
     &lt;version&gt;0.0.0&lt;/version&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
+  &lt;/dependency&gt;
+  &lt;dependency&gt;
     &lt;groupId&gt;xyz.srclab.spring.boot.grpc&lt;/groupId&gt;
     &lt;artifactId&gt;grpc-spring-boot-starter-web&lt;/artifactId&gt;
     &lt;version&gt;0.0.0&lt;/version&gt;
-&lt;/dependency&gt;</code></pre>
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<div class="title">Source Code</div>
+<div class="title">源代码</div>
 <p><a href="https://github.com/srclab-projects/grpc-spring-boot" class="bare">https://github.com/srclab-projects/grpc-spring-boot</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_样例">样例</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="../grpc-spring-boot-samples/">grpc-spring-boot-samples</a></p>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_使用">使用</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_server">Server</h3>
+<div class="sect3">
+<h4 id="_创建一个服务">创建一个服务</h4>
+<div class="paragraph">
+<p>我们首先在application.yml (或者 .yaml, .properties)添加server的属性:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grpc:
+  server:
+    servers:
+      server1:
+        host: 127.0.0.1
+        port: 6565</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>现在我们有了一个叫 <code>server1</code> 的服务, 在地址: <code>127.0.0.1:6565</code> 上.
+接下来我们在 <code>server1</code> 上添加service:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Service
+public class DefaultHelloService extends DefaultHelloServiceGrpc.DefaultHelloServiceImplBase {
 
+    @Override
+    public void hello(HelloRequest request, StreamObserver&lt;HelloResponse&gt; responseObserver) {
+        responseObserver.onNext(HelloResponse.newBuilder()
+            .setMessage("DefaultHelloService")
+            .setThreadName(Thread.currentThread().getName())
+            .build()
+        );
+        responseObserver.onCompleted();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>现在 <code>server1</code> 有了一个 gRPC service <code>DefaultHelloService</code>.
+如果我们运行项目, <code>server1</code> 将会自动启动.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_多server服务">多Server服务</h4>
+<div class="paragraph">
+<p>如果我们需要在端口 <code>6565</code> 和 <code>6566</code> 上都开启服务, 并且他们共享主机 <code>localhost</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grpc:
+  server:
+    defaults:
+      host: 127.0.0.1
+    servers:
+      server1:
+        port: 6565
+      server2:
+        port: 6566</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>defaults</code> 属性的子属性和 <code>server</code> 属性的子属性相同. <code>server</code> 属性将会自动注入 <code>defaults</code> 属性, 除了被覆盖配置的属性.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grpcservice">@GrpcService</h4>
+<div class="paragraph">
+<p>默认情况下, 如果一个 gRPC service 类被 <code>@Service</code> 或者其他 spring-boot 注解所注释, 它将为所有的服务工作.
+因此, <code>DefaultHelloService</code> 将同时为 <code>server1</code> 和 <code>server2</code> 工作.
+如果我们希望 <code>DefaultHelloService</code> 只为 <code>server1</code> 工作:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@GrpcService("server1")
+public class DefaultHelloService{}
+
+@GrpcService(serverPatterns = "server1")
+public class DefaultHelloService{}
+
+@GrpcService(serverPatterns = "*1")
+public class DefaultHelloService{}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>@GrpcService</code> 可以通过 <code>value</code> or <code>serverPatterns</code> 属性指定它愿意工作的服务名, 并且它支持 ant-pattern.
+现在 <code>DefaultHelloService</code> 只为 <code>server1</code> 工作了.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grpcserverinterceptor">@GrpcServerInterceptor</h4>
+<div class="paragraph">
+<p>添加拦截器和添加服务一样:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Component
+public class DefaultServerInterceptor extends BaseServerInterceptor {
+
+    @Override
+    public &lt;ReqT, RespT&gt; ServerCall.Listener&lt;ReqT&gt; interceptCall(
+        ServerCall&lt;ReqT, RespT&gt; call, Metadata headers, ServerCallHandler&lt;ReqT, RespT&gt; next) {
+        if (Objects.equals(call.getMethodDescriptor().getServiceName(), "HelloService2")) {
+            helloService2.addInterceptorTrace("DefaultServerInterceptor");
+        }
+        return super.interceptCall(call, headers, next);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>DefaultServerInterceptor</code> 将会为所有的 gRPC services (<code>DefaultHelloService</code>) 工作, 想要限制它, 使用 <code>@GrpcServerInterceptor</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@GrpcServerInterceptor(value = "*hello*", order = -2)
+public class DefaultServerInterceptor{}
+
+@GrpcServerInterceptor(servicePatterns = "*hello*", order = -3)
+public class DefaultServerInterceptor{}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>就像 <code>@GrpcService</code>, <code>@GrpcServerInterceptor</code> 可以指定 service bean 的名字, 并且支持 ant-pattern.
+<code>order</code> 属性指定调用殊勋, 从低到高.
+现在, <code>DefaultServerInterceptor</code> 只为匹配 <code>*hello*</code> 的服务提供拦截了.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_abstractserverinterceptor_and_simpleserverinterceptor">AbstractServerInterceptor and SimpleServerInterceptor</h4>
+<div class="paragraph">
+<p><code>ServerInterceptor</code> 足以令人困惑 (想想看它的嵌套调用和回调顺序).
+为了方便开发, 这个starter 提供 <code>AbstractServerInterceptor</code> 和 <code>SimpleServerInterceptor</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>AbstractServerInterceptor</code> 是 <code>ServerInterceptor</code> 的快捷实现, 提供一系列的回调方法以供重写, 并且有一个简单的调用顺序: intercept1 &#8594; intercept2 &#8594; onMessage2 &#8594; onMessage1 (具体请参阅 javadoc).</p>
+</div>
+<div class="paragraph">
+<p><code>SimpleServerInterceptor</code> 是一个接口, 提供和 <code>AbstractServerInterceptor</code> 一样的回调方法一共重写.</p>
+</div>
+<div class="paragraph">
+<p>区别:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>每个 <code>AbstractServerInterceptor</code> 都是一个 <code>ServerInterceptor</code> 实例, 但是所有的 <code>SimpleServerInterceptor</code> 对于每个 gRPC service 都将被合并成一个 <code>ServerInterceptor</code>;</p>
+</li>
+<li>
+<p>回调顺序是: intercept1 &#8594; intercept2 &#8594; onMessage1 &#8594; onMessage2 (具体请参阅 javadoc).</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_metadataserverinterceptor">MetadataServerInterceptor</h4>
+<div class="paragraph">
+<p><code>MetadataServerInterceptor</code> 是一个简单的 ServerInterceptor 用来处理 metadata (headers).</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_defaultgrpcserverconfigurer_and_defaultgrpcserverconfigurehelper">DefaultGrpcServerConfigurer and DefaultGrpcServerConfigureHelper</h4>
+<div class="paragraph">
+<p>默认情况下, 这个starter使用 <code>InProcessBuilder</code>, <code>NettyServerBuilder</code> 和 <code>ShadedNettyServerBuilder</code> 来创建 gRPC server.
+如果你想要定制这个过程, 创建一个 <code>DefaultGrpcServerConfigurer</code> bean 并且使用 bean <code>DefaultGrpcServerConfigureHelper</code> 来辅助设置.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grpcserverfactory_and_defaultgrpcserverfactory">GrpcServerFactory and DefaultGrpcServerFactory</h4>
+<div class="paragraph">
+<p>这个starter使用 <code>GrpcServerFactory</code> 来创建 gRPC server, 它默认的实现是 <code>DefaultGrpcServerFactory</code>.
+如果你想要定制这个过程, 创建一个 <code>GrpcServerFactory</code> bean 来替代.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<code>DefaultGrpcServerConfigurer</code> 将会失效如果你创建了定制的 <code>GrpcServerFactory</code> bean, 但是 <code>DefaultGrpcServerConfigureHelper</code> 仍然可以使用.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grpcserversfactory_and_defaultgrpcserversfactory">GrpcServersFactory and DefaultGrpcServersFactory</h4>
+<div class="paragraph">
+<p>这个starter使用 <code>GrpcServersFactory</code> 来创建所有的 gRPC server, 它默认的实现是 <code>DefaultGrpcServersFactory</code>.
+如果你想要定制这个过程, 创建一个 <code>GrpcServersFactory</code> bean 来替代.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<code>DefaultGrpcServerFactory</code> 和 <code>DefaultGrpcServerConfigurer</code> 将会失效如果你创建了定制的 <code>GrpcServersFactory</code> bean, 但是`DefaultGrpcServerConfigureHelper` 仍然可以使用.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_server配置属性表">Server配置属性表</h4>
+<table id="GrpcServersProperties" class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. GrpcServersProperties</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">defaults</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#ServerProperties">ServerProperties</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">servers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Map&lt;String, <a href="#ServerProperties">ServerProperties</a>&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">needGrpcAnnotation</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether gRPC bean (<code>BindableService</code> and <code>ServerInterceptor</code>) should be annotated by gRPC annotation (<code>GrpcService</code> and <code>GrpcServerInterceptor</code>).</p>
+<p class="tableblock">This means spring-boot annotation such as <code>@Component</code> is invalid for gRPC bean.</p>
+<p class="tableblock">Default is false.</p></td>
+</tr>
+</tbody>
+</table>
+<table id="ServerProperties" class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. ServerProperties</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">inProcess</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">useShaded</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">host</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">localhost</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">port</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6565</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">threadPoolBeanName</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Thread pool bean name for gRPC executor.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxConcurrentCallsPerConnection</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">initialFlowControlWindow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">flowControlWindow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxMessageSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxHeaderListSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keepAliveTimeInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keepAliveTimeoutInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxConnectionIdleInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxConnectionAgeInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxConnectionAgeGraceInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">permitKeepAliveWithoutCalls</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">permitKeepAliveTimeInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslCertChainClassPath</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslPrivateKeyClassPath</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslTrustCertCollectionClassPath</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslCertChainFile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslPrivateKeyFile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslTrustCertCollectionFile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslPrivateKeyPassword</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslClientAuth</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Auth enum with case-ignore: <code>none</code>, <code>optional</code> or <code>require</code>.</p>
+<p class="tableblock">Default is <code>none</code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_client">Client</h3>
+<div class="sect3">
+<h4 id="_创建一个客户端">创建一个客户端</h4>
+<div class="paragraph">
+<p>我们首先在application.yml (或者 .yaml, .properties)添加client的属性:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grpc:
+  client:
+    clients:
+      client1:
+        target: 127.0.0.1:6565</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>现在我们有了一个client叫 <code>client1</code>, target: <code>127.0.0.1:6565</code>.
+接着我们使用 <code>client1</code> 添加stub和channel:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public class TestBean {
+
+    @GrpcClient
+    private DefaultHelloServiceGrpc.DefaultHelloServiceBlockingStub stub1;
+
+    @GrpcClient
+    private Channel channel1;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>现在, <code>stub1</code> 和 <code>channel1</code> 在项目启动时将会使用 <code>client1</code> 的属性自动注入.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_多客户端">多客户端:</h4>
+<div class="paragraph">
+<p>如果我们需要两个客户端, 用target <code>127.0.0.1:6565</code> 和 <code>127.0.0.1:6566</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grpc:
+  client:
+    clients:
+      client1:
+        target: 127.0.0.1:6565
+      client2:
+        target: 127.0.0.1:6566</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>然后:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">public class TestBean {
+
+    @GrpcClient
+    private DefaultHelloServiceGrpc.DefaultHelloServiceBlockingStub defaultStub;
+
+    @GrpcClient("client1")
+    private HelloServiceXGrpc.HelloServiceXBlockingStub client1Stub;
+
+    @GrpcClient("client2")
+    private HelloService2Grpc.HelloService2BlockingStub client2Stub;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>如果client的名字在 <code>@GrpcClient</code> 上没有被指定, 它将使用配置的第一个客户端 (这里是 <code>client1</code>).</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+客户端配置也会继承 <code>defaults</code> 属性就像 <a href="#_多server服务">多Server服务</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_负载均衡">负载均衡</h4>
+<div class="paragraph">
+<p>设置 load-balance target:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">grpc:
+  client:
+    clients:
+      lb:
+        target: lb:127.0.0.1/127.0.0.1:6666,127.0.0.1:6667</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>现在, client <code>lb</code> 被配置成负载均衡了.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+负载均衡的语法: <code>lb:authority/host1:port1,host2:port2&#8230;&#8203;</code>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_clientinterceptor">ClientInterceptor</h4>
+<div class="paragraph">
+<p>申明一个 <code>ClientInterceptor</code> 只需要给一个 <code>ClientInterceptor</code> 类型的bean:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Component
+public class DefaultClientInterceptor extends BaseClientInterceptor {
+
+    @Override
+    public &lt;ReqT, RespT&gt; ClientCall&lt;ReqT, RespT&gt; interceptCall(
+        MethodDescriptor&lt;ReqT, RespT&gt; method, CallOptions callOptions, Channel next) {
+        if (Objects.equals(method.getServiceName(), "HelloService2")) {
+            traceService.addInterceptorTrace("DefaultClientInterceptor");
+        }
+        return super.interceptCall(method, callOptions, next);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>现在我们有了一个 <code>DefaultClientInterceptor</code> 作为 <code>ClientInterceptor</code>, 它将为所有的client服务.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_clientinterceptor_2">@ClientInterceptor</h4>
+<div class="paragraph">
+<p>要细粒度的设置拦截器, use <code>@GrpcServerInterceptor</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@GrpcClientInterceptor(value = "*2", order = 0)
+public class DefaultClientInterceptor{}
+
+@GrpcClientInterceptor(clientPatterns = "*2", order = -3)
+public class DefaultClientInterceptor{}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>value 或者 clientPatterns 指定client <code>DefaultClientInterceptor</code> 为谁工作, 支持 ant-pattern.
+现在, 它只为名字匹配 <code>\*2</code> 的client工作.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_abstractclientinterceptor_and_simpleclientinterceptor">AbstractClientInterceptor and SimpleClientInterceptor</h4>
+<div class="paragraph">
+<p><code>ClientInterceptor</code> 足以令人困惑 (想想看它的嵌套调用和回调顺序).
+为了方便开发, 这个starter 提供 <code>AbstractClientInterceptor</code> 和 <code>SimpleClientInterceptor</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>AbstractClientInterceptor</code> 是 <code>ClientInterceptor</code> 的快捷实现, 提供一系列的回调方法以供重写, 并且有一个简单的调用顺序: intercept1 &#8594; intercept2 &#8594; onClose2 &#8594; onClose1 (具体请参阅 javadoc).</p>
+</div>
+<div class="paragraph">
+<p><code>SimpleClientInterceptor</code> 是一个接口, 提供和 <code>AbstractClientInterceptor</code> 一样的回调方法一共重写.</p>
+</div>
+<div class="paragraph">
+<p>区别:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>每个 <code>AbstractClientInterceptor</code> 都是一个 <code>ClientInterceptor</code> 实例, 但是所有的 <code>SimpleClientInterceptor</code> 对于每个 gRPC service 都将被合并成一个 <code>ClientInterceptor</code>;</p>
+</li>
+<li>
+<p>回调顺序是: intercept1 &#8594; intercept2 &#8594; onClose1 &#8594; onClose2 (具体请参阅 javadoc).</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_defaultgrpcchannelconfigurer_and_defaultgrpcchannelconfigurehelper">DefaultGrpcChannelConfigurer and DefaultGrpcChannelConfigureHelper</h4>
+<div class="paragraph">
+<p>默认情况下, 这个starter使用 <code>InProcessBuilder</code>, <code>NettyServerBuilder</code> 和 <code>ShadedNettyServerBuilder</code> 来创建 gRPC client.
+如果你想要定制这个过程, 创建一个 <code>DefaultGrpcChannelConfigurer</code> bean 并且使用 bean <code>DefaultGrpcChannelConfigureHelper</code> 来辅助设置.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grpcchannelfactory_defaultgrpcchannelfactory_grpcstubfactory_and_defaultgrpcstubfactory">GrpcChannelFactory, DefaultGrpcChannelFactory, GrpcStubFactory and DefaultGrpcStubFactory</h4>
+<div class="paragraph">
+<p>这个starter使用 <code>GrpcChannelFactory</code> 来创建 gRPC stub, 使用 <code>GrpcStubFactory</code> 来创建 gRPC channel.
+默认实现 <code>DefaultGrpcChannelFactory</code> 和 <code>DefaultGrpcStubFactory</code>.
+如果你想要定制这个过程, 创建一个 <code>GrpcChannelFactory</code> bean 或者 <code>GrpcStubFactory</code> bean.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<code>DefaultGrpcChannelConfigurer</code> 将会失效如果你创建了定制的 <code>GrpcChannelFactory</code> bean, 但是 <code>DefaultGrpcChannelConfigureHelper</code> 仍然可以使用.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_grpctargetresolver_and_defaultgrpctargetresolver">GrpcTargetResolver and DefaultGrpcTargetResolver</h4>
+<div class="paragraph">
+<p>这个starter会注册 <code>LbNameResolverProvider</code> 来解析负载均衡的 target (lb:authority/host1:port1,host2:port2&#8230;&#8203;).
+默认情况下, <code>LbNameResolverProvider</code> 使用 <code>DefaultGrpcTargetResolver</code> 来解析, 想要定制这个过程, 创建一个 <code>GrpcTargetResolver</code> bean 来替代.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_client配置属性表">Client配置属性表</h4>
+<table id="GrpcClientsProperties" class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. GrpcClientsProperties</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">defaults</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#ClientProperties">ClientProperties</a></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">servers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Map&lt;String, <a href="#ClientProperties">ClientProperties</a>&gt;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">needGrpcAnnotation</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Whether gRPC bean <code>ClientInterceptor</code> should be annotated by gRPC annotation (<code>GrpcClientInterceptor</code>).</p>
+<p class="tableblock">This means spring-boot annotation such as <code>@Component</code> is invalid for gRPC bean.</p>
+<p class="tableblock">Default is false.</p></td>
+</tr>
+</tbody>
+</table>
+<table id="ClientProperties" class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 4. ClientProperties</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">inProcess</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">useShaded</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">target</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">localhost:6565</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Address or load balance (<code>lb:authority/host1:port1,host2:port2&#8230;&#8203;</code>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">threadPoolBeanName</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Thread pool bean name for gRPC executor.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">initialFlowControlWindow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">flowControlWindow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxMessageSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">maxHeaderListSize</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Int</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keepAliveTimeInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keepAliveTimeoutInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">keepAliveWithoutCalls</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deadlineAfterInNanos</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">loadBalancingPolicy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">round_robin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Load balance policy: <code>round_robin</code>, <code>pick_first</code>.</p>
+<p class="tableblock">Default is <code>round_robin</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslCertChainClassPath</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslPrivateKeyClassPath</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslTrustCertCollectionClassPath</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslCertChainFile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslPrivateKeyFile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslTrustCertCollectionFile</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same classpath and file properties are alternative and classpath first</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslPrivateKeyPassword</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sslClientAuth</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Auth enum with case-ignore: <code>none</code>, <code>optional</code> or <code>require</code>.</p>
+<p class="tableblock">Default is <code>none</code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">

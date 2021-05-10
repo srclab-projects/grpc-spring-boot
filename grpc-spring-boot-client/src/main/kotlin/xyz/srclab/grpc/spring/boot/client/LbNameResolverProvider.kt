@@ -12,7 +12,7 @@ import java.net.URI
  * Simple load balance target resolver provider:
  *
  * ```
- * lb:authority/host1:port1, host2:port2
+ * lb:authority/host1:port1,host2:port2...
  * ```
  */
 internal class LbNameResolverProvider(
