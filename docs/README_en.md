@@ -43,6 +43,7 @@ Table of Contents
             DefaultGrpcTargetResolver](#_grpctargetresolver_and_defaultgrpctargetresolver)
         -   [Client Configuration Properties
             Table](#_client_configuration_properties_table)
+    -   [Web](#_web)
 -   [Contribution and Contact](#_contribution_and_contact)
 -   [License](#_license)
 
@@ -72,25 +73,25 @@ spring-boot starter, with spring-boot style.
 
 Gradle
 
-    implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-server:0.0.0")
-    implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-client:0.0.0")
-    implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-web:0.0.0")
+    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-server:0.0.0")
+    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-client:0.0.0")
+    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-web:0.0.0")
 
 Maven
 
     <dependencies>
       <dependency>
-        <groupId>xyz.srclab.spring.boot.grpc</groupId>
+        <groupId>xyz.srclab.grpc.spring.boot</groupId>
         <artifactId>grpc-spring-boot-starter-server</artifactId>
         <version>0.0.0</version>
       </dependency>
       <dependency>
-        <groupId>xyz.srclab.spring.boot.grpc</groupId>
+        <groupId>xyz.srclab.grpc.spring.boot</groupId>
         <artifactId>grpc-spring-boot-starter-client</artifactId>
         <version>0.0.0</version>
       </dependency>
       <dependency>
-        <groupId>xyz.srclab.spring.boot.grpc</groupId>
+        <groupId>xyz.srclab.grpc.spring.boot</groupId>
         <artifactId>grpc-spring-boot-starter-web</artifactId>
         <version>0.0.0</version>
       </dependency>
@@ -896,6 +897,13 @@ Table 3. GrpcClientsProperties
 </table>
 
 Table 4. ClientProperties
+
+### Web
+
+`grpc-spring-boot-starter-web` is used for making `Controller` support
+protobuf `Message` type.
+
+By default, it uses `Jackson2ObjectMapperBuilderCustomizer`.
 
 ## Contribution and Contact
 

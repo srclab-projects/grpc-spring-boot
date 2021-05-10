@@ -483,6 +483,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_client配置属性表">Client配置属性表</a></li>
 </ul>
 </li>
+<li><a href="#_web">Web</a></li>
 </ul>
 </li>
 <li><a href="#_共享和联系方式">共享和联系方式</a></li>
@@ -529,9 +530,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock">
 <div class="title">Gradle</div>
 <div class="content">
-<pre class="highlight"><code class="language-groovy" data-lang="groovy">implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-server:0.0.0")
-implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-client:0.0.0")
-implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-web:0.0.0")</code></pre>
+<pre class="highlight"><code class="language-groovy" data-lang="groovy">implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-server:0.0.0")
+implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-client:0.0.0")
+implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-web:0.0.0")</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -539,17 +540,17 @@ implementation("xyz.srclab.spring.boot.grpc:grpc-spring-boot-starter-web:0.0.0")
 <div class="content">
 <pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependencies&gt;
   &lt;dependency&gt;
-    &lt;groupId&gt;xyz.srclab.spring.boot.grpc&lt;/groupId&gt;
+    &lt;groupId&gt;xyz.srclab.grpc.spring.boot&lt;/groupId&gt;
     &lt;artifactId&gt;grpc-spring-boot-starter-server&lt;/artifactId&gt;
     &lt;version&gt;0.0.0&lt;/version&gt;
   &lt;/dependency&gt;
   &lt;dependency&gt;
-    &lt;groupId&gt;xyz.srclab.spring.boot.grpc&lt;/groupId&gt;
+    &lt;groupId&gt;xyz.srclab.grpc.spring.boot&lt;/groupId&gt;
     &lt;artifactId&gt;grpc-spring-boot-starter-client&lt;/artifactId&gt;
     &lt;version&gt;0.0.0&lt;/version&gt;
   &lt;/dependency&gt;
   &lt;dependency&gt;
-    &lt;groupId&gt;xyz.srclab.spring.boot.grpc&lt;/groupId&gt;
+    &lt;groupId&gt;xyz.srclab.grpc.spring.boot&lt;/groupId&gt;
     &lt;artifactId&gt;grpc-spring-boot-starter-web&lt;/artifactId&gt;
     &lt;version&gt;0.0.0&lt;/version&gt;
   &lt;/dependency&gt;
@@ -1399,6 +1400,15 @@ public class DefaultClientInterceptor{}</code></pre>
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_web">Web</h3>
+<div class="paragraph">
+<p><code>grpc-spring-boot-starter-web</code> 用来让 <code>Controller</code> 支持protobuf的 <code>Message</code> 类型.</p>
+</div>
+<div class="paragraph">
+<p>默认情况下, 它使用 <code>Jackson2ObjectMapperBuilderCustomizer</code> 来实现.</p>
 </div>
 </div>
 </div>
