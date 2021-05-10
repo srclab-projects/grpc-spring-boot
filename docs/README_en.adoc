@@ -485,7 +485,7 @@ Auth enum with case-ignore: `none`, `optional` or `require`.
 Default is `none`.
 |===
 
-== Web
+=== Web
 
 `grpc-spring-boot-starter-web` is used for making `Controller` support protobuf `Message` type.
 

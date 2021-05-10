@@ -41,7 +41,7 @@
         -   [GrpcTargetResolver and
             DefaultGrpcTargetResolver](#_grpctargetresolver_and_defaultgrpctargetresolver)
         -   [Client配置属性表](#_client配置属性表)
--   [Web](#_web)
+    -   [Web](#_web)
 -   [共享和联系方式](#_共享和联系方式)
 -   [License](#_license)
 
@@ -881,7 +881,7 @@ Table 3. GrpcClientsProperties
 
 Table 4. ClientProperties
 
-## Web
+### Web
 
 `grpc-spring-boot-starter-web` 用来让 `Controller` 支持protobuf的
 `Message` 类型.
