@@ -7,7 +7,7 @@ ext["infos"] = [
   version      : "0.0.0",
 
   //Group
-  group        : "xyz.srclab.spring.boot.grpc",
+  group        : "xyz.srclab.grpc.spring.boot",
 
   //Project url
   url          : "https://github.com/srclab-projects/grpc-spring-boot",
@@ -19,7 +19,7 @@ ext["infos"] = [
   licenses     : [
     [
       name: "The Apache License, Version 2.0",
-      url : "http://www.apache.org/licenses/LICENSE-2.0.txt",
+      url : "https://www.apache.org/licenses/LICENSE-2.0.txt",
     ],
   ],
 
