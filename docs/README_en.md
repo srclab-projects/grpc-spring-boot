@@ -589,7 +589,7 @@ To set a load-balance target:
       client:
         clients:
           lb:
-            target: lb:127.0.0.1/127.0.0.1:6666,127.0.0.1:6667
+            target: lb:127.0.0.1/127.0.0.1:6666,127.0.0.1/127.0.0.1:6667
 
 Now the client `lb` is load-balance.
 
@@ -603,7 +603,7 @@ Now the client `lb` is load-balance.
 <td class="icon"><div class="title">
 Note
 </div></td>
-<td class="content">load balance syntax is: <code>lb:authority/host1:port1,host2:port2…​</code></td>
+<td class="content">load balance syntax is: <code>lb:authority1/host1:port1,authority2/host2:port2…​</code></td>
 </tr>
 </tbody>
 </table>

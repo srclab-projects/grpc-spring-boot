@@ -575,7 +575,7 @@ Note
       client:
         clients:
           lb:
-            target: lb:127.0.0.1/127.0.0.1:6666,127.0.0.1:6667
+            target: lb:127.0.0.1/127.0.0.1:6666,127.0.0.1/127.0.0.1:6667
 
 现在, client `lb` 被配置成负载均衡了.
 
@@ -589,7 +589,7 @@ Note
 <td class="icon"><div class="title">
 Note
 </div></td>
-<td class="content">负载均衡的语法: <code>lb:authority/host1:port1,host2:port2…​</code></td>
+<td class="content">负载均衡的语法: <code>lb:authority1/host1:port1,authority2/host2:port2…​</code></td>
 </tr>
 </tbody>
 </table>
