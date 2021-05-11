@@ -33,7 +33,6 @@ open class DefaultGrpcChannelFactory : GrpcChannelFactory {
             emptyList()
         }
 
-        //add load balance support: lb:authority1/host1:port1,authority1/host2:port2...
         NameResolverRegistry.getDefaultRegistry().register(LbNameResolverProvider(defaultGrpcTargetResolver))
     }
 

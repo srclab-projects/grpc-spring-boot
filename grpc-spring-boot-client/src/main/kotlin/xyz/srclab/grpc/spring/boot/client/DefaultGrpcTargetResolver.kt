@@ -1,5 +1,7 @@
 package xyz.srclab.grpc.spring.boot.client
 
+import io.grpc.Attributes
+import io.grpc.EquivalentAddressGroup
 import io.grpc.NameResolver
 import xyz.srclab.grpc.spring.boot.DEFAULT_PORT
 import java.net.InetAddress
@@ -19,39 +21,54 @@ open class DefaultGrpcTargetResolver : GrpcTargetResolver {
         args: NameResolver.Args
     ) : GrpcTarget {
 
-        override val authority: String
-        override val addresses: List<SocketAddress>
+        override val addresses: List<EquivalentAddressGroup>
 
         init {
-            val authorityAndAddresses = targetUri.schemeSpecificPart.split("/")
+            fun String.resolveEquivalentAddressGroup(): EquivalentAddressGroup {
+                val socketAddresses: MutableList<SocketAddress> = LinkedList()
+                val authorityAndHostIp = this.trim().split("/")
 
-            fun String.resolveAddresses(): List<SocketAddress> {
-                val inetAddresses: MutableList<SocketAddress> = LinkedList()
-                val parts = this.split(",")
-                for (part in parts) {
-                    val hostAndPort = part.split(":")
+                fun resolveAuthorityAndHostIp(authority: String?, hostAndPort: List<String>): EquivalentAddressGroup {
                     if (hostAndPort.size != 2) {
-                        val actualAddresses = InetAddress.getAllByName(hostAndPort[0].trim())
-                        for (actualAddress in actualAddresses) {
-                            inetAddresses.add(InetSocketAddress(actualAddress.hostAddress, DEFAULT_PORT))
+                        val hostAddresses = InetAddress.getAllByName(hostAndPort[0].trim())
+                        for (hostAddress in hostAddresses) {
+                            socketAddresses.add(InetSocketAddress(hostAddress.hostAddress, DEFAULT_PORT))
                         }
                     } else {
-                        val actualAddresses = InetAddress.getAllByName(hostAndPort[0].trim())
-                        for (actualAddress in actualAddresses) {
-                            inetAddresses.add(InetSocketAddress(actualAddress.hostAddress, hostAndPort[1].toInt()))
+                        val hostAddresses = InetAddress.getAllByName(hostAndPort[0].trim())
+                        val port = hostAndPort[1].trim().toInt()
+                        for (hostAddress in hostAddresses) {
+                            socketAddresses.add(InetSocketAddress(hostAddress.hostAddress, port))
                         }
                     }
+                    return if (authority === null) {
+                        EquivalentAddressGroup(socketAddresses)
+                    } else {
+                        EquivalentAddressGroup(
+                            socketAddresses,
+                            Attributes.newBuilder()
+                                .set(EquivalentAddressGroup.ATTR_AUTHORITY_OVERRIDE, authority)
+                                .build()
+                        )
+                    }
                 }
-                return inetAddresses
+
+                return if (authorityAndHostIp.size != 2) {
+                    val hostAndPort = this.trim().split(":")
+                    resolveAuthorityAndHostIp(null, hostAndPort)
+                } else {
+                    val authority = authorityAndHostIp[0].trim()
+                    val hostAndPort = authorityAndHostIp[1].trim().split(":")
+                    resolveAuthorityAndHostIp(authority, hostAndPort)
+                }
             }
 
-            if (authorityAndAddresses.size != 2) {
-                authority = ""
-                addresses = targetUri.schemeSpecificPart.trim().resolveAddresses()
-            } else {
-                authority = authorityAndAddresses[0].trim()
-                addresses = authorityAndAddresses[1].trim().resolveAddresses()
+            val addressStrings = targetUri.schemeSpecificPart.split(",")
+            val equivalentAddressGroups: MutableList<EquivalentAddressGroup> = LinkedList()
+            for (addressString in addressStrings) {
+                equivalentAddressGroups.add(addressString.resolveEquivalentAddressGroup())
             }
+            addresses = equivalentAddressGroups.toList()
         }
     }
 }

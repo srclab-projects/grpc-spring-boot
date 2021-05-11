@@ -356,7 +356,7 @@ grpc:
 
 Now the client `lb` is load-balance.
 
-NOTE: load balance syntax is: `lb:authority1/host1:port1,authority1/host2:port2...`
+NOTE: load balance syntax is: `lb:authority1/host1:port1,authority2/host2:port2...`
 
 ==== ClientInterceptor
 

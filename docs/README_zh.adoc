@@ -357,7 +357,7 @@ grpc:
 
 现在, client `lb` 被配置成负载均衡了.
 
-NOTE: 负载均衡的语法: `lb:authority1/host1:port1,authority1/host2:port2...`
+NOTE: 负载均衡的语法: `lb:authority1/host1:port1,authority2/host2:port2...`
 
 ==== ClientInterceptor
 

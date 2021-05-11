@@ -17,7 +17,7 @@ grpc:
       client3:
         target: 127.0.0.1:6568
       lb:
-        target: lb:127.0.0.1/127.0.0.1:6666,127.0.0.1:6667
+        target: lb:127.0.0.1/127.0.0.1:6666,127.0.0.1/127.0.0.1:6667
         sslCertChainClassPath: myClient.crt
         sslPrivateKeyClassPath: myClient.key.pkcs8
         sslTrustCertCollectionClassPath: myServer.crt

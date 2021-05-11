@@ -1,7 +1,7 @@
 package xyz.srclab.grpc.spring.boot.client
 
 import io.grpc.Attributes
-import io.grpc.EquivalentAddressGroup
+import io.grpc.EquivalentAddressGroup.ATTR_AUTHORITY_OVERRIDE
 import io.grpc.NameResolver
 import io.grpc.NameResolverProvider
 import org.slf4j.Logger
@@ -12,7 +12,7 @@ import java.net.URI
  * Simple load balance target resolver provider:
  *
  * ```
- * lb:authority1/host1:port1,authority1/host2:port2...
+ * lb:authority1/host1:port1,authority2/host2:port2...
  * ```
  */
 internal class LbNameResolverProvider(
@@ -40,16 +40,14 @@ internal class LbNameResolverProvider(
 
         private val target: GrpcTarget = targetResolver.resolve(targetUri, args)
 
-        override fun getServiceAuthority(): String = target.authority
+        override fun getServiceAuthority(): String = ATTR_AUTHORITY_OVERRIDE.toString()
 
         override fun shutdown() {
         }
 
         override fun start(listener: Listener) {
             listener.onAddresses(
-                target.addresses.map {
-                    EquivalentAddressGroup(it)
-                },
+                target.addresses,
                 Attributes.EMPTY
             )
         }
