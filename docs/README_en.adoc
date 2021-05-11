@@ -351,12 +351,12 @@ grpc:
   client:
     clients:
       lb:
-        target: lb:127.0.0.1/127.0.0.1:6666,127.0.0.1:6667
+        target: lb:127.0.0.1/127.0.0.1:6666,127.0.0.1/127.0.0.1:6667
 ----
 
 Now the client `lb` is load-balance.
 
-NOTE: load balance syntax is: `lb:authority/host1:port1,host2:port2...`
+NOTE: load balance syntax is: `lb:authority1/host1:port1,authority2/host2:port2...`
 
 ==== ClientInterceptor
 
