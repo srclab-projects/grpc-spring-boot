@@ -24,7 +24,7 @@ open class GrpcClientProperties {
     var useShaded: Boolean? = null
 
     /**
-     * Address or load balance (`lb:authority/host1:port1,host2:port2...`)
+     * Address or load balance (`lb:authority1/host1:port1,authority1/host2:port2...`)
      */
     var target: String? = null
     var threadPoolBeanName: String? = null
@@ -113,7 +113,7 @@ open class GrpcClientConfig(
     val useShaded: Boolean = _useShaded ?: false
 
     /**
-     * Address or load balance (`lb:authority/host1:port1,host2:port2...`)
+     * Address or load balance (`lb:authority1/host1:port1,authority1/host2:port2...`)
      */
     val target: String = _target ?: DEFAULT_TARGET
     val threadPoolBeanName: String? = _threadPoolBeanName
