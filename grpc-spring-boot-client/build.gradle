@@ -1,5 +1,5 @@
 plugins {
-  id 'build.kotlin-publish-jar'
+  id 'build.jar'
 }
 
 description = "gRPC Spring Boot Client: gRPC server interfaces, functions and utilities for Spring Boot."
@@ -24,8 +24,3 @@ dependencies {
 }
 
 compileJava.inputs.files(processResources)
-
-test {
-  useTestNG()
-  include("**/*Test.class", "**/*TestKt.class")
-}

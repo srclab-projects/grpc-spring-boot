@@ -1,5 +1,5 @@
 plugins {
-  id 'build.kotlin-publish-jar'
+  id 'build.jar'
 }
 
 description = "gRPC Spring Boot Starters for web: gRPC for Spring Boot Web."

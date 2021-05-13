@@ -1,5 +1,5 @@
 plugins {
-  id 'build.kotlin-sample'
+  id 'build.sample'
 }
 
 description = "gRPC Boat Spring Boot Samples"
@@ -12,9 +12,4 @@ java {
 
 dependencies {
   testCompile project(":grpc-spring-boot-starters:grpc-spring-boot-starter-test")
-}
-
-test {
-  useTestNG()
-  include("**/*Sample.class", "**/*SampleKt.class")
 }
