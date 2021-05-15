@@ -5,8 +5,8 @@ import io.grpc.netty.GrpcSslContexts
 import io.grpc.netty.NettyServerBuilder
 import io.netty.handler.ssl.ClientAuth
 import org.springframework.context.ApplicationContext
-import xyz.srclab.common.base.loadResource
-import xyz.srclab.common.base.valueOfEnumIgnoreCase
+import xyz.srclab.common.lang.loadResource
+import xyz.srclab.common.lang.valueOfEnumIgnoreCase
 import java.io.File
 import java.io.InputStream
 import java.util.concurrent.Executor

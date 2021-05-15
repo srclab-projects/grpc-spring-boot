@@ -8,6 +8,9 @@ Table of Contents
 -   [Introduction](#_introduction)
 -   [Features](#_features)
 -   [Getting](#_getting)
+    -   [Gradle](#_gradle)
+    -   [Maven](#_maven)
+    -   [Source Code](#_source_code)
 -   [Samples](#_samples)
 -   [Usage](#_usage)
     -   [Server](#_server)
@@ -71,33 +74,55 @@ spring-boot starter, with spring-boot style.
 
 ## Getting
 
-Gradle
+### Gradle
 
-    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-server:0.0.0")
-    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-client:0.0.0")
-    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-web:0.0.0")
+Specify version:
 
-Maven
+    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-server:0.0.1")
+    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-client:0.0.1")
+    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-web:0.0.1")
+
+Use bom:
+
+    api platform("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-bom:0.0.1")
+
+### Maven
+
+Specify version:
 
     <dependencies>
       <dependency>
         <groupId>xyz.srclab.grpc.spring.boot</groupId>
         <artifactId>grpc-spring-boot-starter-server</artifactId>
-        <version>0.0.0</version>
+        <version>0.0.1</version>
       </dependency>
       <dependency>
         <groupId>xyz.srclab.grpc.spring.boot</groupId>
         <artifactId>grpc-spring-boot-starter-client</artifactId>
-        <version>0.0.0</version>
+        <version>0.0.1</version>
       </dependency>
       <dependency>
         <groupId>xyz.srclab.grpc.spring.boot</groupId>
         <artifactId>grpc-spring-boot-starter-web</artifactId>
-        <version>0.0.0</version>
+        <version>0.0.1</version>
       </dependency>
     </dependencies>
 
-Source Code
+Use bom:
+
+    <dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>xyz.srclab.grpc.spring.boot</groupId>
+          <artifactId>grpc-spring-boot-starter-bom</artifactId>
+          <version>0.0.1</version>
+          <type>pom</type>
+          <scope>import</scope>
+        </dependency>
+      </dependencies>
+    </dependencyManagement>
+
+### Source Code
 
 <https://github.com/srclab-projects/grpc-spring-boot>
 

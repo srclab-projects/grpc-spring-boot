@@ -4,8 +4,8 @@ import io.grpc.Metadata
 import io.grpc.ServerCall
 import io.grpc.ServerInterceptor
 import io.grpc.Status
-import xyz.srclab.common.base.INAPPLICABLE_JVM_NAME
 import xyz.srclab.common.collect.sorted
+import xyz.srclab.common.lang.INAPPLICABLE_JVM_NAME
 import xyz.srclab.grpc.spring.boot.context.GrpcContext
 import xyz.srclab.grpc.spring.boot.server.interceptors.AbstractServerInterceptor
 import xyz.srclab.grpc.spring.boot.server.interceptors.SimpleServerInterceptor
@@ -101,42 +101,48 @@ interface GrpcServerInterceptorsBuilder {
         ) : AbstractServerInterceptor() {
 
             override fun <ReqT : Any, RespT : Any> intercept(
-                call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext) {
+                call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext
+            ) {
                 for (interceptor in interceptors) {
                     interceptor.intercept(call, headers, context)
                 }
             }
 
             override fun <ReqT : Any, RespT : Any> onReady(
-                call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext) {
+                call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext
+            ) {
                 for (interceptor in interceptors) {
                     interceptor.onReady(call, headers, context)
                 }
             }
 
             override fun <ReqT : Any, RespT : Any> onMessage(
-                message: ReqT, call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext) {
+                message: ReqT, call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext
+            ) {
                 for (interceptor in interceptors) {
                     interceptor.onMessage(message, call, headers, context)
                 }
             }
 
             override fun <ReqT : Any, RespT : Any> onHalfClose(
-                call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext) {
+                call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext
+            ) {
                 for (interceptor in interceptors) {
                     interceptor.onHalfClose(call, headers, context)
                 }
             }
 
             override fun <ReqT : Any, RespT : Any> sendHeaders(
-                sentHeader: Metadata, call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext) {
+                sentHeader: Metadata, call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext
+            ) {
                 for (interceptor in interceptors) {
                     interceptor.sendHeaders(sentHeader, call, headers, context)
                 }
             }
 
             override fun <ReqT : Any, RespT : Any> sendMessage(
-                sentMessage: RespT, call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext) {
+                sentMessage: RespT, call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext
+            ) {
                 for (interceptor in interceptors) {
                     interceptor.sendMessage(sentMessage, call, headers, context)
                 }
@@ -155,21 +161,24 @@ interface GrpcServerInterceptorsBuilder {
             }
 
             override fun <ReqT : Any, RespT : Any> onCancel(
-                call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext) {
+                call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext
+            ) {
                 for (interceptor in interceptors) {
                     interceptor.onCancel(call, headers, context)
                 }
             }
 
             override fun <ReqT : Any, RespT : Any> onComplete(
-                call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext) {
+                call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext
+            ) {
                 for (interceptor in interceptors) {
                     interceptor.onComplete(call, headers, context)
                 }
             }
 
             override fun <ReqT : Any, RespT : Any> onException(
-                cause: Throwable, call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext) {
+                cause: Throwable, call: ServerCall<ReqT, RespT>, headers: Metadata, context: GrpcContext
+            ) {
                 for (interceptor in interceptors) {
                     interceptor.onException(cause, call, headers, context)
                 }

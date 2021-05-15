@@ -1,7 +1,7 @@
 package xyz.srclab.grpc.spring.boot.client
 
 import io.grpc.EquivalentAddressGroup
-import xyz.srclab.common.base.INAPPLICABLE_JVM_NAME
+import xyz.srclab.common.lang.INAPPLICABLE_JVM_NAME
 
 interface GrpcTarget {
 

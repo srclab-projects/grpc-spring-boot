@@ -6,8 +6,8 @@ import io.grpc.netty.GrpcSslContexts
 import io.grpc.netty.NettyChannelBuilder
 import io.netty.handler.ssl.ClientAuth
 import org.springframework.context.ApplicationContext
-import xyz.srclab.common.base.loadResource
-import xyz.srclab.common.base.valueOfEnumIgnoreCaseOrNull
+import xyz.srclab.common.lang.loadResource
+import xyz.srclab.common.lang.valueOfEnumIgnoreCaseOrNull
 import java.io.File
 import java.io.InputStream
 import java.util.concurrent.Executor
@@ -127,7 +127,8 @@ open class DefaultGrpcChannelConfigureHelper {
 
         val clientAuthString = clientConfig.sslClientAuth
         if (clientAuthString !== null) {
-            val clientAuth = ShadedClientAuth::class.java.valueOfEnumIgnoreCaseOrNull<ShadedClientAuth>(clientAuthString)
+            val clientAuth =
+                ShadedClientAuth::class.java.valueOfEnumIgnoreCaseOrNull<ShadedClientAuth>(clientAuthString)
             if (clientAuth !== ShadedClientAuth.NONE)
                 sslBuilder.clientAuth(clientAuth)
         }

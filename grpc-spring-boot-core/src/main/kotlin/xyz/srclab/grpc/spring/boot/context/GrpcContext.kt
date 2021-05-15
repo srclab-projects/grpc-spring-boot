@@ -1,8 +1,8 @@
 package xyz.srclab.grpc.spring.boot.context
 
 import io.grpc.Context
-import xyz.srclab.common.base.INAPPLICABLE_JVM_NAME
-import xyz.srclab.common.base.asAny
+import xyz.srclab.common.lang.INAPPLICABLE_JVM_NAME
+import xyz.srclab.common.lang.asAny
 import xyz.srclab.grpc.spring.boot.context.GrpcContext.Companion.ARGS_KEY
 import xyz.srclab.grpc.spring.boot.context.GrpcContext.Companion.CONTEXT_KEY
 
