@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import xyz.srclab.common.base.Loaders;
+import xyz.srclab.common.lang.Loaders;
 import xyz.srclab.spring.boot.proto.*;
 
 import javax.annotation.Resource;

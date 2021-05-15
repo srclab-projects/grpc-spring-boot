@@ -2,8 +2,8 @@ package xyz.srclab.grpc.spring.boot.client
 
 import io.grpc.*
 import org.springframework.util.AntPathMatcher
-import xyz.srclab.common.base.INAPPLICABLE_JVM_NAME
 import xyz.srclab.common.collect.sorted
+import xyz.srclab.common.lang.INAPPLICABLE_JVM_NAME
 import xyz.srclab.grpc.spring.boot.client.interceptors.AbstractClientInterceptor
 import xyz.srclab.grpc.spring.boot.client.interceptors.SimpleClientInterceptor
 import xyz.srclab.grpc.spring.boot.context.GrpcContext
@@ -113,7 +113,8 @@ interface GrpcClientInterceptorsBuilder {
         ) : AbstractClientInterceptor() {
 
             override fun <ReqT : Any, RespT : Any> intercept(
-                method: MethodDescriptor<ReqT, RespT>, callOptions: CallOptions, context: GrpcContext) {
+                method: MethodDescriptor<ReqT, RespT>, callOptions: CallOptions, context: GrpcContext
+            ) {
                 for (interceptor in interceptors) {
                     interceptor.intercept(method, callOptions, context)
                 }
@@ -142,7 +143,8 @@ interface GrpcClientInterceptorsBuilder {
             }
 
             override fun <ReqT : Any, RespT : Any> onReady(
-                method: MethodDescriptor<ReqT, RespT>, callOptions: CallOptions, context: GrpcContext) {
+                method: MethodDescriptor<ReqT, RespT>, callOptions: CallOptions, context: GrpcContext
+            ) {
                 for (interceptor in interceptors) {
                     interceptor.onReady(method, callOptions, context)
                 }
@@ -175,7 +177,8 @@ interface GrpcClientInterceptorsBuilder {
                 trailers: Metadata,
                 method: MethodDescriptor<ReqT, RespT>,
                 callOptions: CallOptions,
-                context: GrpcContext) {
+                context: GrpcContext
+            ) {
                 for (interceptor in interceptors) {
                     interceptor.onClose(status, trailers, method, callOptions, context)
                 }

@@ -3,7 +3,7 @@ package xyz.srclab.grpc.spring.boot.server
 import io.grpc.BindableService
 import io.grpc.ServerInterceptors
 import io.grpc.ServerServiceDefinition
-import xyz.srclab.common.base.INAPPLICABLE_JVM_NAME
+import xyz.srclab.common.lang.INAPPLICABLE_JVM_NAME
 
 interface GrpcServiceBuilder {
 

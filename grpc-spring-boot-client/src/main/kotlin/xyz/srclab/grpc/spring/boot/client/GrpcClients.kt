@@ -7,7 +7,7 @@ import io.grpc.stub.AbstractAsyncStub
 import io.grpc.stub.AbstractBlockingStub
 import io.grpc.stub.AbstractFutureStub
 import io.grpc.stub.AbstractStub
-import xyz.srclab.common.base.asAny
+import xyz.srclab.common.lang.asAny
 import xyz.srclab.common.reflect.method
 import java.util.concurrent.TimeUnit
 
