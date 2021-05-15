@@ -8,6 +8,9 @@
 -   [简介](#_简介)
 -   [特性](#_特性)
 -   [获取](#_获取)
+    -   [Gradle](#_gradle)
+    -   [Maven](#_maven)
+    -   [源代码](#_源代码)
 -   [样例](#_样例)
 -   [使用](#_使用)
     -   [Server](#_server)
@@ -66,33 +69,55 @@ starter.
 
 ## 获取
 
-Gradle
+### Gradle
 
-    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-server:0.0.0")
-    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-client:0.0.0")
-    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-web:0.0.0")
+Specify version:
 
-Maven
+    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-server:0.0.1")
+    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-client:0.0.1")
+    implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-web:0.0.1")
+
+Use bom:
+
+    api platform("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-bom:0.0.1")
+
+### Maven
+
+Specify version:
 
     <dependencies>
       <dependency>
         <groupId>xyz.srclab.grpc.spring.boot</groupId>
         <artifactId>grpc-spring-boot-starter-server</artifactId>
-        <version>0.0.0</version>
+        <version>0.0.1</version>
       </dependency>
       <dependency>
         <groupId>xyz.srclab.grpc.spring.boot</groupId>
         <artifactId>grpc-spring-boot-starter-client</artifactId>
-        <version>0.0.0</version>
+        <version>0.0.1</version>
       </dependency>
       <dependency>
         <groupId>xyz.srclab.grpc.spring.boot</groupId>
         <artifactId>grpc-spring-boot-starter-web</artifactId>
-        <version>0.0.0</version>
+        <version>0.0.1</version>
       </dependency>
     </dependencies>
 
-源代码
+Use bom:
+
+    <dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>xyz.srclab.grpc.spring.boot</groupId>
+          <artifactId>grpc-spring-boot-starter-bom</artifactId>
+          <version>0.0.1</version>
+          <type>pom</type>
+          <scope>import</scope>
+        </dependency>
+      </dependencies>
+    </dependencyManagement>
+
+### 源代码
 
 <https://github.com/srclab-projects/grpc-spring-boot>
 

@@ -9,7 +9,7 @@ Sun Qian <fredsuvn@163.com>
 :license: https://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license]
 
 :qq-group: QQ group: 1037555759
-:grpc-spring-boot-version: 0.0.0
+:grpc-spring-boot-version: 0.0.1
 
 == Introduction
 
@@ -25,7 +25,9 @@ This is a concise, clear, easy to extend gRPC and high-customizable spring-boot 
 
 == Getting
 
-.Gradle
+=== Gradle
+
+.Specify version:
 [source,groovy,subs="attributes+"]
 ----
 implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-server:{grpc-spring-boot-version}")
@@ -33,7 +35,15 @@ implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-client:{grp
 implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-web:{grpc-spring-boot-version}")
 ----
 
-.Maven
+.Use bom:
+[source,groovy,subs="attributes+"]
+----
+api platform("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-bom:{grpc-spring-boot-version}")
+----
+
+=== Maven
+
+.Specify version:
 [source,xml,subs="attributes+"]
 ----
 <dependencies>
@@ -55,7 +65,24 @@ implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-web:{grpc-s
 </dependencies>
 ----
 
-.Source Code
+.Use bom:
+[source,xml,subs="attributes+"]
+----
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>xyz.srclab.grpc.spring.boot</groupId>
+      <artifactId>grpc-spring-boot-starter-bom</artifactId>
+      <version>{grpc-spring-boot-version}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
+----
+
+=== Source Code
+
 {url}
 
 == Samples
