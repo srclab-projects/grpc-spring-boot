@@ -1,0 +1,25 @@
+plugins {
+  id 'build.platform'
+}
+
+description = "gRPC Spring Boot BOM"
+
+javaPlatform {
+  allowDependencies()
+}
+
+dependencies {
+  constraints {
+    file("${rootDir}/").eachDir { dir ->
+      if (dir.name == "grpc-spring-boot-starters") {
+        dir.eachDir { subDir ->
+          api project(":${dir.name}:${subDir.name}")
+        }
+        return
+      }
+      if (dir.name.startsWith("grpc-spring-boot-")) {
+        api project(":${dir.name}")
+      }
+    }
+  }
+}
