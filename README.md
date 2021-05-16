@@ -1,4 +1,4 @@
-# Spring Boot Starter for gRPC
+# ![Boat](logo.svg) Spring Boot Starter for gRPC
 
 ## Choose doc style you like:
 
