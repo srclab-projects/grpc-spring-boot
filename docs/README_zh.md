@@ -1,4 +1,4 @@
-# <span class="image">![Boat Spring Boot](../logo.svg)</span> Boat Spring Boot: SrcLab核心基础Spring Boot库
+# <span class="image">![Boat Spring Boot](../logo.svg)</span> Spring Boot Starter for gRPC
 
 <span id="author" class="author">Sun Qian</span>  
 <span id="email" class="email"><fredsuvn@163.com></span>  
@@ -50,7 +50,7 @@
 
 ## 简介
 
-一个简洁, 清晰, 易扩展和高度可定制的spring-boot风格的spring-boot
+一个简洁, 清晰, 易扩展和高度可定制的 gRPC spring-boot 风格的 spring-boot
 starter.
 
 ## 特性

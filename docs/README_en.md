@@ -1,4 +1,4 @@
-# Spring Boot Starter for gRPC
+# <span class="image">![Boat Spring Boot](../logo.svg)</span> Spring Boot Starter for gRPC
 
 <span id="author" class="author">Sun Qian</span>  
 <span id="email" class="email"><fredsuvn@163.com></span>  
@@ -52,7 +52,7 @@ Table of Contents
 
 ## Introduction
 
-This is a concise, clear, easy to extend gRPC and high-customizable
+This is a concise, clear, easy to extend and high-customizable gRPC
 spring-boot starter, with spring-boot style.
 
 ## Features
