@@ -1,4 +1,4 @@
-= Spring Boot Starter for gRPC
+= image:../logo.svg[Boat Spring Boot] Spring Boot Starter for gRPC
 :toc:
 :toclevels: 3
 :last-update-label!:
@@ -13,7 +13,7 @@ Sun Qian <fredsuvn@163.com>
 
 == Introduction
 
-This is a concise, clear, easy to extend gRPC and high-customizable spring-boot starter, with spring-boot style.
+This is a concise, clear, easy to extend and high-customizable gRPC spring-boot starter, with spring-boot style.
 
 == Features
 
