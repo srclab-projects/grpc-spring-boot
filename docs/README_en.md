@@ -47,13 +47,13 @@ Table of Contents
         -   [Client Configuration Properties
             Table](#_client_configuration_properties_table)
     -   [Web](#_web)
--   [Contribution and Contact](#_contribution_and_contact)
--   [License](#_license)
 
 ## Introduction
 
 This is a concise, clear, easy to extend and high-customizable gRPC
 spring-boot starter, with spring-boot style.
+
+It needs `Spring Boot 2+` and `JDK1.8+`.
 
 ## Features
 
@@ -76,7 +76,7 @@ spring-boot starter, with spring-boot style.
 
 ### Gradle
 
-Specify version:
+Get grpc-spring-boot:
 
     implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-server:0.0.1")
     implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-client:0.0.1")
@@ -88,7 +88,7 @@ Use bom:
 
 ### Maven
 
-Specify version:
+Get grpc-spring-boot:
 
     <dependencies>
       <dependency>
@@ -929,15 +929,3 @@ Table 4. ClientProperties
 protobuf `Message` type.
 
 By default, it uses `Jackson2ObjectMapperBuilderCustomizer`.
-
-## Contribution and Contact
-
--   <fredsuvn@163.com>
-
--   <https://github.com/srclab-projects/grpc-spring-boot>
-
--   QQ group: 1037555759
-
-## License
-
-[Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0.html)

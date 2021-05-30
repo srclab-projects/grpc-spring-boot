@@ -45,13 +45,13 @@
             DefaultGrpcTargetResolver](#_grpctargetresolver_and_defaultgrpctargetresolver)
         -   [Client配置属性表](#_client配置属性表)
     -   [Web](#_web)
--   [共享和联系方式](#_共享和联系方式)
--   [License](#_license)
 
 ## 简介
 
 一个简洁, 清晰, 易扩展和高度可定制的 gRPC spring-boot 风格的 spring-boot
 starter.
+
+它需要 `Spring Boot 2+` and `JDK1.8+`.
 
 ## 特性
 
@@ -71,7 +71,7 @@ starter.
 
 ### Gradle
 
-Specify version:
+Get grpc-spring-boot:
 
     implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-server:0.0.1")
     implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-client:0.0.1")
@@ -83,7 +83,7 @@ Use bom:
 
 ### Maven
 
-Specify version:
+Get grpc-spring-boot:
 
     <dependencies>
       <dependency>
@@ -912,15 +912,3 @@ Table 4. ClientProperties
 `Message` 类型.
 
 默认情况下, 它使用 `Jackson2ObjectMapperBuilderCustomizer` 来实现.
-
-## 共享和联系方式
-
--   <fredsuvn@163.com>
-
--   <https://github.com/srclab-projects/grpc-spring-boot>
-
--   QQ group: 1037555759
-
-## License
-
-[Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0.html)
