@@ -6,14 +6,13 @@ Sun Qian <fredsuvn@163.com>
 :encoding: UTF-8
 :emaill: fredsuvn@163.com
 :url: https://github.com/srclab-projects/grpc-spring-boot
-:license: https://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license]
-
-:qq-group: QQ group: 1037555759
 :grpc-spring-boot-version: 0.0.1
 
 == Introduction
 
 This is a concise, clear, easy to extend and high-customizable gRPC spring-boot starter, with spring-boot style.
+
+It needs `Spring Boot 2+` and `JDK1.8+`.
 
 == Features
 
@@ -27,7 +26,7 @@ This is a concise, clear, easy to extend and high-customizable gRPC spring-boot 
 
 === Gradle
 
-.Specify version:
+.Get grpc-spring-boot:
 [source,groovy,subs="attributes+"]
 ----
 implementation("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-server:{grpc-spring-boot-version}")
@@ -43,7 +42,7 @@ api platform("xyz.srclab.grpc.spring.boot:grpc-spring-boot-starter-bom:{grpc-spr
 
 === Maven
 
-.Specify version:
+.Get grpc-spring-boot:
 [source,xml,subs="attributes+"]
 ----
 <dependencies>
@@ -517,13 +516,3 @@ Default is `none`.
 `grpc-spring-boot-starter-web` is used for making `Controller` support protobuf `Message` type.
 
 By default, it uses `Jackson2ObjectMapperBuilderCustomizer`.
-
-== Contribution and Contact
-
-* {emaill}
-* {url}
-* {qq-group}
-
-== License
-
-{license}

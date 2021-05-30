@@ -28,4 +28,6 @@ dependencies {
   //developmentOnly "org.springframework.boot:spring-boot-devtools"
 }
 
+utils.writeBuildInfos(project, "src/main/resources/META-INF/build.properties")
+
 compileJava.inputs.files(processResources)
