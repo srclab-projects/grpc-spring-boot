@@ -1,4 +1,4 @@
-# <span class="image">![gRPC Spring Boot](../logo.svg)</span> Spring Boot Starter for gRPC
+# <span class="image">![logo](../logo.svg)</span> Spring Boot Starter for gRPC
 
 <span id="author" class="author">Sun Qian</span>  
 <span id="email" class="email"><fredsuvn@163.com></span>  

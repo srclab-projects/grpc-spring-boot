@@ -1,4 +1,4 @@
-# ![gRPC Spring Boot](logo.svg) Spring Boot Starter for gRPC
+# ![](logo.svg) Spring Boot Starter for gRPC
 
 ## Read Me:
 
