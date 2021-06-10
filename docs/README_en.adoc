@@ -1,4 +1,4 @@
-= image:../logo.svg[gRPC Spring Boot] Spring Boot Starter for gRPC
+= image:../logo.svg[] Spring Boot Starter for gRPC
 :toc:
 :toclevels: 3
 :last-update-label!:
