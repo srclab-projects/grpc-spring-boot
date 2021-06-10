@@ -1,6 +1,6 @@
 # ![gRPC Spring Boot](logo.svg) Spring Boot Starter for gRPC
 
-## Choose doc style you like:
+## Read Me:
 
 - AsciiDoc:
   * [English](docs/README_en.adoc)
