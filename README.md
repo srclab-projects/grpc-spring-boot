@@ -40,7 +40,7 @@ cd grpc-spring-boot && gradle clean build
 
 * fredsuvn@163.com
 * https://github.com/srclab-projects/grpc-spring-boot
-* QQ group: 1037555759
+* QQ group: 566185308
 
 ## License
 
